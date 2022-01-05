@@ -5,7 +5,6 @@
 
 void vec4_vector(float x, float y, float z, vec4 *t);
 void vec4_point(float x, float y, float z, vec4 *t);
-void vec4_up(vec4 *t);
 float vec4_magnitude(const vec4 *t);
 void vec4_normalize(vec4 *t);
 float vec4_dot(const vec4 *t0, const vec4 *t1);
