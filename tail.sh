@@ -2,7 +2,7 @@ target="i686-w64-mingw32-gcc"
 options="-Isrc/headers -Wall"
 
 build() {
-  rm -rf obj tests.exe
+  rm -rf obj
   mkdir obj
   ${target} -c src/math/m4x4.c -o obj/m4x4.o ${options}
   ${target} -c src/math/vec4.c -o obj/vec4.o ${options}

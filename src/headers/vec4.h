@@ -3,6 +3,7 @@
 
 #include "public_types.h"
 
+void vec4_create(float x, float y, float z, float w, vec4 *t);
 void vec4_vector(float x, float y, float z, vec4 *t);
 void vec4_point(float x, float y, float z, vec4 *t);
 float vec4_magnitude(const vec4 *t);

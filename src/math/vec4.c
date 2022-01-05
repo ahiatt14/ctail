@@ -3,6 +3,13 @@
 #include "vec4.h"
 #include "public_types.h"
 
+void vec4_create(float x, float y, float z, float w, vec4 *t) {
+  t->x = x;
+  t->y = y;
+  t->z = z;
+  t->w = w;
+}
+
 void vec4_vector(float x, float y, float z, vec4 *t) {
   t->x = x;
   t->y = y;
@@ -59,13 +66,13 @@ void vec4_minus_vec4(const vec4 *t0, const vec4 *t1, vec4 *diff) {
 
 void m4x4_x_vec4(const m4x4 *m, const vec4 *t, vec4 *dest) {
   vec4 temp;
-  temp.x = m->data[0] * t->x + m->data[1] * t->y +
-    m->data[2] * t->z + m->data[3] * t->w;
-  temp.y = m->data[4] * t->x + m->data[5] * t->y +
-    m->data[6] * t->z + m->data[7] * t->w;
-  temp.z = m->data[8] * t->x + m->data[9] * t->y +
-    m->data[10] * t->z + m->data[11] * t->w;
-  temp.w = m->data[12] * t->x + m->data[13] * t->y +
-    m->data[14] * t->z + m->data[15] * t->w;
+  temp.x = m->data[0] * t->x + m->data[4] * t->y +
+    m->data[8] * t->z + m->data[12] * t->w;
+  temp.y = m->data[1] * t->x + m->data[5] * t->y +
+    m->data[9] * t->z + m->data[13] * t->w;
+  temp.z = m->data[2] * t->x + m->data[6] * t->y +
+    m->data[10] * t->z + m->data[14] * t->w;
+  temp.w = m->data[3] * t->x + m->data[7] * t->y +
+    m->data[11] * t->z + m->data[15] * t->w;
   memcpy(&dest->x, &temp.x, sizeof(vec4));
 }

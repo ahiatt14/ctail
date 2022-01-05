@@ -68,6 +68,28 @@ int main(void) {
   assert(vec4_equals_vec4(&expected_v, &actual_v));
   PASSED
 
+  TEST("vec4_minus_vec4 should subtract the 2nd from the 1st");
+  vec4_vector(1.0f, 1.0f, 2.0f, &actual_v);
+  vec4_vector(4.2f, 35.3f, 0.1f, &actual_v1);
+  vec4_minus_vec4(&actual_v1, &actual_v, &actual_v);
+  vec4_vector(3.2f, 34.3f, -1.9f, &expected_v);
+  assert(vec4_equals_vec4(&expected_v, &actual_v));
+  PASSED
+
+  TEST("m4x4_x_vec4 should correctly multiply a 4d matrix by a vec4");
+  vec4_point(6.0f, -20.0f, -14.33f, &actual_v);
+  m4x4_create(
+    1, 0, 0, 4.0f,
+    0, 1, -2.2f, 0,
+    0, 0, 1, 0,
+    11.11f, 0, 0, 1,
+    &actual_m
+  );
+  m4x4_x_vec4(&actual_m, &actual_v, &actual_v);
+  vec4_create(10, 11.526f, -14.33f, 67.66f, &expected_v);
+  assert(vec4_equals_vec4(&expected_v, &actual_v));
+  PASSED
+
   TEST("m4x4_create should fill the matrix buffer column-first");
   m4x4_create(
     1, 1, 0, 0,
