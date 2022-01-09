@@ -1,6 +1,8 @@
 #include <math.h>
 #include "m4x4.h"
 
+#include <stdio.h>
+
 static inline void fill_m4x4_data(
   float i0, float i1, float i2, float i3,
   float i4, float i5, float i6, float i7,
@@ -99,17 +101,17 @@ void m4x4_scaling(float s, m4x4 *m) {
 
 void m4x4_rotation(float rads, const vec4 *t, m4x4 *m) {
 
-  float c = cos(rads);
-  float s = sin(rads);
-  float d = 1.0f - c;
+  double c = cos(rads);
+  double s = sin(rads);
+  double d = 1.0f - c;
 
-  float x = t->x * d;
-  float y = t->y * d;
-  float z = t->z * d;
+  double x = t->x * d;
+  double y = t->y * d;
+  double z = t->z * d;
 
-  float txty = x * t->y;
-  float txtz = x * t->z;
-  float tytz = y * t->z;
+  double txty = x * t->y;
+  double txtz = x * t->z;
+  double tytz = y * t->z;
 
   fill_m4x4_data(
     c + x * t->x, txty - s * t->z, txtz + s * t->y, 0,

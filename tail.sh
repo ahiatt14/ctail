@@ -9,6 +9,7 @@ build() {
   ${target} -c src/math/tail_math.c -o obj/tail_math.o ${options}
   ${target} -c src/camera.c -o obj/camera.o ${options}
   ${target} -c src/worldspace.c -o obj/worldspace.o ${options}
+  ${target} -c src/precision.c -o obj/precision.o ${options}
 }
 test() {
   build && \
@@ -20,6 +21,7 @@ test() {
   obj/vec4.o \
   obj/tail_math.o \
   obj/camera.o \
+  obj/precision.o \
   obj/worldspace.o -Wall -Iinclude && \
   ./tests.exe &> test_report.txt
 }

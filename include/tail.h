@@ -7,5 +7,6 @@
 #include "../src/headers/tail_math.h"
 #include "../src/headers/camera.h"
 #include "../src/headers/worldspace.h"
+#include "../src/headers/precision.h"
 
 #endif
