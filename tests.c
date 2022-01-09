@@ -179,22 +179,58 @@ int main(void) {
   assert(m4x4_equals_m4x4(&expected_m, &actual_m, &f_tol));
   PASSED
 
-  // TEST("m4x4_rotation should create a rotation matrix");
-  // printf("\nM_PI: %.24f \n", M_PI);
-  // vec4 axis;
-  // m4x4 rotation;
-  // vec4_point(1.0f, 0.0f, 0.0f, &actual_v);
-  // vec4_vector(0.0f, 1.0f, 0.0f, &axis);
-  // m4x4_rotation(deg_to_rad(90), &axis, &rotation);
-  // printf("deg_to_rad: %.12f\n", deg_to_rad(90));
-  // printf("cos(deg_to_rad(90)): %.12f\n\n", cos(deg_to_rad(90)));
-  // print_m4x4("rotation_matrix", &rotation);
-  // m4x4_x_vec4(&rotation, &actual_v, &actual_v);
-  // vec4_point(0.0f, 0.0f, -1.0f, &expected_v);
-  // print_vec4("expected position", &expected_v);
-  // print_vec4("rotated position", &actual_v);
-  // assert(vec4_equals_vec4(&expected_v, &actual_v, &f_tol));
-  // PASSED
+  TEST("m4x4_rotation should create a working rotation matrix");
+  // NOTE: math.h trig fns not very accurate (eg cos(90) != 0)
+  // but idc really so set tolerance higher
+  f_tol.tolerance = FLT_EPSILON * 10000000;
+  vec4 axis;
+  m4x4 rotation;
+  vec4_point(1.0f, 0.0f, 0.0f, &actual_v);
+  vec4_vector(0.0f, 1.0f, 0.0f, &axis);
+  m4x4_rotation(deg_to_rad(90), &axis, &rotation);
+  m4x4_x_vec4(&rotation, &actual_v, &actual_v);
+  vec4_point(0.0f, 0.0f, -1.0f, &expected_v);
+  assert(vec4_equals_vec4(&expected_v, &actual_v, &f_tol));
+  PASSED
+
+  TEST("m4x4_rotation run #2");
+  f_tol.tolerance = FLT_EPSILON * 10000000;
+  vec4 axis;
+  m4x4 rotation;
+  vec4_vector(1.0f, 1.0f, -1.0f, &axis);
+  vec4_normalize(&axis);
+  vec4_point(1.0f, 0.0f, 0.0f, &actual_v);
+  m4x4_rotation(deg_to_rad(180), &axis, &rotation);
+  m4x4_x_vec4(&rotation, &actual_v, &actual_v);
+  vec4_point(0.0f, 0.0f, -1.0f, &expected_v);
+  assert(vec4_equals_vec4(&expected_v, &actual_v, &f_tol));
+  PASSED
+
+  TEST("m4x4_view should construct an inverted space transform matrix");
+  f_tol.tolerance = FLT_EPSILON;
+  vec4 up, right, forward;
+  vec4_vector(0.0f, 1.0f, 0.0f, &up);
+  vec4_vector(1.0f, 0.0f, 0.0f, &right);
+  vec4_vector(0.0f, 0.0f, -1.0f, &forward);
+  m4x4_view(
+    &up,
+    &right,
+    &forward,
+    &actual_m
+  );
+  m4x4_create(
+    0, 1, 0, 0,
+    1, 0, 0, 0,
+    0, 0, -1, 0,
+    0, 0, 0, 1,
+    &expected_m
+  );
+  m4x4_equals_m4x4(
+    &expected_m,
+    &actual_m,
+    &f_tol
+  );
+  PASSED
 }
 
 void print_m4x4(const char *name, const m4x4 *m) {
