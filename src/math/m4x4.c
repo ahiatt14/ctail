@@ -1,8 +1,6 @@
 #include <math.h>
 #include "m4x4.h"
 
-#include <stdio.h>
-
 static inline void fill_m4x4_data(
   float i0, float i1, float i2, float i3,
   float i4, float i5, float i6, float i7,
@@ -123,8 +121,8 @@ void m4x4_rotation(float rads, const vec4 *t, m4x4 *m) {
 }
 
 void m4x4_view(
-  const vec4 *up,
   const vec4 *right,
+  const vec4 *up,
   const vec4 *forward,
   m4x4 *m
 ) {

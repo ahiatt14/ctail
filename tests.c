@@ -22,7 +22,7 @@ void print_m4x4(const char *name, const m4x4 *m);
 void print_vec4(const char *name, const vec4 *t);
 
 vec4 expected_v, actual_v, actual_v1;
-m4x4 expected_m, actual_m;
+m4x4 expected_m, actual_m, actual_m1;
 
 float_tolerance f_tol = {
   .within_tolerance = diff_is_within_mag_based_tolerance,
@@ -225,8 +225,8 @@ int main(void) {
   vec4_vector(1.0f, 0.0f, 0.0f, &right);
   vec4_vector(0.0f, 0.0f, -1.0f, &forward);
   m4x4_view(
-    &up,
     &right,
+    &up,
     &forward,
     &actual_m
   );
@@ -244,47 +244,80 @@ int main(void) {
   ));
   PASSED
 
+  TEST("m4x4_x_m4x4 should correctly multiply 2 matrices");
+  m4x4_create(
+    1, 0.3f, 3, 0,
+    0, -0.2f, 1, 0,
+    -2.2f, 0, 1, 0,
+    0, 0, 0, 1,
+    &actual_m
+  );
+  m4x4_create(
+    1, 0, 0, 0.3f,
+    0, 1, 0, 0,
+    0, 0, 1, -1.3f,
+    0, 0, 0, 1,
+    &actual_m1
+  );
+  m4x4_x_m4x4(
+    &actual_m,
+    &actual_m1,
+    &actual_m
+  );
+  m4x4_create(
+    1, 0.3f, 3, -3.6f,
+    0, -0.2f, 1, -1.3f,
+    -2.2f, 0, 1, -1.96f,
+    0, 0, 0, 1,
+    &expected_m
+  );
+  assert(m4x4_equals_m4x4(
+    &actual_m,
+    &expected_m,
+    &f_tol
+  ));
+  PASSED
+
   /*
 
     CAMERA
 
   */
 
-  TEST("calculate_lookat should create a lookat matrix");
-  vec4 target = { 0.0f, 0.5f, -1.0f, 0.0f };
-  vec4 up = { 0.0f, 1.0f, 0.0f, 0.0f };
-  camera cam;
-  camera__init(&cam);
-  camera__set_position(0.0f, 0.25f, 0.5f, &cam);
-  camera__set_look_target(&target, &cam);
-  camera__calculate_lookat(&up, &cam);
-  m4x4_create(
-    1, 0, 0, 0,
-    0, 1, 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1,
-    &expected_m
-  );
-  assert(m4x4_equals_m4x4(
-    &expected_m,
-    camera__get_lookat(&cam),
-    &f_tol
-  ));
-  PASSED
+  // TEST("calculate_lookat should create a lookat matrix");
+  // vec4 target = { 0.0f, 0.5f, -1.0f, 1.0f };
+  // vec4 world_up = { 0.0f, 1.0f, 0.0f, 0.0f };
+  // camera cam;
+  // camera__init(&cam);
+  // camera__set_position(0.0f, 0.25f, 0.5f, &cam);
+  // camera__set_look_target(&target, &cam);
+  // camera__calculate_lookat(&world_up, &cam);
+  // m4x4_create(
+  //   1, 0, 0, 0,
+  //   0, 0.986f, 0.164, -0.3285f,
+  //   0, -0.164, 0.986f, -0.452f,
+  //   0, 0, 0, 1,
+  //   &expected_m
+  // );
+  // // print_m4x4("\nexpected \n", &expected_m);
+  // // print_m4x4("\nactual \n", camera__get_lookat(&cam));
+  // assert(m4x4_equals_m4x4(
+  //   &expected_m,
+  //   camera__get_lookat(&cam),
+  //   &f_tol
+  // ));
+  // PASSED
 }
 
 void print_m4x4(const char *name, const m4x4 *m) {
   const float *data = &(m->data[0]);
   printf("%s\n", name);
-  for (int i = 0; i < 16; i++) {
-    printf("%.12f, ", data[i]);
-    if (
-      i == 3 ||
-      i == 7 ||
-      i == 11
-    ) printf("\n");
+  for (int c = 0; c < 4; c++) {
+    for (int r = 0; r < 4; r++) {
+      printf("%.12f, ", data[r * 4 + c]);
+    }
+    printf("\n");
   }
-  printf("\n");
 }
 
 void print_vec4(const char *name, const vec4 *t) {

@@ -18,8 +18,8 @@ void m4x4_inverted_translation(const vec4 *t, m4x4 *m);
 void m4x4_scaling(float s, m4x4 *m);
 void m4x4_rotation(float rads, const vec4 *t, m4x4 *m);
 void m4x4_view(
-  const vec4 *up,
   const vec4 *right,
+  const vec4 *up,
   const vec4 *forward,
   m4x4 *m
 );
