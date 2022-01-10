@@ -29,8 +29,13 @@ typedef struct TRANSFORM {
   vec4 position;
   vec4 rotation; // TODO: we'll want to represent rotation as quats eventually
   float scale;
-  m4x4 model;
 } transform;
+
+typedef struct COORDINATE_SPACE {
+  vec4 up;
+  vec4 right;
+  vec4 forward;
+} coordinate_space;
 
 typedef struct DRAWABLE_MESH {
   vertex *vertex_buffer;
@@ -50,7 +55,7 @@ typedef struct CAMERA {
   m4x4 _projection;
   vec4 _position;
   vec4 _look_target;
-  short int _updated_since_last_draw;
+  short int _view_needs_recalculating;
 } camera;
 
 #endif

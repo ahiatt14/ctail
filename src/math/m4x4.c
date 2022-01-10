@@ -150,20 +150,20 @@ void m4x4_inverted_translation(
   );
 }
 
-void m4x4_ortho_projection(
-  float n,
-  float f,
-  float l,
-  float r,
-  float b,
-  float t,
-  m4x4 *m
-) {
-  fill_m4x4_data(
-    2/(r-l), 0, 0, -(r+l)/(r-l),
-    0, 2/(t-b), 0, -(t+b)/(t-b),
-    0, 0, -2/(f-n), -(f+n)/(f-n),
-    0, 0, 0, 1,
-    m->data
-  );
-}
+// void m4x4_ortho_projection(
+//   float n,
+//   float f,
+//   float l,
+//   float r,
+//   float b,
+//   float t,
+//   m4x4 *m
+// ) {
+//   fill_m4x4_data(
+//     2/(r-l), 0, 0, -(r+l)/(r-l),
+//     0, 2/(t-b), 0, -(t+b)/(t-b),
+//     0, 0, -2/(f-n), -(f+n)/(f-n),
+//     0, 0, 0, 1,
+//     m->data
+//   );
+// }

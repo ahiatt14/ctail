@@ -31,6 +31,12 @@ float_tolerance f_tol = {
 
 int main(void) {
 
+  /*
+
+    VECTORS
+
+  */
+
   TEST("vec4_point should create a vec4 with a w component of 1.0");
   vec4_point(2, 4.05f, 40, &actual_v);
   assert(diff_is_within_mag_based_tolerance(2.0f, actual_v.x, FLT_EPSILON));
@@ -89,6 +95,12 @@ int main(void) {
   vec4_vector(3.2f, 34.3f, -1.9f, &expected_v);
   assert(vec4_equals_vec4(&expected_v, &actual_v, &f_tol));
   PASSED
+
+  /*
+
+    MATRICES
+
+  */
 
   TEST("m4x4_x_vec4 should correctly multiply a 4d matrix by a vec4");
   vec4_point(6.0f, -20.0f, -14.33f, &actual_v);
@@ -219,17 +231,45 @@ int main(void) {
     &actual_m
   );
   m4x4_create(
-    0, 1, 0, 0,
     1, 0, 0, 0,
+    0, 1, 0, 0,
     0, 0, -1, 0,
     0, 0, 0, 1,
     &expected_m
   );
-  m4x4_equals_m4x4(
+  assert(m4x4_equals_m4x4(
     &expected_m,
     &actual_m,
     &f_tol
+  ));
+  PASSED
+
+  /*
+
+    CAMERA
+
+  */
+
+  TEST("calculate_lookat should create a lookat matrix");
+  vec4 target = { 0.0f, 0.5f, -1.0f, 0.0f };
+  vec4 up = { 0.0f, 1.0f, 0.0f, 0.0f };
+  camera cam;
+  camera__init(&cam);
+  camera__set_position(0.0f, 0.25f, 0.5f, &cam);
+  camera__set_look_target(&target, &cam);
+  camera__calculate_lookat(&up, &cam);
+  m4x4_create(
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+    &expected_m
   );
+  assert(m4x4_equals_m4x4(
+    &expected_m,
+    camera__get_lookat(&cam),
+    &f_tol
+  ));
   PASSED
 }
 

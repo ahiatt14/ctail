@@ -8,7 +8,7 @@ build() {
   ${target} -c src/math/vec4.c -o obj/vec4.o ${options}
   ${target} -c src/math/tail_math.c -o obj/tail_math.o ${options}
   ${target} -c src/camera.c -o obj/camera.o ${options}
-  ${target} -c src/worldspace.c -o obj/worldspace.o ${options}
+  ${target} -c src/space.c -o obj/space.o ${options}
   ${target} -c src/precision.c -o obj/precision.o ${options}
 }
 test() {
@@ -22,7 +22,7 @@ test() {
   obj/tail_math.o \
   obj/camera.o \
   obj/precision.o \
-  obj/worldspace.o -Wall -Iinclude && \
+  obj/space.o -Wall -Iinclude && \
   ./tests.exe &> test_report.txt
 }
 
