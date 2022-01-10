@@ -31,13 +31,12 @@ void m4x4_create(
 }
 
 void m4x4_x_m4x4(const m4x4 *m0, const m4x4 *m1, m4x4 *dest) {
-  for (int r = 0; r < 4; r++)
-    for (int c = 0; c < 4; c++)
-      dest->data[c * 4 + r] =
-        m0->data[c * 4]     * m1->data[r]     +
-        m0->data[c * 4 + 1] * m1->data[4 + r] +
-        m0->data[c * 4 + 2] * m1->data[8 + r] +
-        m0->data[c * 4 + 3] * m1->data[12 + r];
+  for (int i = 0; i < 16; i++)
+    dest->data[i] =
+      m0->data[0 +i%4] * m1->data[(int)(floor(i/4)*4+0)] +
+      m0->data[4 +i%4] * m1->data[(int)(floor(i/4)*4+1)] +
+      m0->data[8 +i%4] * m1->data[(int)(floor(i/4)*4+2)] +
+      m0->data[12+i%4] * m1->data[(int)(floor(i/4)*4+3)];
 }
 
 static inline void m4x4_transpose_p(float *m) {
