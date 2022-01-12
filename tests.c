@@ -29,6 +29,12 @@ float_tolerance f_tol = {
   .tolerance = FLT_EPSILON
 };
 
+const coordinate_space DEFAULT_WORLDSPACE = {
+  .up = { 0, 1, 0, 0 },
+  .right = { 1, 0, 0, 0 },
+  .forward = { 0, 0, 1, 0 }
+};
+
 int main(void) {
 
   /*
@@ -245,6 +251,7 @@ int main(void) {
   PASSED
 
   TEST("m4x4_x_m4x4 should correctly multiply 2 matrices");
+  f_tol.tolerance = FLT_EPSILON;
   m4x4_create(
     1, 0.3f, 3, 0,
     0, -0.2f, 1, 0,
@@ -284,29 +291,89 @@ int main(void) {
 
   */
 
-  // TEST("calculate_lookat should create a lookat matrix");
-  // vec4 target = { 0.0f, 0.5f, -1.0f, 1.0f };
-  // vec4 world_up = { 0.0f, 1.0f, 0.0f, 0.0f };
-  // camera cam;
-  // camera__init(&cam);
-  // camera__set_position(0.0f, 0.25f, 0.5f, &cam);
-  // camera__set_look_target(&target, &cam);
-  // camera__calculate_lookat(&world_up, &cam);
-  // m4x4_create(
-  //   1, 0, 0, 0,
-  //   0, 0.986f, 0.164, -0.3285f,
-  //   0, -0.164, 0.986f, -0.452f,
-  //   0, 0, 0, 1,
-  //   &expected_m
-  // );
-  // // print_m4x4("\nexpected \n", &expected_m);
-  // // print_m4x4("\nactual \n", camera__get_lookat(&cam));
-  // assert(m4x4_equals_m4x4(
-  //   &expected_m,
-  //   camera__get_lookat(&cam),
-  //   &f_tol
-  // ));
-  // PASSED
+  TEST("camera__calculate_lookat should create a lookat matrix");
+  f_tol.tolerance = FLT_EPSILON;
+  vec4 target = { 0.0f, 0.5f, -1.0f, 1.0f };
+  vec4 world_up = { 0.0f, 1.0f, 0.0f, 0.0f };
+  camera cam;
+  camera__init(&cam);
+  camera__set_position(0.0f, 0.25f, 0.5f, &cam);
+  camera__set_look_target(&target, &cam);
+  camera__calculate_lookat(&world_up, &cam);
+  m4x4_create(
+    1, 0, 0, 0,
+    0, 0.98639392853f, 0.16439899802f, -0.3287979960f,
+    0, -0.16439899802f, 0.98639392853f, -0.4520971775f,
+    0, 0, 0, 1,
+    &expected_m
+  );
+  assert(m4x4_equals_m4x4(
+    &expected_m,
+    camera__get_lookat(&cam),
+    &f_tol
+  ));
+  PASSED
+
+  TEST("moving the camera should set view_needs_recalculating to true");
+  camera cam;
+  camera__init(&cam);
+  camera__set_position(0.0f, 1.0f, 1.2f, &cam);
+  assert(camera__view_needs_recalculating(&cam));
+  PASSED
+
+  TEST("changing the camera look target should set view_needs_recalculating to true");
+  camera cam;
+  camera__init(&cam);
+  vec4 target = { 0.3f, 0.0f, 3.0f, 1.0f };
+  camera__set_look_target(&target, &cam);
+  assert(camera__view_needs_recalculating(&cam));
+  PASSED
+
+  TEST("calculating the camera view should set view_needs_recalculating to false");
+  camera cam;
+  camera__init(&cam);
+  vec4 target = { 0.0f, 0.5f, -1.0f, 1.0f };
+  vec4 world_up = { 0.0f, 1.0f, 0.0f, 0.0f };
+  camera__set_position(0.0f, 0.25f, 0.5f, &cam);
+  camera__set_look_target(&target, &cam);
+  camera__calculate_lookat(&world_up, &cam);
+  assert(!camera__view_needs_recalculating(&cam));
+  PASSED
+
+  /*
+
+  SPACE
+
+  */
+
+  TEST(
+    "space__create_model should use a transform to create a compound "
+    "matrix for rotation around the z axis, scale, and translation"
+  );
+  f_tol.tolerance = FLT_EPSILON * 1000;
+  transform t = {
+    .position = { 0.3f, -2.0f, -2.0f, 1.0f },
+    .rotation_in_deg = { 0, 0, 45, 0 },
+    .scale = 1.3f
+  };
+  space__create_model(
+    &DEFAULT_WORLDSPACE,
+    &t,
+    &actual_m
+  );
+  m4x4_create(
+    0.919187997f, 0, 0.919187997f, 0.3f,
+    0, 1.3f, 0, -2,
+    -0.919187997f, 0, 0.919187997f, -2,
+    0, 0, 0, 1,
+    &expected_m
+  );
+  assert(m4x4_equals_m4x4(
+    &expected_m,
+    &actual_m,
+    &f_tol
+  ));
+  PASSED
 }
 
 int m4x4_equals_m4x4(

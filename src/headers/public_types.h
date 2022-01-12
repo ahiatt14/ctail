@@ -27,7 +27,7 @@ typedef struct VERTEX {
 
 typedef struct TRANSFORM {
   vec4 position;
-  vec4 rotation; // TODO: we'll want to represent rotation as quats eventually
+  vec4 rotation_in_deg; // TODO: we'll want to represent rotation as quats eventually
   float scale;
 } transform;
 
