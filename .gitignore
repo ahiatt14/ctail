@@ -1,3 +1,4 @@
 obj/
 test_report.txt
 tests.exe
+static/

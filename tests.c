@@ -347,7 +347,7 @@ int main(void) {
   */
 
   TEST(
-    "space__create_model should use a transform to create a compound "
+    "space__create_model should use a transform to create a compound\n"
     "matrix for rotation around the z axis, scale, and translation"
   );
   f_tol.tolerance = FLT_EPSILON * 1000;
