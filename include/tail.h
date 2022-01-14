@@ -8,6 +8,5 @@
 #include "../src/headers/camera.h"
 #include "../src/headers/space.h"
 #include "../src/headers/precision.h"
-#include "../src/headers/debug_helpers.h"
 
 #endif
