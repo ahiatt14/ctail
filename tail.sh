@@ -10,6 +10,7 @@ build() {
   ${target} -c src/camera.c -o obj/camera.o ${options}
   ${target} -c src/space.c -o obj/space.o ${options}
   ${target} -c src/precision.c -o obj/precision.o ${options}
+  ${target} -c src/viewport.c -o obj/viewport.o ${options}
 }
 static() {
   rm -rf static

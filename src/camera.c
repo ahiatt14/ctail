@@ -7,7 +7,6 @@
 
 void camera__init(camera *c) {
   m4x4_identity(&c->_lookat);
-  m4x4_identity(&c->_projection);
 }
 
 const m4x4* camera__calculate_lookat(
@@ -40,7 +39,7 @@ const m4x4* camera__calculate_lookat(
 
   m4x4_x_m4x4(&view, &offset, &c->_lookat);
 
-  c->_view_needs_recalculating = 0;
+  c->_lookat_needs_recalculating = 0;
   return &c->_lookat;
 }
 
@@ -64,10 +63,6 @@ const m4x4* camera__get_lookat(const camera *c) {
   return &c->_lookat;
 }
 
-const m4x4* camera__get_projection(const camera *c) {
-  return &c->_projection;
-}
-
 const vec4* camera__get_position(camera *c) {
   return &c->_position;
 }
@@ -81,14 +76,14 @@ void camera__set_position(float x, float y, float z, camera *c) {
   c->_position.y = y;
   c->_position.z = z;
   c->_position.w = 1.0f;
-  c->_view_needs_recalculating = 1;
+  c->_lookat_needs_recalculating = 1;
 }
 
 void camera__set_look_target(const vec4 *t, camera *c) {
   memcpy(&c->_look_target.x, &t->x, sizeof(vec4));
-  c->_view_needs_recalculating = 1;
+  c->_lookat_needs_recalculating = 1;
 }
 
-int camera__view_needs_recalculating(const camera *c) {
-  return c->_view_needs_recalculating;
+int camera__lookat_needs_recalculating(const camera *c) {
+  return c->_lookat_needs_recalculating;
 }

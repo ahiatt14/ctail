@@ -318,7 +318,7 @@ int main(void) {
   camera cam;
   camera__init(&cam);
   camera__set_position(0.0f, 1.0f, 1.2f, &cam);
-  assert(camera__view_needs_recalculating(&cam));
+  assert(camera__lookat_needs_recalculating(&cam));
   PASSED
 
   TEST("changing the camera look target should set view_needs_recalculating to true");
@@ -326,7 +326,7 @@ int main(void) {
   camera__init(&cam);
   vec4 target = { 0.3f, 0.0f, 3.0f, 1.0f };
   camera__set_look_target(&target, &cam);
-  assert(camera__view_needs_recalculating(&cam));
+  assert(camera__lookat_needs_recalculating(&cam));
   PASSED
 
   TEST("calculating the camera view should set view_needs_recalculating to false");
@@ -337,7 +337,7 @@ int main(void) {
   camera__set_position(0.0f, 0.25f, 0.5f, &cam);
   camera__set_look_target(&target, &cam);
   camera__calculate_lookat(&world_up, &cam);
-  assert(!camera__view_needs_recalculating(&cam));
+  assert(!camera__lookat_needs_recalculating(&cam));
   PASSED
 
   /*

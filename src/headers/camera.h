@@ -15,6 +15,6 @@ const vec4* camera__get_position(camera *c);
 const vec4* camera__get_look_target(camera *c);
 void camera__set_position(float x, float y, float z, camera *c);
 void camera__set_look_target(const vec4 *t, camera *c);
-int camera__view_needs_recalculating(const camera *c);
+int camera__lookat_needs_recalculating(const camera *c);
 
 #endif

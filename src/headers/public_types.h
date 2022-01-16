@@ -12,12 +12,14 @@ typedef struct VEC4 {
 } vec4;
 
 typedef struct VIEWPORT {
-  int x_pos;
-  int y_pos;
-  int width;
-  int height;
-  int has_changed;
-  m4x4 projection;
+  int _near_clip_distance;
+  int _far_clip_distance;
+  int _x_pos;
+  int _y_pos;
+  int _width;
+  int _height;
+  int _perspective_needs_recalculating;
+  m4x4 _perspective;
 } viewport;
 
 typedef struct VERTEX {
@@ -49,13 +51,10 @@ typedef struct DRAWABLE_MESH {
 } drawable_mesh;
 
 typedef struct CAMERA {
-  float near_clip_distance;
-  float far_clip_distance;
   m4x4 _lookat;
-  m4x4 _projection;
   vec4 _position;
   vec4 _look_target;
-  short int _view_needs_recalculating;
+  short int _lookat_needs_recalculating;
 } camera;
 
 #endif
