@@ -6,7 +6,7 @@
 const m4x4* viewport__calculate_perspective(
   int near_clip_distance,
   int far_clip_distance,
-  int vertical_fov_in_deg,
+  int horizontal_fov_in_deg,
   viewport *vwprt
 );
 
