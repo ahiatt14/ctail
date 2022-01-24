@@ -21,7 +21,8 @@ static() {
   obj/tail_math.o \
   obj/camera.o \
   obj/precision.o \
-  obj/space.o
+  obj/space.o \
+  obj/viewport.o
 }
 run_and_log_tests() {
   ./tests.exe &> test_report.txt

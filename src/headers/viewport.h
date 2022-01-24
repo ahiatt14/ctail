@@ -3,11 +3,9 @@
 
 #include "public_types.h"
 
-const m4x4* viewport__calculate_perspective(
-  int near_clip_distance,
-  int far_clip_distance,
-  int horizontal_fov_in_deg,
-  viewport *vwprt
-);
+void viewport__set_width(int w, viewport *v);
+void viewport__set_height(int h, viewport *v);
+float viewport__get_aspect_ratio(const viewport *v);
+short int viewport__perspective_needs_recalculating(const viewport *v);
 
 #endif
