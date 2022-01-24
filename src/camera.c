@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "viewport.h"
 #include "public_types.h"
+#include "tail_math.h"
 #include "m4x4.h"
 #include "vec4.h"
 
@@ -63,7 +64,7 @@ short int camera__perspective_needs_recalculating(const camera *c) {
 
 const m4x4* camera__calculate_perspective(viewport *vwprt, camera *cam) {
 
-  r = tan(cam->_horizontal_fov_in_deg/2) * cam->_near_clip_distance;
+  r = tan(deg_to_rad(cam->_horizontal_fov_in_deg)/2) * cam->_near_clip_distance;
   l = -r;
   t = r * 1 / viewport__get_aspect_ratio(vwprt);
   b = -t;

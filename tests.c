@@ -287,6 +287,35 @@ int main(void) {
 
   /*
 
+    VIEWPORT
+
+  */
+
+  TEST("setting viewport width should set perspective_needs_recalculating to true");
+  viewport vwprt = {0};
+  viewport__set_width(100, &vwprt);
+  assert(viewport__perspective_needs_recalculating(&vwprt));
+  PASSED
+
+  TEST("setting viewport height should set perspective_needs_recalculating to true");
+  viewport vwprt = {0};
+  viewport__set_height(200, &vwprt);
+  assert(viewport__perspective_needs_recalculating(&vwprt));
+  PASSED
+
+  TEST("viewport__get_aspect_ratio should return the viewport width / height");
+  viewport vwprt = {0};
+  viewport__set_width(1920, &vwprt);
+  viewport__set_height(1080, &vwprt);
+  assert(diff_is_within_mag_based_tolerance(
+    1.777777777777f,
+    viewport__get_aspect_ratio(&vwprt),
+    FLT_EPSILON
+  ));
+  PASSED
+
+  /*
+
     CAMERA
 
   */
@@ -340,9 +369,27 @@ int main(void) {
   assert(!camera__lookat_needs_recalculating(&cam));
   PASSED
 
+  TEST("setting horiz fov should set perspective_needs_recalculating to true");
+  camera cam;
+  camera__init(&cam);
+  camera__set_horizontal_fov_in_deg(45, &cam);
+  assert(camera__perspective_needs_recalculating(&cam));
+  PASSED
+
+  TEST(
+    "camera__calculate_perspective should create a correct perspective\n"
+    "projection matrix"
+  );
+  camera cam;
+  camera__init(&cam);
+  camera__set_horizontal_fov_in_deg(75, &cam);
+  // viewport vwprt;
+
+  PASSED
+
   /*
 
-  SPACE
+    SPACE
 
   */
 

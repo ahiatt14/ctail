@@ -12,8 +12,8 @@ typedef struct VEC4 {
 } vec4;
 
 typedef struct VIEWPORT {
-  int _width;
-  int _height;
+  float _width;
+  float _height;
   short int _perspective_needs_recalculating;
 } viewport;
 
