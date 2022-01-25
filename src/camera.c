@@ -18,10 +18,15 @@ static m4x4 view, offset;
 
 void camera__init(camera *c) {
   m4x4_identity(&c->_lookat);
+  m4x4_identity(&c->_perspective);
 }
 
 const m4x4* camera__get_lookat(const camera *c) {
   return &c->_lookat;
+}
+
+const m4x4* camera__get_perspective(const camera *c) {
+  return &c->_perspective;
 }
 
 const vec4* camera__get_position(camera *c) {
@@ -42,6 +47,16 @@ void camera__set_position(float x, float y, float z, camera *c) {
 
 void camera__set_horizontal_fov_in_deg(float fov, camera *c) {
   c->_horizontal_fov_in_deg = fov;
+  c->_perspective_needs_recalculating = 1;
+}
+
+void camera__set_near_clip_distance(float n, camera *c) {
+  c->_near_clip_distance = n;
+  c->_perspective_needs_recalculating = 1;
+}
+
+void camera__set_far_clip_distance(float f, camera *c) {
+  c->_far_clip_distance = f;
   c->_perspective_needs_recalculating = 1;
 }
 

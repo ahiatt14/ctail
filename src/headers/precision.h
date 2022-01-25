@@ -3,6 +3,7 @@
 
 typedef int (*flts_are_within_tolerance_ptr)(float a, float b, float tolerance);
 
+int diff_is_within_tolerance(float a, float b, float tolerance);
 int diff_is_within_mag_based_tolerance(float a, float b, float tolerance);
 
 typedef struct FLOAT_TOLERANCE {
