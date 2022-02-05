@@ -4,6 +4,8 @@ options="-Isrc/headers -O2 -Wall"
 build() {
   rm -rf obj
   mkdir obj
+  ${target} -c src/math/m2x2.c -o obj/m2x2.o ${options}
+  ${target} -c src/math/m3x3.c -o obj/m3x3.o ${options}
   ${target} -c src/math/m4x4.c -o obj/m4x4.o ${options}
   ${target} -c src/math/vec4.c -o obj/vec4.o ${options}
   ${target} -c src/math/tail_math.c -o obj/tail_math.o ${options}
@@ -16,6 +18,8 @@ static() {
   rm -rf static
   mkdir static
   ar -crs static/tail.a \
+  obj/m2x2.o \
+  obj/m3x3.o \
   obj/m4x4.o \
   obj/vec4.o \
   obj/tail_math.o \

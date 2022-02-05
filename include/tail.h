@@ -2,6 +2,8 @@
 #define __TAIL__
 
 #include "../src/headers/public_types.h"
+#include "../src/headers/m2x2.h"
+#include "../src/headers/m3x3.h"
 #include "../src/headers/m4x4.h"
 #include "../src/headers/vec4.h"
 #include "../src/headers/tail_math.h"

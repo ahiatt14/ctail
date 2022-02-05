@@ -9,6 +9,16 @@
 #define PASSED printf(": PASSED\n"); }
 #define QUIT return 0;
 
+int m2x2_equals_m2x2(
+  const m2x2 *m0,
+  const m2x2 *m1,
+  const float_tolerance *ft
+);
+int m3x3_equals_m3x3(
+  const m3x3 *m0,
+  const m3x3 *m1,
+  const float_tolerance *ft
+);
 int m4x4_equals_m4x4(
   const m4x4 *m0,
   const m4x4 *m1,
@@ -19,11 +29,14 @@ int vec4_equals_vec4(
   const vec4 *t1,
   const float_tolerance *ft
 );
+void print_m3x3(const char *name, const m3x3 *m);
 void print_m4x4(const char *name, const m4x4 *m);
 void print_vec4(const char *name, const vec4 *t);
 
 vec4 expected_v, actual_v, actual_v1;
-m4x4 expected_m, actual_m, actual_m1;
+m2x2 expected_m2, actual_m2;
+m3x3 expected_m3, actual_m3;
+m4x4 expected_m4, actual_m4, actual_m4b;
 
 float_tolerance f_tol = {
   .within_tolerance = diff_is_within_tolerance,
@@ -37,6 +50,20 @@ const coordinate_space DEFAULT_WORLDSPACE = {
 };
 
 int main(void) {
+
+  /*
+
+    MATH
+
+  */
+
+  TEST("iclamp should return 3 when clamping 5 between 0 and 3");
+  assert(iclamp(5, 0, 3) == 3);
+  PASSED
+
+  TEST("iclamp should return 1 when clamping 2 between 0 and 1");
+  assert(iclamp(2, 0, 1) == 1);
+  PASSED
 
   /*
 
@@ -146,9 +173,171 @@ int main(void) {
 
   /*
 
-    MATRICES
+    MATRICES (remember, column-first buffers!)
 
   */
+
+  TEST("m2x2_deterimant should correctly calculate the determinant");
+  m2x2_create(
+    3, 2,
+    2, -2,
+    &actual_m2
+  );
+  float actual = m2x2_determinant(&actual_m2);
+  float expected = -10;
+  assert(diff_is_within_tolerance(actual, expected, FLT_EPSILON));
+  PASSED
+
+  TEST("m3x3_determinant should calculate the determinant");
+  f_tol.tolerance = FLT_EPSILON * 10;
+  m3x3_create(
+    3, 1.3f, 4,
+    0, 1.2f, 3,
+    -1, 0.3f, 0.3f,
+    &actual_m3
+  );
+  assert(diff_is_within_tolerance(
+    -0.72f,
+    m3x3_determinant(&actual_m3),
+    f_tol.tolerance
+  ));
+  PASSED
+
+  TEST("m3x3_minor should calculate the minor for the given r and c");
+  m3x3_create(
+    3, 0, 2,
+    2, 0, -2,
+    0, 1, 1,
+    &actual_m3
+  );
+  float actual = m3x3_minor(2, 1, &actual_m3);
+  float expected = -10;
+  assert(diff_is_within_tolerance(actual, expected, FLT_EPSILON));
+  PASSED
+
+  TEST("m3x3_minor run #2");
+  m3x3_create(
+    2, 3, 3.4,
+    2, -2, 1,
+    1, 1, 2,
+    &actual_m3
+  );
+  float actual = m3x3_minor(1, 2, &actual_m3);
+  float expected = -1;
+  assert(diff_is_within_tolerance(actual, expected, FLT_EPSILON));
+  PASSED
+
+  TEST("m3x3_minor run #3");
+  m3x3_create(
+    2, 3, 3.4,
+    2, -2, 1,
+    1, 1, 2,
+    &actual_m3
+  );
+  float actual = m3x3_minor(0, 0, &actual_m3);
+  float expected = -5;
+  assert(diff_is_within_tolerance(actual, expected, FLT_EPSILON));
+  PASSED
+
+  TEST("m3x3_minors should create a 3x3 of minors for the original");
+  f_tol.tolerance = FLT_EPSILON;
+  m3x3_create(
+    3, 0, 2,
+    2, 0, -2,
+    0, 1, 1,
+    &actual_m3
+  );
+  m3x3_create(
+    2, 2, 2,
+    -2, 3, 3,
+    0, -10, 0,
+    &expected_m3
+  );
+  m3x3_minors(
+    &actual_m3,
+    &actual_m3
+  );
+  assert(m3x3_equals_m3x3(
+    &expected_m3,
+    &actual_m3,
+    &f_tol
+  ));
+  PASSED
+
+  TEST("m3x3_cofactors should create a cofactor matrix of the original");
+  f_tol.tolerance = FLT_EPSILON;
+  m3x3_create(
+    2, 2, 2,
+    -2, 3, 3,
+    0, -10, 0,
+    &actual_m3
+  );
+  m3x3_create(
+    2, -2, 2,
+    2, 3, -3,
+    0, 10, 0,
+    &expected_m3
+  );
+  m3x3_cofactors(
+    &actual_m3,
+    &actual_m3
+  );
+  assert(m3x3_equals_m3x3(
+    &expected_m3,
+    &actual_m3,
+    &f_tol
+  ));
+  PASSED
+
+  TEST("m3x3_transpose should transpose the matrix");
+  f_tol.tolerance = FLT_EPSILON;
+  m3x3_create(
+    2, 2, 0,
+    -2, 3, 10,
+    2, -3, 0,
+    &actual_m3
+  );
+  m3x3_transpose(
+    &actual_m3,
+    &actual_m3
+  );
+  m3x3_create(
+    2, -2, 2,
+    2, 3, -3,
+    0, 10, 0,
+    &expected_m3
+  );
+  assert(m3x3_equals_m3x3(
+    &expected_m3,
+    &actual_m3,
+    &f_tol
+  ));
+  PASSED
+
+  TEST("m3x3_inverse should correctly invert the matrix");
+  f_tol.tolerance = FLT_EPSILON * 100;
+  m3x3_create(
+    3, 0, 2,
+    2, 0, -2,
+    0, 1, 1,
+    &actual_m3
+  );
+  m3x3_inverse(
+    &actual_m3,
+    &actual_m3
+  );
+  m3x3_create(
+    0.2f, 0.2f, 0,
+    -0.2f, 0.3f, 1,
+    0.2f, -0.3f, 0,
+    &expected_m3
+  );
+  assert(m3x3_equals_m3x3(
+    &expected_m3,
+    &actual_m3,
+    &f_tol
+  ));
+  PASSED
 
   TEST("m4x4_x_vec4 should correctly multiply a 4d matrix by a vec4");
   f_tol.tolerance = FLT_EPSILON * 100;
@@ -158,9 +347,9 @@ int main(void) {
     0, 1, -2.2f, 0,
     0, 0, 1, 0,
     11.11f, 0, 0, 1,
-    &actual_m
+    &actual_m4
   );
-  m4x4_x_vec4(&actual_m, &actual_v, &actual_v);
+  m4x4_x_vec4(&actual_m4, &actual_v, &actual_v);
   vec4_create(10, 11.526f, -14.33f, 67.66f, &expected_v);
   assert(vec4_equals_vec4(&expected_v, &actual_v, &f_tol));
   PASSED
@@ -172,44 +361,44 @@ int main(void) {
     6, 6, 0, 0,
     7, 7, 1, 1,
     3, 3, 4, 5,
-    &actual_m
+    &actual_m4
   );
-  float expected_m_data[16] = {
+  float expected_m4_data[16] = {
     1, 6, 7, 3,
     1, 6, 7, 3,
     0, 0, 1, 4,
     0, 0, 1, 5
   };
-  memcpy(&expected_m.data, &expected_m_data[0], sizeof(expected_m_data));
-  assert(m4x4_equals_m4x4(&expected_m, &actual_m, &f_tol));
+  memcpy(&expected_m4.data, &expected_m4_data[0], sizeof(expected_m4_data));
+  assert(m4x4_equals_m4x4(&expected_m4, &actual_m4, &f_tol));
   PASSED
   
   TEST("m4x4_identity should create a 4d identity matrix");
   f_tol.tolerance = FLT_EPSILON;
-  m4x4_identity(&actual_m);
+  m4x4_identity(&actual_m4);
   m4x4_create(
     1, 0, 0, 0,
     0, 1, 0, 0,
     0, 0, 1, 0,
     0, 0, 0, 1,
-    &expected_m
+    &expected_m4
   );
-  assert(m4x4_equals_m4x4(&expected_m, &actual_m, &f_tol));
+  assert(m4x4_equals_m4x4(&expected_m4, &actual_m4, &f_tol));
   PASSED
 
   TEST("m4x4_translation should create a translation matrix");
   f_tol.tolerance = FLT_EPSILON;
   vec4 t;
   vec4_vector(2.355f, 30, 1, &t);
-  m4x4_translation(&t, &actual_m);
+  m4x4_translation(&t, &actual_m4);
   m4x4_create(
     1, 0, 0, 2.355f,
     0, 1, 0, 30,
     0, 0, 1, 1,
     0, 0, 0, 1,
-    &expected_m
+    &expected_m4
   );
-  assert(m4x4_equals_m4x4(&expected_m, &actual_m, &f_tol));
+  assert(m4x4_equals_m4x4(&expected_m4, &actual_m4, &f_tol));
   PASSED
 
   TEST("m4x4_transpose should transpose the matrix");
@@ -219,30 +408,30 @@ int main(void) {
     2, 1, 0, 0,
     0, 1, 1, 0,
     0, 0, 0, 1,
-    &actual_m
+    &actual_m4
   );
-  m4x4_transpose(&actual_m);
+  m4x4_transpose(&actual_m4);
   m4x4_create(
     1, 2, 0, 0,
     0, 1, 1, 0,
     0, 0, 1, 0,
     0, 0, 0, 1,
-    &expected_m
+    &expected_m4
   );
-  assert(m4x4_equals_m4x4(&expected_m, &actual_m, &f_tol));
+  assert(m4x4_equals_m4x4(&expected_m4, &actual_m4, &f_tol));
   PASSED
 
   TEST("m4x4_scaling should create a scaling matrix");
   f_tol.tolerance = FLT_EPSILON;
-  m4x4_scaling(3, &actual_m);
+  m4x4_scaling(3, &actual_m4);
   m4x4_create(
     3, 0, 0, 0,
     0, 3, 0, 0,
     0, 0, 3, 0,
     0, 0, 0, 1,
-    &expected_m
+    &expected_m4
   );
-  assert(m4x4_equals_m4x4(&expected_m, &actual_m, &f_tol));
+  assert(m4x4_equals_m4x4(&expected_m4, &actual_m4, &f_tol));
   PASSED
 
   TEST("m4x4_rotation should create a working rotation matrix");
@@ -282,18 +471,18 @@ int main(void) {
     &right,
     &up,
     &forward,
-    &actual_m
+    &actual_m4
   );
   m4x4_create(
     1, 0, 0, 0,
     0, 1, 0, 0,
     0, 0, -1, 0,
     0, 0, 0, 1,
-    &expected_m
+    &expected_m4
   );
   assert(m4x4_equals_m4x4(
-    &expected_m,
-    &actual_m,
+    &expected_m4,
+    &actual_m4,
     &f_tol
   ));
   PASSED
@@ -305,30 +494,30 @@ int main(void) {
     0, -0.2f, 1, 0,
     -2.2f, 0, 1, 0,
     0, 0, 0, 1,
-    &actual_m
+    &actual_m4
   );
   m4x4_create(
     1, 0, 0, 0.3f,
     0, 1, 0, 0,
     0, 0, 1, -1.3f,
     0, 0, 0, 1,
-    &actual_m1
+    &actual_m4b
   );
   m4x4_x_m4x4(
-    &actual_m,
-    &actual_m1,
-    &actual_m
+    &actual_m4,
+    &actual_m4b,
+    &actual_m4
   );
   m4x4_create(
     1, 0.3f, 3, -3.6f,
     0, -0.2f, 1, -1.3f,
     -2.2f, 0, 1, -1.96f,
     0, 0, 0, 1,
-    &expected_m
+    &expected_m4
   );
   assert(m4x4_equals_m4x4(
-    &actual_m,
-    &expected_m,
+    &actual_m4,
+    &expected_m4,
     &f_tol
   ));
   PASSED
@@ -382,10 +571,10 @@ int main(void) {
     0, 0.98639392853f, 0.16439899802f, -0.3287979960f,
     0, -0.16439899802f, 0.98639392853f, -0.4520971775f,
     0, 0, 0, 1,
-    &expected_m
+    &expected_m4
   );
   assert(m4x4_equals_m4x4(
-    &expected_m,
+    &expected_m4,
     camera__get_lookat(&cam),
     &f_tol
   ));
@@ -443,10 +632,10 @@ int main(void) {
     0, 2.31683776546f, 0, 0,
     0, 0, -1.0202020202f, -0.20202020202f,
     0, 0, -1, 0,
-    &expected_m
+    &expected_m4
   );
   assert(m4x4_equals_m4x4(
-    &expected_m,
+    &expected_m4,
     camera__get_perspective(&cam),
     &f_tol
   ));
@@ -488,21 +677,51 @@ int main(void) {
   space__create_model(
     &DEFAULT_WORLDSPACE,
     &t,
-    &actual_m
+    &actual_m4
   );
   m4x4_create(
     0.919187997f, 0, 0.919187997f, 0.3f,
     0, 1.3f, 0, -2,
     -0.919187997f, 0, 0.919187997f, -2,
     0, 0, 0, 1,
-    &expected_m
+    &expected_m4
   );
   assert(m4x4_equals_m4x4(
-    &expected_m,
-    &actual_m,
+    &expected_m4,
+    &actual_m4,
     &f_tol
   ));
   PASSED
+}
+
+int m2x2_equals_m2x2(
+  const m2x2 *m0,
+  const m2x2 *m1,
+  const float_tolerance *ft
+) {
+  for (int i = 0; i < 4; i++) {
+    if (!ft->within_tolerance(
+      m0->data[i],
+      m1->data[i],
+      ft->tolerance
+    )) return 0;
+  }
+  return 1;
+}
+
+int m3x3_equals_m3x3(
+  const m3x3 *m0,
+  const m3x3 *m1,
+  const float_tolerance *ft
+) {
+  for (int i = 0; i < 9; i++) {
+    if (!ft->within_tolerance(
+      m0->data[i],
+      m1->data[i],
+      ft->tolerance
+    )) return 0;
+  }
+  return 1;
 }
 
 int m4x4_equals_m4x4(
@@ -533,6 +752,19 @@ int vec4_equals_vec4(
     )) return 0;
   }
   return 1;
+}
+
+void print_m3x3(const char *name, const m3x3 *m) {
+  printf(name);
+  printf("%.12f, ", m->data[0]);
+  printf("%.12f, ", m->data[3]);
+  printf("%.12f\n", m->data[6]);
+  printf("%.12f, ", m->data[1]);
+  printf("%.12f, ", m->data[4]);
+  printf("%.12f\n", m->data[7]);
+  printf("%.12f, ", m->data[2]);
+  printf("%.12f, ", m->data[5]);
+  printf("%.12f\n", m->data[8]);
 }
 
 // TODO: this prints row-first! we're column-first! transpose in ur head

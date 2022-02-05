@@ -3,6 +3,14 @@
 
 #include <stddef.h>
 
+typedef struct M2X2 {
+  float data[4];
+} m2x2;
+
+typedef struct M3X3 {
+  float data[9];
+} m3x3;
+
 typedef struct M4X4 {
   float data[16];
 } m4x4;
