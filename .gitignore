@@ -2,3 +2,8 @@ obj/
 test_report.txt
 tests.exe
 static/
+
+tools/obj-parser/obj_files/
+tools/obj-parser/output/
+tools/obj-parser/bin/
+tools/obj-parser/test_report.txt

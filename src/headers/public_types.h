@@ -15,6 +15,10 @@ typedef struct M4X4 {
   float data[16];
 } m4x4;
 
+typedef struct VEC3 {
+  float x, y, z;
+} vec3;
+
 typedef struct VEC4 {
   float x, y, z, w;
 } vec4;
