@@ -5,7 +5,6 @@
 #include <float.h>
 
 #include "tail.h"
-#include "types.h"
 #include "parser.h"
 
 #define TEST(msg) { printf(msg)

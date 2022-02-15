@@ -30,8 +30,8 @@ typedef struct VIEWPORT {
 } viewport;
 
 typedef struct VERTEX {
-  float position[3];
-  float normal[3];
+  vec3 position;
+  vec3 normal;
 } vertex;
 
 typedef struct TRANSFORM {
