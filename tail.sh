@@ -7,6 +7,7 @@ build() {
   ${target} -c src/math/m2x2.c -o obj/m2x2.o ${options}
   ${target} -c src/math/m3x3.c -o obj/m3x3.o ${options}
   ${target} -c src/math/m4x4.c -o obj/m4x4.o ${options}
+  ${target} -c src/math/vec3.c -o obj/vec3.o ${options}
   ${target} -c src/math/vec4.c -o obj/vec4.o ${options}
   ${target} -c src/math/tail_math.c -o obj/tail_math.o ${options}
   ${target} -c src/camera.c -o obj/camera.o ${options}
@@ -21,6 +22,7 @@ static() {
   obj/m2x2.o \
   obj/m3x3.o \
   obj/m4x4.o \
+  obj/vec3.o \
   obj/vec4.o \
   obj/tail_math.o \
   obj/camera.o \

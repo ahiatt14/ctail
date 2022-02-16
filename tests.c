@@ -24,6 +24,11 @@ int m4x4_equals_m4x4(
   const m4x4 *m1,
   const float_tolerance *ft
 );
+int vec3_equals_vec3(
+  const vec3 *t0,
+  const vec3 *t1,
+  const float_tolerance *ft
+);
 int vec4_equals_vec4(
   const vec4 *t0,
   const vec4 *t1,
@@ -31,9 +36,11 @@ int vec4_equals_vec4(
 );
 void print_m3x3(const char *name, const m3x3 *m);
 void print_m4x4(const char *name, const m4x4 *m);
+void print_vec3(const char *name, const vec3 *t);
 void print_vec4(const char *name, const vec4 *t);
 
-vec4 expected_v, actual_v, actual_v1;
+vec3 expected_v3, actual_v3, actual_v3b, actual_v3c, actual_v3d;
+vec4 expected_v4, actual_v4, actual_v4b;
 m2x2 expected_m2, actual_m2;
 m3x3 expected_m3, actual_m3;
 m4x4 expected_m4, actual_m4, actual_m4b;
@@ -110,44 +117,75 @@ int main(void) {
 
   */
 
+  TEST("vec3_minus_vec3 should subtract the 2nd vec3 from the 1st");
+  f_tol.tolerance = FLT_EPSILON;
+  vec3_create(3.4f, 1, -1.002f, &actual_v3);
+  vec3_create(1, 0, -1, &actual_v3b);
+  vec3_minus_vec3(&actual_v3, &actual_v3b, &actual_v3);
+  vec3_create(2.4f, 1, -0.002f, &expected_v3);
+  assert(vec3_equals_vec3(&actual_v3, &expected_v3, &f_tol));
+  PASSED
+
+  TEST("vec3_plus_vec3 should add the vectors");
+  f_tol.tolerance = FLT_EPSILON * 10;
+  vec3_create(3.4f, 1, -1.002f, &actual_v3);
+  vec3_create(1, 0, -1, &actual_v3b);
+  vec3_plus_vec3(&actual_v3, &actual_v3b, &actual_v3);
+  vec3_create(4.4f, 1, -2.002f, &expected_v3);
+  assert(vec3_equals_vec3(&actual_v3, &expected_v3, &f_tol));
+  PASSED
+
+  TEST("vec3_average should calculate the mean vec3");
+  f_tol.tolerance = FLT_EPSILON * 10;
+  vec3 vecs[4] = {
+    { 2.3f, 4, 9 },
+    { -2, 2.1f, 2.2f },
+    { 0.1f, 0.1f, 0.1f },
+    { 2, 0.8f, 3 }
+  };
+  vec3_mean(vecs, 4, &actual_v3);
+  vec3_create(0.6f, 1.75f, 3.575f, &expected_v3);
+  assert(vec3_equals_vec3(&actual_v3, &expected_v3, &f_tol));
+  PASSED
+
   TEST("vec4_point should create a vec4 with a w component of 1.0");
-  vec4_point(2, 4.05f, 40, &actual_v);
-  assert(diff_is_within_tolerance(2.0f, actual_v.x, FLT_EPSILON));
-  assert(diff_is_within_tolerance(4.05f, actual_v.y, FLT_EPSILON));
-  assert(diff_is_within_tolerance(40.0f, actual_v.z, FLT_EPSILON));
-  assert(diff_is_within_tolerance(1.0f, actual_v.w, FLT_EPSILON));
+  vec4_point(2, 4.05f, 40, &actual_v4);
+  assert(diff_is_within_tolerance(2.0f, actual_v4.x, FLT_EPSILON));
+  assert(diff_is_within_tolerance(4.05f, actual_v4.y, FLT_EPSILON));
+  assert(diff_is_within_tolerance(40.0f, actual_v4.z, FLT_EPSILON));
+  assert(diff_is_within_tolerance(1.0f, actual_v4.w, FLT_EPSILON));
   PASSED
 
   TEST("vec4_vector should create a vec4 with a w component of 0.0");
-  vec4_vector(3.0f, 3.01f, 1.0f, &actual_v);
-  assert(diff_is_within_tolerance(3.0f, actual_v.x, FLT_EPSILON));
-  assert(diff_is_within_tolerance(3.01f, actual_v.y, FLT_EPSILON));
-  assert(diff_is_within_tolerance(1.0f, actual_v.z, FLT_EPSILON));
-  assert(diff_is_within_tolerance(0.0f, actual_v.w, FLT_EPSILON));
+  vec4_vector(3.0f, 3.01f, 1.0f, &actual_v4);
+  assert(diff_is_within_tolerance(3.0f, actual_v4.x, FLT_EPSILON));
+  assert(diff_is_within_tolerance(3.01f, actual_v4.y, FLT_EPSILON));
+  assert(diff_is_within_tolerance(1.0f, actual_v4.z, FLT_EPSILON));
+  assert(diff_is_within_tolerance(0.0f, actual_v4.w, FLT_EPSILON));
   PASSED
 
   TEST("vec4_magnitude should calculate the mag of a vec4");
-  vec4_vector(2.0f, 1.0f, 4.3f, &actual_v);
+  vec4_vector(2.0f, 1.0f, 4.3f, &actual_v4);
   assert(diff_is_within_tolerance(
-    vec4_magnitude(&actual_v),
+    vec4_magnitude(&actual_v4),
     4.846648693f,
     FLT_EPSILON
   ));
   PASSED
 
   TEST("vec4_normalize should noramlize a vec4");
-  vec4_vector(0.0f, 0.5f, 1.0f, &actual_v);
-  vec4_normalize(&actual_v);
-  assert(diff_is_within_tolerance(actual_v.x, 0.0f, FLT_EPSILON));
-  assert(diff_is_within_tolerance(actual_v.y, 0.4472135954f, FLT_EPSILON));
-  assert(diff_is_within_tolerance(actual_v.z, 0.8944271909f, FLT_EPSILON));
+  vec4_vector(0.0f, 0.5f, 1.0f, &actual_v4);
+  vec4_normalize(&actual_v4);
+  assert(diff_is_within_tolerance(actual_v4.x, 0.0f, FLT_EPSILON));
+  assert(diff_is_within_tolerance(actual_v4.y, 0.4472135954f, FLT_EPSILON));
+  assert(diff_is_within_tolerance(actual_v4.z, 0.8944271909f, FLT_EPSILON));
   PASSED
 
   TEST("vec4_dot should calculate the dot product of 2 vectors");
-  vec4_vector(1.0f, 1.0f, 2.0f, &actual_v1);
-  vec4_vector(4.2f, 35.3f, 0.1f, &actual_v);
+  vec4_vector(1.0f, 1.0f, 2.0f, &actual_v4b);
+  vec4_vector(4.2f, 35.3f, 0.1f, &actual_v4);
   assert(diff_is_within_tolerance(
-    vec4_dot(&actual_v, &actual_v1),
+    vec4_dot(&actual_v4, &actual_v4b),
     39.7f,
     FLT_EPSILON
   ));
@@ -155,20 +193,20 @@ int main(void) {
 
   TEST("vec4_cross should calculate the cross of 2 vectors");
   f_tol.tolerance = FLT_EPSILON * 100;
-  vec4_vector(1.0f, 1.0f, 2.0f, &actual_v);
-  vec4_vector(4.2f, 35.3f, 0.1f, &actual_v1);
-  vec4_cross(&actual_v, &actual_v1, &actual_v);
-  vec4_vector(-70.5f, 8.3f, 31.1f, &expected_v);
-  assert(vec4_equals_vec4(&expected_v, &actual_v, &f_tol));
+  vec4_vector(1.0f, 1.0f, 2.0f, &actual_v4);
+  vec4_vector(4.2f, 35.3f, 0.1f, &actual_v4b);
+  vec4_cross(&actual_v4, &actual_v4b, &actual_v4);
+  vec4_vector(-70.5f, 8.3f, 31.1f, &expected_v4);
+  assert(vec4_equals_vec4(&expected_v4, &actual_v4, &f_tol));
   PASSED
 
   TEST("vec4_minus_vec4 should subtract the 2nd from the 1st");
   f_tol.tolerance = FLT_EPSILON * 10;
-  vec4_vector(1.0f, 1.0f, 2.0f, &actual_v);
-  vec4_vector(4.2f, 35.3f, 0.1f, &actual_v1);
-  vec4_minus_vec4(&actual_v1, &actual_v, &actual_v);
-  vec4_vector(3.2f, 34.3f, -1.9f, &expected_v);
-  assert(vec4_equals_vec4(&expected_v, &actual_v, &f_tol));
+  vec4_vector(1.0f, 1.0f, 2.0f, &actual_v4);
+  vec4_vector(4.2f, 35.3f, 0.1f, &actual_v4b);
+  vec4_minus_vec4(&actual_v4b, &actual_v4, &actual_v4);
+  vec4_vector(3.2f, 34.3f, -1.9f, &expected_v4);
+  assert(vec4_equals_vec4(&expected_v4, &actual_v4, &f_tol));
   PASSED
 
   /*
@@ -341,7 +379,7 @@ int main(void) {
 
   TEST("m4x4_x_vec4 should correctly multiply a 4d matrix by a vec4");
   f_tol.tolerance = FLT_EPSILON * 100;
-  vec4_point(6.0f, -20.0f, -14.33f, &actual_v);
+  vec4_point(6.0f, -20.0f, -14.33f, &actual_v4);
   m4x4_create(
     1, 0, 0, 4.0f,
     0, 1, -2.2f, 0,
@@ -349,9 +387,9 @@ int main(void) {
     11.11f, 0, 0, 1,
     &actual_m4
   );
-  m4x4_x_vec4(&actual_m4, &actual_v, &actual_v);
-  vec4_create(10, 11.526f, -14.33f, 67.66f, &expected_v);
-  assert(vec4_equals_vec4(&expected_v, &actual_v, &f_tol));
+  m4x4_x_vec4(&actual_m4, &actual_v4, &actual_v4);
+  vec4_create(10, 11.526f, -14.33f, 67.66f, &expected_v4);
+  assert(vec4_equals_vec4(&expected_v4, &actual_v4, &f_tol));
   PASSED
 
   TEST("m4x4_create should fill the matrix buffer column-first");
@@ -440,12 +478,12 @@ int main(void) {
   f_tol.tolerance = FLT_EPSILON * 1000;
   vec4 axis;
   m4x4 rotation;
-  vec4_point(1.0f, 0.0f, 0.0f, &actual_v);
+  vec4_point(1.0f, 0.0f, 0.0f, &actual_v4);
   vec4_vector(0.0f, 1.0f, 0.0f, &axis);
   m4x4_rotation(deg_to_rad(90), &axis, &rotation);
-  m4x4_x_vec4(&rotation, &actual_v, &actual_v);
-  vec4_point(0.0f, 0.0f, -1.0f, &expected_v);
-  assert(vec4_equals_vec4(&expected_v, &actual_v, &f_tol));
+  m4x4_x_vec4(&rotation, &actual_v4, &actual_v4);
+  vec4_point(0.0f, 0.0f, -1.0f, &expected_v4);
+  assert(vec4_equals_vec4(&expected_v4, &actual_v4, &f_tol));
   PASSED
 
   TEST("m4x4_rotation run #2");
@@ -454,11 +492,11 @@ int main(void) {
   m4x4 rotation;
   vec4_vector(1.0f, 1.0f, 0, &axis);
   vec4_normalize(&axis);
-  vec4_point(1.0f, 0.0f, 0.0f, &actual_v);
+  vec4_point(1.0f, 0.0f, 0.0f, &actual_v4);
   m4x4_rotation(deg_to_rad(180), &axis, &rotation);
-  m4x4_x_vec4(&rotation, &actual_v, &actual_v);
-  vec4_point(0.0f, 1.0f, 0, &expected_v);
-  assert(vec4_equals_vec4(&expected_v, &actual_v, &f_tol));
+  m4x4_x_vec4(&rotation, &actual_v4, &actual_v4);
+  vec4_point(0.0f, 1.0f, 0, &expected_v4);
+  assert(vec4_equals_vec4(&expected_v4, &actual_v4, &f_tol));
   PASSED
 
   TEST("m4x4_view should construct an inverted space transform matrix");
@@ -754,6 +792,21 @@ int vec4_equals_vec4(
   return 1;
 }
 
+int vec3_equals_vec3(
+  const vec3 *t0,
+  const vec3 *t1,
+  const float_tolerance *ft
+) {
+  for (int i = 0; i < 3; i++) {
+    if (!ft->within_tolerance(
+      (&t0->x)[i],
+      (&t1->x)[i],
+      ft->tolerance
+    )) return 0;
+  }
+  return 1;
+}
+
 void print_m3x3(const char *name, const m3x3 *m) {
   printf(name);
   printf("%.12f, ", m->data[0]);
@@ -781,6 +834,13 @@ void print_m4x4(const char *name, const m4x4 *m) {
 }
 
 void print_vec4(const char *name, const vec4 *t) {
+  printf(name);
+  for (int i = 0; i < 4; i++) {
+    printf("%.12f, ", (&t->x)[i]);
+  }
+}
+
+void print_vec3(const char *name, const vec3 *t) {
   printf(name);
   for (int i = 0; i < 4; i++) {
     printf("%.12f, ", (&t->x)[i]);
