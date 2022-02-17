@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include "public_types.h"
 #include "vec3.h"
 
@@ -38,10 +39,17 @@ void vec3_mean(const vec3 *vec3s, int count, vec3 *avg) {
   }
 }
 
-      // printf(
-      //   "\ncomp: %i -- v: %.8f -- temp mean: %.8f",
-      //   component,
-      //   v,
-      //   temp_mean
-      // );
-      // printf("\n");
+float vec3_magnitude(const vec3 *t) {
+  return sqrt(
+    t->x * t->x +
+    t->y * t->y +
+    t->z * t->z
+  );
+}
+
+void vec3_normalize(const vec3 *t, vec3 *normalized) {
+  float m = vec3_magnitude(t);
+  normalized->x = t->x / m;
+  normalized->y = t->y / m;
+  normalized->z = t->z / m;
+}

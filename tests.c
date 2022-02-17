@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "tail.h"
+#include "test_data.h"
 
 #define TEST(msg) { printf(msg)
 #define PASSED printf(": PASSED\n"); }
@@ -136,7 +137,7 @@ int main(void) {
   PASSED
 
   TEST("vec3_average should calculate the mean vec3");
-  f_tol.tolerance = FLT_EPSILON * 10;
+  f_tol.tolerance = FLT_EPSILON;
   vec3 vecs[4] = {
     { 2.3f, 4, 9 },
     { -2, 2.1f, 2.2f },
@@ -146,6 +147,34 @@ int main(void) {
   vec3_mean(vecs, 4, &actual_v3);
   vec3_create(0.6f, 1.75f, 3.575f, &expected_v3);
   assert(vec3_equals_vec3(&actual_v3, &expected_v3, &f_tol));
+  PASSED
+
+  TEST("vec3_magnitude should calculate the mag of the vec3");
+  f_tol.tolerance = FLT_EPSILON;
+  vec3_create(4.5f, 8, -2.2f, &actual_v3);
+  float actual_magnitude = vec3_magnitude(&actual_v3);
+  assert(diff_is_within_tolerance(
+    9.438749917229f,
+    actual_magnitude,
+    FLT_EPSILON
+  ));
+  PASSED
+
+  TEST("vec3_normalize should normalize the vec3");
+  f_tol.tolerance = FLT_EPSILON;
+  vec3_create(23.2f, 12.49f, 92.3f, &actual_v3);
+  vec3_create(
+    0.2416991f,
+    0.1301216f,
+    0.9615872f,
+    &expected_v3
+  );
+  vec3_normalize(&actual_v3, &actual_v3);
+  assert(vec3_equals_vec3(
+    &expected_v3,
+    &actual_v3,
+    &f_tol
+  ));
   PASSED
 
   TEST("vec4_point should create a vec4 with a w component of 1.0");
@@ -208,6 +237,35 @@ int main(void) {
   vec4_vector(3.2f, 34.3f, -1.9f, &expected_v4);
   assert(vec4_equals_vec4(&expected_v4, &actual_v4, &f_tol));
   PASSED
+
+  TEST(
+    "calculate normal should calculate a\n"
+    "normalized normal for the given vert index"
+  );
+  f_tol.tolerance = FLT_EPSILON;
+  calculate_normal(
+    0,
+    36,
+    cube_indices,
+    cube_vertex_positions,
+    &actual_v3
+  );
+  vec3_create(
+    0.577350269f,
+    0.577350269f,
+    -0.577350269f,
+    &expected_v3
+  );
+  print_vec3("\n actual v3 \n", &actual_v3);
+  assert(vec3_equals_vec3(
+    &actual_v3,
+    &expected_v3,
+    &f_tol
+  ));
+  PASSED
+
+  // TEST("calculate normal run #2");
+  // PASSED
 
   /*
 
@@ -730,6 +788,11 @@ int main(void) {
     &f_tol
   ));
   PASSED
+
+  printf("\n\n");
+  printf("_____________________________________\n");
+  printf("_________ALL_TESTS_PASSED_:)_________\n");
+  printf("_____________________________________\n");
 }
 
 int m2x2_equals_m2x2(

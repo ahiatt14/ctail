@@ -13,7 +13,7 @@ void calculate_normal(
   unsigned short vertex_index,
   unsigned short index_buffer_length,
   const unsigned int *indices,
-  const vertex *vertices,
+  const vec3 *positions,
   vec3 *normalized_output
 );
 
