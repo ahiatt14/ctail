@@ -1,6 +1,7 @@
-#include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include "public_types.h"
+#include "precision.h"
 #include "vec3.h"
 
 void vec3_minus_vec3(
@@ -23,8 +24,35 @@ void vec3_plus_vec3(
   sum->z = t0->z + t1->z;
 }
 
+int vec3_equals_vec3(
+  const vec3 *t0,
+  const vec3 *t1,
+  const float_tolerance *ft
+) {
+  for (int i = 0; i < 3; i++) {
+    if (!ft->within_tolerance(
+      (&t0->x)[i],
+      (&t1->x)[i],
+      ft->tolerance
+    )) return 0;
+  }
+  return 1;
+}
+
 void vec3_create(float x, float y, float z, vec3 *t) {
   t->x = x; t->y = y; t->z = z;
+}
+
+void vec3_cross(
+  const vec3 *t0,
+  const vec3 *t1,
+  vec3 *cross
+) {
+  vec4 temp;
+  temp.x = t0->y * t1->z - t0->z * t1->y;
+  temp.y = t0->z * t1->x - t0->x * t1->z;
+  temp.z = t0->x * t1->y - t0->y * t1->x;
+  memcpy(&cross->x, &temp.x, sizeof(vec3));
 }
 
 void vec3_mean(const vec3 *vec3s, int count, vec3 *avg) {

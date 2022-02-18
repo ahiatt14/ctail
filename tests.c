@@ -25,11 +25,6 @@ int m4x4_equals_m4x4(
   const m4x4 *m1,
   const float_tolerance *ft
 );
-int vec3_equals_vec3(
-  const vec3 *t0,
-  const vec3 *t1,
-  const float_tolerance *ft
-);
 int vec4_equals_vec4(
   const vec4 *t0,
   const vec4 *t1,
@@ -72,6 +67,101 @@ int main(void) {
   TEST("iclamp should return 1 when clamping 2 between 0 and 1");
   assert(iclamp(2, 0, 1) == 1);
   PASSED
+
+  TEST(
+    "calculate_face_normal should calculate a normalized\n"
+    "normal for the provided triangle of positions"
+  );
+  f_tol.tolerance = FLT_EPSILON;
+  vec3 positions[3] = {
+    { -1, 0, 0 },
+    { 0, 0, 1 },
+    { 0, 1, 0 }
+  };
+  calculate_face_normal(positions, &actual_v3);
+  vec3_create(
+    -0.577350269f,
+    0.577350269f,
+    0.577350269f,
+    &expected_v3
+  );
+  PASSED
+
+  TEST("calculate_face_normal run #2");
+  f_tol.tolerance = FLT_EPSILON;
+  vec3 positions[3] = {
+    { 0, 0, 0 },
+    { 0, 0, -1 },
+    { 0, 1, 0 }
+  };
+  calculate_face_normal(positions, &actual_v3);
+  vec3_create(1, 0, 0, &expected_v3);
+  PASSED
+
+  TEST(
+    "copy_vec3s should copy the vec3s values for the given indices\n"
+    "to the provided buffer"
+  );
+  f_tol.tolerance = FLT_EPSILON;
+  vec3 vec3s[7] = {
+    { 0, 0, 0 },
+    { 1, 1, 1 },
+    { 2, 2, 2 },
+    { 3, 3, 3 },
+    { 4, 4, 4 },
+    { 5, 5, 5 },
+    { 6, 6, 6 }
+  };
+  vec3 actual_v3s[3] = {0};
+  unsigned int indices[3] = { 2, 4, 5 };
+  vec3 expected_v3s[3] = {
+    { 2, 2, 2 },
+    { 4, 4, 4 },
+    { 5, 5, 5 }
+  };
+  copy_vec3s(
+    vec3s,
+    indices,
+    3,
+    actual_v3s
+  );
+  for (int i = 0; i < 3; i++) {
+    assert(vec3_equals_vec3(
+      &actual_v3s[i],
+      &expected_v3s[i],
+      &f_tol
+    ));
+  }
+  PASSED
+
+  TEST(
+    "calculate_vertex_normal should calculate a\n"
+    "normalized normal for the given vert index"
+  );
+  f_tol.tolerance = FLT_EPSILON;
+  calculate_vertex_normal(
+    0,
+    36,
+    cube_indices,
+    cube_vertex_positions,
+    &actual_v3
+  );
+  vec3_create(
+    0.577350269f,
+    0.577350269f,
+    -0.577350269f,
+    &expected_v3
+  );
+  assert(vec3_equals_vec3(
+    &actual_v3,
+    &expected_v3,
+    &f_tol
+  ));
+  PASSED
+
+  // TODO: add more tests for normal calc
+  // TEST("calculate_vertex_normal run #2");
+  // PASSED
 
   /*
 
@@ -117,6 +207,15 @@ int main(void) {
     VECTORS
 
   */
+
+  TEST("vec3_cross should calculate the cross product");
+  f_tol.tolerance = FLT_EPSILON;
+  vec3_create(5, 2.1f, 2.2f, &actual_v3);
+  vec3_create(-2, -8, 3.8f, &actual_v3b);
+  vec3_cross(&actual_v3, &actual_v3b, &actual_v3);
+  vec3_create(25.58, -23.4, -35.8, &expected_v3);
+  assert(vec3_equals_vec3(&actual_v3, &expected_v3, &f_tol));
+  PASSED
 
   TEST("vec3_minus_vec3 should subtract the 2nd vec3 from the 1st");
   f_tol.tolerance = FLT_EPSILON;
@@ -237,35 +336,6 @@ int main(void) {
   vec4_vector(3.2f, 34.3f, -1.9f, &expected_v4);
   assert(vec4_equals_vec4(&expected_v4, &actual_v4, &f_tol));
   PASSED
-
-  TEST(
-    "calculate normal should calculate a\n"
-    "normalized normal for the given vert index"
-  );
-  f_tol.tolerance = FLT_EPSILON;
-  calculate_normal(
-    0,
-    36,
-    cube_indices,
-    cube_vertex_positions,
-    &actual_v3
-  );
-  vec3_create(
-    0.577350269f,
-    0.577350269f,
-    -0.577350269f,
-    &expected_v3
-  );
-  print_vec3("\n actual v3 \n", &actual_v3);
-  assert(vec3_equals_vec3(
-    &actual_v3,
-    &expected_v3,
-    &f_tol
-  ));
-  PASSED
-
-  // TEST("calculate normal run #2");
-  // PASSED
 
   /*
 
@@ -846,21 +916,6 @@ int vec4_equals_vec4(
   const float_tolerance *ft
 ) {
   for (int i = 0; i < 4; i++) {
-    if (!ft->within_tolerance(
-      (&t0->x)[i],
-      (&t1->x)[i],
-      ft->tolerance
-    )) return 0;
-  }
-  return 1;
-}
-
-int vec3_equals_vec3(
-  const vec3 *t0,
-  const vec3 *t1,
-  const float_tolerance *ft
-) {
-  for (int i = 0; i < 3; i++) {
     if (!ft->within_tolerance(
       (&t0->x)[i],
       (&t1->x)[i],
