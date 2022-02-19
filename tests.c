@@ -545,32 +545,32 @@ int main(void) {
   assert(m4x4_equals_m4x4(&expected_m4, &actual_m4, &f_tol));
   PASSED
 
-  // TEST("m4x4_rotation should create a working rotation matrix");
-  // // NOTE: math.h trig fns not very accurate (eg cos(90) != 0)
-  // // but idc really so set tolerance higher
-  // f_tol.tolerance = FLT_EPSILON * 1000;
-  // vec4 axis;
-  // m4x4 rotation;
-  // vec4_point(1.0f, 0.0f, 0.0f, &actual_v3);
-  // vec4_vector(0.0f, 1.0f, 0.0f, &axis);
-  // m4x4_rotation(deg_to_rad(90), &axis, &rotation);
-  // m4x4_x_vec4(&rotation, &actual_v3, &actual_v3);
-  // vec4_point(0.0f, 0.0f, -1.0f, &expected_v3);
-  // assert(vec4_equals_vec4(&expected_v3, &actual_v3, &f_tol));
-  // PASSED
+  TEST("m4x4_rotation should create a working rotation matrix");
+  // NOTE: math.h trig fns not very accurate (eg cos(90) != 0)
+  // but idc really so set tolerance higher
+  f_tol.tolerance = FLT_EPSILON * 1000;
+  vec3 axis;
+  m4x4 rotation;
+  vec3_create(1.0f, 0.0f, 0.0f, &actual_v3);
+  vec3_create(0.0f, 1.0f, 0.0f, &axis);
+  m4x4_rotation(deg_to_rad(90), &axis, &rotation);
+  m4x4_x_point(&rotation, &actual_v3, &actual_v3);
+  vec3_create(0.0f, 0.0f, -1.0f, &expected_v3);
+  assert(vec3_equals_vec3(&expected_v3, &actual_v3, &f_tol));
+  PASSED
 
-  // TEST("m4x4_rotation run #2");
-  // f_tol.tolerance = FLT_EPSILON * 1000;
-  // vec4 axis;
-  // m4x4 rotation;
-  // vec4_vector(1.0f, 1.0f, 0, &axis);
-  // vec4_normalize(&axis);
-  // vec4_point(1.0f, 0.0f, 0.0f, &actual_v3);
-  // m4x4_rotation(deg_to_rad(180), &axis, &rotation);
-  // m4x4_x_vec4(&rotation, &actual_v3, &actual_v3);
-  // vec4_point(0.0f, 1.0f, 0, &expected_v3);
-  // assert(vec4_equals_vec4(&expected_v3, &actual_v3, &f_tol));
-  // PASSED
+  TEST("m4x4_rotation run #2");
+  f_tol.tolerance = FLT_EPSILON * 1000;
+  vec3 axis;
+  m4x4 rotation;
+  vec3_create(1.0f, 1.0f, 0, &axis);
+  vec3_normalize(&axis, &axis);
+  vec3_create(1.0f, 0.0f, 0.0f, &actual_v3);
+  m4x4_rotation(deg_to_rad(180), &axis, &rotation);
+  m4x4_x_point(&rotation, &actual_v3, &actual_v3);
+  vec3_create(0.0f, 1.0f, 0, &expected_v3);
+  assert(vec3_equals_vec3(&expected_v3, &actual_v3, &f_tol));
+  PASSED
 
   TEST("m4x4_view should construct an inverted space transform matrix");
   f_tol.tolerance = FLT_EPSILON;
