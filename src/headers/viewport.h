@@ -1,7 +1,11 @@
 #ifndef __TAIL_VIEWPORT__
 #define __TAIL_VIEWPORT__
 
-#include "public_types.h"
+typedef struct VIEWPORT {
+  float _width;
+  float _height;
+  short int _perspective_needs_recalculating;
+} viewport;
 
 void viewport__set_width(int w, viewport *v);
 void viewport__set_height(int h, viewport *v);

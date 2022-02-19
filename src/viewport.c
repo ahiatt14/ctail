@@ -1,5 +1,4 @@
 #include "viewport.h"
-#include "public_types.h"
 
 void viewport__set_width(int w, viewport *v) {
   v->_width = w;

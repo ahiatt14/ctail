@@ -1,7 +1,11 @@
 #ifndef __TAIL_M4X4__
 #define __TAIL_M4X4__
 
-#include "public_types.h"
+#include "vec4.h"
+
+typedef struct M4X4 {
+  float data[16];
+} m4x4;
 
 void m4x4_create(
   float i0, float i1, float i2, float i3,
@@ -13,6 +17,7 @@ void m4x4_create(
 void m4x4_x_m4x4(const m4x4 *m0, const m4x4 *m1, m4x4 *dest);
 void m4x4_transpose(m4x4 *m);
 void m4x4_identity(m4x4 *m);
+void m4x4_x_vec4(const m4x4 *m, const vec4 *t, vec4 *dest);
 void m4x4_translation(const vec4 *t, m4x4 *m);
 void m4x4_inverted_translation(const vec4 *t, m4x4 *m);
 void m4x4_scaling(float s, m4x4 *m);
@@ -23,14 +28,5 @@ void m4x4_view(
   const vec4 *forward,
   m4x4 *m
 );
-// void m4x4_ortho_projection(
-//   float near,
-//   float far,
-//   float left,
-//   float right,
-//   float bottom,
-//   float top,
-//   m4x4 *m
-// );
 
 #endif

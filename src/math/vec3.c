@@ -1,8 +1,8 @@
 #include <string.h>
 #include <math.h>
-#include "public_types.h"
-#include "precision.h"
+
 #include "vec3.h"
+#include "precision.h"
 
 void vec3_minus_vec3(
   const vec3 *t0,
@@ -24,6 +24,7 @@ void vec3_plus_vec3(
   sum->z = t0->z + t1->z;
 }
 
+//TODO: may have to move to tail_math
 int vec3_equals_vec3(
   const vec3 *t0,
   const vec3 *t1,
@@ -48,7 +49,7 @@ void vec3_cross(
   const vec3 *t1,
   vec3 *cross
 ) {
-  vec4 temp;
+  vec3 temp;
   temp.x = t0->y * t1->z - t0->z * t1->y;
   temp.y = t0->z * t1->x - t0->x * t1->z;
   temp.z = t0->x * t1->y - t0->y * t1->x;

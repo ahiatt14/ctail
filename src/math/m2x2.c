@@ -1,4 +1,3 @@
-#include "public_types.h"
 #include "m2x2.h"
 
 void m2x2_create(

@@ -2,7 +2,6 @@
 
 #include "space.h"
 #include "tail_math.h"
-#include "public_types.h"
 #include "m4x4.h"
 
 static m4x4 temp__model_scale;

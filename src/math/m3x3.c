@@ -2,7 +2,6 @@
 #include <math.h>
 #include <string.h>
 
-#include "public_types.h"
 #include "tail_math.h"
 #include "m3x3.h"
 #include "m2x2.h"

@@ -1,7 +1,11 @@
 #ifndef __TAIL_M2X2__
 #define __TAIL_M2X2__
 
-#include "public_types.h"
+#include "m2x2.h"
+
+typedef struct M2X2 {
+  float data[4];
+} m2x2;
 
 void m2x2_create(
   float i0, float i2,

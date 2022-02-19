@@ -1,7 +1,21 @@
 #ifndef __TAIL_CAMERA__
 #define __TAIL_CAMERA__
 
-#include "public_types.h"
+#include "viewport.h"
+#include "m4x4.h"
+#include "vec4.h"
+
+typedef struct CAMERA {
+  m4x4 _lookat;
+  m4x4 _perspective;
+  vec4 _position;
+  vec4 _look_target;
+  float _near_clip_distance;
+  float _far_clip_distance;
+  float _horizontal_fov_in_deg;
+  short int _lookat_needs_recalculating;
+  short int _perspective_needs_recalculating;
+} camera;
 
 void camera__init(camera *c);
 const m4x4* camera__calculate_lookat(const vec4 *world_up, camera *c);

@@ -3,7 +3,6 @@
 
 #include "camera.h"
 #include "viewport.h"
-#include "public_types.h"
 #include "tail_math.h"
 #include "m4x4.h"
 #include "vec4.h"

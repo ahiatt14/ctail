@@ -1,7 +1,11 @@
 #ifndef __TAIL_M3X3__
 #define __TAIL_M3X3__
 
-#include "public_types.h"
+#include "m3x3.h"
+
+typedef struct M3X3 {
+  float data[9];
+} m3x3;
 
 void m3x3_create(
   float i0, float i3, float i6,

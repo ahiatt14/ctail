@@ -1,9 +1,7 @@
 #ifndef __TAIL_MATH__
 #define __TAIL_MATH__
 
-#include "public_types.h"
-
-extern const float PI;
+#include "vec3.h"
 
 float deg_to_rad(float d);
 

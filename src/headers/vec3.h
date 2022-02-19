@@ -1,8 +1,11 @@
 #ifndef __TAIL_VEC3__
 #define __TAIL_VEC3__
 
-#include "public_types.h"
 #include "precision.h"
+
+typedef struct VEC3 {
+  float x, y, z;
+} vec3;
 
 void vec3_create(float x, float y, float z, vec3 *t);
 void vec3_plus_vec3(const vec3 *t0, const vec3 *t1, vec3 *sum);

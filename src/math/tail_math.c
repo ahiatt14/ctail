@@ -4,7 +4,6 @@
 
 #include <stdio.h> //TODO: remove
 
-#include "public_types.h"
 #include "precision.h"
 #include "tail_math.h"
 #include "vec3.h"

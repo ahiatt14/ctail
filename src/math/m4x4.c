@@ -1,4 +1,6 @@
 #include <math.h>
+#include <string.h>
+
 #include "m4x4.h"
 
 static inline void fill_m4x4_data(
@@ -73,6 +75,19 @@ void m4x4_identity(m4x4 *m) {
     0, 0, 0, 1,
     m->data
   );
+}
+
+void m4x4_x_vec4(const m4x4 *m, const vec4 *t, vec4 *dest) {
+  vec4 temp;
+  temp.x = m->data[0] * t->x + m->data[4] * t->y +
+    m->data[8] * t->z + m->data[12] * t->w;
+  temp.y = m->data[1] * t->x + m->data[5] * t->y +
+    m->data[9] * t->z + m->data[13] * t->w;
+  temp.z = m->data[2] * t->x + m->data[6] * t->y +
+    m->data[10] * t->z + m->data[14] * t->w;
+  temp.w = m->data[3] * t->x + m->data[7] * t->y +
+    m->data[11] * t->z + m->data[15] * t->w;
+  memcpy(&dest->x, &temp.x, sizeof(vec4));
 }
 
 void m4x4_translation(const vec4 *t, m4x4 *m) {
