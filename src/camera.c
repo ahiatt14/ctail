@@ -5,14 +5,14 @@
 #include "viewport.h"
 #include "tail_math.h"
 #include "m4x4.h"
-#include "vec4.h"
+#include "vec3.h"
 
 // cache for perspective calculation
 static float r, l, t, b;
 static float m0, m5, m8, m9, m10, m14;
 
 // cache for lookat calculation
-static vec4 camera_forward, camera_right, camera_up;
+static vec3 camera_forward, camera_right, camera_up;
 static m4x4 view, offset;
 
 void camera__init(camera *c) {
@@ -28,11 +28,11 @@ const m4x4* camera__get_perspective(const camera *c) {
   return &c->_perspective;
 }
 
-const vec4* camera__get_position(camera *c) {
+const vec3* camera__get_position(camera *c) {
   return &c->_position;
 }
 
-const vec4* camera__get_look_target(camera *c) {
+const vec3* camera__get_look_target(camera *c) {
   return &c->_look_target;
 }
 
@@ -40,7 +40,6 @@ void camera__set_position(float x, float y, float z, camera *c) {
   c->_position.x = x;
   c->_position.y = y;
   c->_position.z = z;
-  c->_position.w = 1.0f;
   c->_lookat_needs_recalculating = 1;
 }
 
@@ -63,8 +62,8 @@ float camera__get_horizontal_fov_in_deg(const camera *c) {
   return c->_horizontal_fov_in_deg;
 }
 
-void camera__set_look_target(const vec4 *t, camera *c) {
-  memcpy(&c->_look_target.x, &t->x, sizeof(vec4));
+void camera__set_look_target(const vec3 *t, camera *c) {
+  memcpy(&c->_look_target.x, &t->x, sizeof(vec3));
   c->_lookat_needs_recalculating = 1;
 }
 
@@ -109,16 +108,16 @@ const m4x4* camera__calculate_perspective(viewport *vwprt, camera *cam) {
 }
 
 const m4x4* camera__calculate_lookat(
-  const vec4 *up,
+  const vec3 *up,
   camera *cam
 ) {
 
-  vec4_minus_vec4(&cam->_position, &cam->_look_target, &camera_forward);
-  vec4_normalize(&camera_forward);
-  vec4_cross(up, &camera_forward, &camera_right);
-  vec4_normalize(&camera_right);
-  vec4_cross(&camera_forward, &camera_right, &camera_up);
-  vec4_normalize(&camera_up);
+  vec3_minus_vec3(&cam->_position, &cam->_look_target, &camera_forward);
+  vec3_normalize(&camera_forward, &camera_forward);
+  vec3_cross(up, &camera_forward, &camera_right);
+  vec3_normalize(&camera_right, &camera_right);
+  vec3_cross(&camera_forward, &camera_right, &camera_up);
+  vec3_normalize(&camera_up, &camera_up);
 
   m4x4_view(
     &camera_right,

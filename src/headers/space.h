@@ -2,16 +2,17 @@
 #define __TAIL_SPACE__
 
 #include "m4x4.h"
+#include "vec3.h"
 
 typedef struct COORDINATE_SPACE {
-  vec4 up;
-  vec4 right;
-  vec4 forward;
+  vec3 up;
+  vec3 right;
+  vec3 forward;
 } coordinate_space;
 
 typedef struct TRANSFORM {
-  vec4 position;
-  vec4 rotation_in_deg; // TODO: we'll want to represent rotation as quats eventually
+  vec3 position;
+  vec3 rotation_in_deg; // TODO: we'll want to represent rotation as quats eventually
   float scale;
 } transform;
 

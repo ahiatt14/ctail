@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "m4x4.h"
+#include "vec3.h"
 
 static inline void fill_m4x4_data(
   float i0, float i1, float i2, float i3,
@@ -77,20 +78,19 @@ void m4x4_identity(m4x4 *m) {
   );
 }
 
-void m4x4_x_vec4(const m4x4 *m, const vec4 *t, vec4 *dest) {
-  vec4 temp;
+// TODO: is this used anywhere?
+void m4x4_x_point(const m4x4 *m, const vec3 *t, vec3 *dest) {
+  vec3 temp;
   temp.x = m->data[0] * t->x + m->data[4] * t->y +
-    m->data[8] * t->z + m->data[12] * t->w;
+    m->data[8] * t->z + m->data[12];
   temp.y = m->data[1] * t->x + m->data[5] * t->y +
-    m->data[9] * t->z + m->data[13] * t->w;
+    m->data[9] * t->z + m->data[13];
   temp.z = m->data[2] * t->x + m->data[6] * t->y +
-    m->data[10] * t->z + m->data[14] * t->w;
-  temp.w = m->data[3] * t->x + m->data[7] * t->y +
-    m->data[11] * t->z + m->data[15] * t->w;
-  memcpy(&dest->x, &temp.x, sizeof(vec4));
+    m->data[10] * t->z + m->data[14];
+  memcpy(&dest->x, &temp.x, sizeof(vec3));
 }
 
-void m4x4_translation(const vec4 *t, m4x4 *m) {
+void m4x4_translation(const vec3 *t, m4x4 *m) {
   fill_m4x4_data(
     1, 0, 0, t->x,
     0, 1, 0, t->y,
@@ -111,7 +111,7 @@ void m4x4_scaling(float s, m4x4 *m) {
   );
 }
 
-void m4x4_rotation(float rads, const vec4 *t, m4x4 *m) {
+void m4x4_rotation(float rads, const vec3 *t, m4x4 *m) {
 
   double c = cos(rads);
   double s = sin(rads);
@@ -135,9 +135,9 @@ void m4x4_rotation(float rads, const vec4 *t, m4x4 *m) {
 }
 
 void m4x4_view(
-  const vec4 *right,
-  const vec4 *up,
-  const vec4 *forward,
+  const vec3 *right,
+  const vec3 *up,
+  const vec3 *forward,
   m4x4 *m
 ) {
   fill_m4x4_data(
@@ -150,7 +150,7 @@ void m4x4_view(
 }
 
 void m4x4_inverted_translation(
-  const vec4 *t,
+  const vec3 *t,
   m4x4 *m
 ) {
   fill_m4x4_data(

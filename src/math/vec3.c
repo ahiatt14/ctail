@@ -44,6 +44,13 @@ void vec3_create(float x, float y, float z, vec3 *t) {
   t->x = x; t->y = y; t->z = z;
 }
 
+float vec3_dot(const vec3 *t0, const vec3 *t1) {
+  return
+    t0->x * t1->x +
+    t0->y * t1->y +
+    t0->z * t1->z;
+}
+
 void vec3_cross(
   const vec3 *t0,
   const vec3 *t1,
