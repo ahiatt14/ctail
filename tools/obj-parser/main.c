@@ -6,6 +6,26 @@
 #include "tail.h"
 #include "parser.h"
 
+vec3 obj_positions[5000];
+vec3 obj_normals[5000];
+unsigned int indices[10000];
+vertex vertices[20000];
+
+char obj_line[OBJ_LINE_MAX_LENGTH];
+int obj_position_count = 0;
+int obj_normal_count = 0;
+int vert_count = 0;
+int face_count = 0;
+vec3 temp_vec3a = {0};
+vec3 temp_vec3b = {0};
+
+FILE *obj_file = NULL;
+
+void parse_obj_into_flat_mesh();
+void parse_obj_into_smooth_mesh();
+void print_smooth_mesh();
+void print_flat_mesh();
+
 int main(int argc, char *argv[]) {
 
   if (argc != 3) {
@@ -24,23 +44,26 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  FILE *obj_file = fopen(argv[1], "r");
+  obj_file = fopen(argv[1], "r");
   if (obj_file == NULL) {
     printf("obj file not found.\n");
     return 1;
   }
   
-  vec3 obj_positions[5000];
-  vec3 obj_normals[5000];
-  vertex vertices[20000];
+  if (strcmp(argv[2], "flat") == 0) {
+    parse_obj_into_flat_mesh();
+    print_flat_mesh();
+  }
+  if (strcmp(argv[2], "smooth") == 0) {
+    parse_obj_into_smooth_mesh();
+    print_smooth_mesh();
+  }
 
-  char obj_line[OBJ_LINE_MAX_LENGTH];
-  int obj_position_count = 0;
-  int obj_normal_count = 0;
-  int vert_count = 0;
-  vec3 temp_vec3a = {0};
-  vec3 temp_vec3b = {0};
-  obj_file = fopen(argv[1], "r");
+  fclose(obj_file);
+  return 0;
+}
+
+void parse_obj_into_flat_mesh() {
   while (fgets(obj_line, OBJ_LINE_MAX_LENGTH, obj_file) != NULL) {
     if (strncmp(obj_line, "v ", 2) == 0) {
       obj_vec3_line_to_vec3(obj_line, &temp_vec3a);
@@ -59,7 +82,7 @@ int main(int argc, char *argv[]) {
       );
     }
     else if (strncmp(obj_line, "f ", 2) == 0) {
-      obj_face_line_to_vec3s(obj_line, &temp_vec3a, &temp_vec3b);
+      obj_f_n_line_to_vec3s(obj_line, &temp_vec3a, &temp_vec3b);
       for (int face_vert_index = 0; face_vert_index < 3; face_vert_index++) {
         memcpy(
           &vertices[vert_count].position.x,
@@ -75,7 +98,41 @@ int main(int argc, char *argv[]) {
       }
     }
   }
+}
 
+void parse_obj_into_smooth_mesh() {
+  unsigned int index_trio[3] = {0};
+  while (fgets(obj_line, OBJ_LINE_MAX_LENGTH, obj_file) != NULL) {
+    if (strncmp(obj_line, "v ", 2) == 0) {
+      obj_vec3_line_to_vec3(obj_line, &temp_vec3a);
+      memcpy(
+        &obj_positions[obj_position_count++],
+        &temp_vec3a.x,
+        sizeof(vec3)
+      );
+    }
+    else if (strncmp(obj_line, "f ", 2) == 0) {
+      obj_f_line_to_3_ui_indices(obj_line, index_trio);
+      memcpy(
+        &indices[face_count++],
+        index_trio,
+        sizeof(unsigned int) * 3
+      );
+    }
+  }
+  vec3 temp_normal = {0};
+  for (int i = 0; i < obj_position_count; i++) {
+    calculate_vertex_normal(
+      i,
+      face_count * 3,
+      indices,
+      obj_positions,
+      &temp_normal
+    );
+  }
+}
+
+void print_flat_mesh() {
   printf("vertex count: %i\n\n", vert_count);
 
   printf("{\n");
@@ -93,8 +150,7 @@ int main(int argc, char *argv[]) {
     printf("\t%i, %i, %i,\n", i, i+1, i+2);
   }
   printf("}");
-
-  fclose(obj_file);
-  return 0;
 }
 
+void print_smooth_mesh() {
+}

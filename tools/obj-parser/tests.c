@@ -73,14 +73,29 @@ int main() {
   ));
   PASSED
 
+  // TEST(
+  //   "obj_f_line_to_vec3 should convert the obj f string\n"
+  //   "into a vec3 of indices"
+  // );
+  //   const char *str = "f 5 2 4";
+  //   vec3 actual_v3 = {0};
+  //   obj_f_line_to_vec3(str, &actual_v3);
+  //   vec3 expected_v3 = { 5, 2, 4 };
+  //   assert(vec3s_close_enough(
+  //     &actual_v3,
+  //     &expected_v3,
+  //     FLT_EPSILON
+  //   ));
+  // PASSED
+
   TEST(
-    "obj_face_line_to_vec3s should convert the "
+    "obj_f_n_line_to_vec3s should convert the "
     "str into two corresponding vec3s; remember i-1"
   );
   const char *str = "f 10//5 11//5 9//5";
   vec3 actual_vi = {0};
   vec3 actual_vni = {0};
-  obj_face_line_to_vec3s(
+  obj_f_n_line_to_vec3s(
     str,
     &actual_vi,
     &actual_vni
@@ -100,12 +115,12 @@ int main() {
   PASSED
 
   TEST(
-    "obj_face_line_to_vec3s run #2"
+    "obj_f_n_line_to_vec3s run #2"
   );
   const char *str = "f 285//30 311//30 600//30";
   vec3 actual_vi = {0};
   vec3 actual_vni = {0};
-  obj_face_line_to_vec3s(
+  obj_f_n_line_to_vec3s(
     str,
     &actual_vi,
     &actual_vni
@@ -123,4 +138,9 @@ int main() {
     FLT_EPSILON
   ));
   PASSED
+
+  printf("\n\n");
+  printf("_____________________________________\n");
+  printf("_________ALL_TESTS_PASSED_:)_________\n");
+  printf("_____________________________________\n");
 }
