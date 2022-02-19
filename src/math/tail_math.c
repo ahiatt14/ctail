@@ -75,8 +75,8 @@ static inline int contains_vec3(
 
 // TODO: not optimized (or safe?) to use in real time, revisit if needed
 void calculate_vertex_normal(
-  unsigned short vertex_index,
-  unsigned short index_buffer_count,
+  int vertex_index,
+  int index_buffer_count,
   const unsigned int *indices,
   const vec3 *positions,
   vec3 *normalized_output

@@ -9,10 +9,10 @@ build() {
   ${target} -c src/math/m4x4.c -o obj/m4x4.o ${options}
   ${target} -c src/math/vec3.c -o obj/vec3.o ${options}
   ${target} -c src/math/vec4.c -o obj/vec4.o ${options}
-  ${target} -c src/math/tail_math.c -o obj/tail_math.o ${options}
   ${target} -c src/camera.c -o obj/camera.o ${options}
   ${target} -c src/space.c -o obj/space.o ${options}
   ${target} -c src/precision.c -o obj/precision.o ${options}
+  ${target} -c src/math/tail_math.c -o obj/tail_math.o ${options}
   ${target} -c src/viewport.c -o obj/viewport.o ${options}
 }
 static() {
@@ -24,9 +24,9 @@ static() {
   obj/m4x4.o \
   obj/vec3.o \
   obj/vec4.o \
-  obj/tail_math.o \
   obj/camera.o \
   obj/precision.o \
+  obj/tail_math.o \
   obj/space.o \
   obj/viewport.o
 }
@@ -35,7 +35,7 @@ run_and_log_tests() {
 }
 build_tests() {
   rm -rf tests.o && \
-  ${target} -c tests.c -o tests.o -Iinclude -Wall && \
+  ${target} -c tests.c -o tests.o -Iinclude -Itest_data -Wall && \
   ${target} -o tests.exe \
   tests.o \
   static/tail.a

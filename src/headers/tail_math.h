@@ -22,8 +22,8 @@ void calculate_face_normal(
 );
 
 void calculate_vertex_normal(
-  unsigned short vertex_index,
-  unsigned short index_buffer_length,
+  int vertex_index,
+  int index_buffer_length,
   const unsigned int *indices,
   const vec3 *positions,
   vec3 *normalized_output
