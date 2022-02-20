@@ -45,7 +45,7 @@ void obj_f_line_to_3_ui_indices(
   while (!terminal(obj_line[obj_line_index])) {
     if (isspace(obj_line[obj_line_index])) {
       indices[xyz_offset++] =
-        (unsigned int)strtod(&obj_line[obj_line_index], &end_of_int);
+        (unsigned int)strtod(&obj_line[obj_line_index], &end_of_int) - 1;
       obj_line_index = end_of_int - obj_line;
     } else obj_line_index++;
   }
@@ -62,10 +62,7 @@ void obj_f_n_line_to_vec3s(
   int vn_xyz_offset = 0;
   char *end_of_int;
   int temp_index = 0;
-  while (
-    obj_line[obj_line_index] != '\0' &&
-    obj_line[obj_line_index] != '\n'
-  ) {
+  while (!terminal(obj_line[obj_line_index])) {
     if (isdigit(obj_line[obj_line_index])) {
       if (is_position) {
         temp_index = (int)strtod(

@@ -5,28 +5,35 @@
 #include <float.h>
 
 #include "tail.h"
+#include "test_data.h"
+#include "normals.h"
 #include "parser.h"
 
 #define TEST(msg) { printf(msg)
 #define PASSED printf(": PASSED\n"); }
 #define QUIT return 0;
 
-int floats_close_enough(float a, float b, float tol) {
-  float abs_diff = fabs(a - b);
-  return abs_diff <= tol ? 1 : 0;
-}
+// int diff_is_within_tolerance(float a, float b, float tol) {
+//   float abs_diff = fabs(a - b);
+//   return abs_diff <= tol ? 1 : 0;
+// }
 
-int vec3s_close_enough(const vec3 *t0, const vec3 *t1, float tol) {
-  if (!floats_close_enough(t0->x, t1->x, tol)) return 0;
-  if (!floats_close_enough(t0->y, t1->y, tol)) return 0;
-  if (!floats_close_enough(t0->z, t1->z, tol)) return 0;
-  return 1;
-}
+// int vec3_equals_vec3(const vec3 *t0, const vec3 *t1, float tol) {
+//   if (!diff_is_within_tolerance(t0->x, t1->x, tol)) return 0;
+//   if (!diff_is_within_tolerance(t0->y, t1->y, tol)) return 0;
+//   if (!diff_is_within_tolerance(t0->z, t1->z, tol)) return 0;
+//   return 1;
+// }
+
+float_tolerance f_tol = {
+  .within_tolerance = diff_is_within_tolerance,
+  .tolerance = FLT_EPSILON
+};
 
 int main() {
 
   TEST("tolerance check 1");
-  assert(floats_close_enough(
+  assert(diff_is_within_tolerance(
     1.033929f,
     1.033928f,
     0.000002f
@@ -34,7 +41,7 @@ int main() {
   PASSED
 
   TEST("tolerance check 2");
-  assert(floats_close_enough(
+  assert(diff_is_within_tolerance(
     1.033929f,
     1.033928f,
     0.0000005f
@@ -42,6 +49,7 @@ int main() {
   PASSED
 
   TEST("obj_vec3_line_to_vec3 should convert the str to a vec3");
+  f_tol.tolerance = FLT_EPSILON;
   const char *str = "v 0.894426 0.447216 0.000000";
   vec3 actual = {0};
   obj_vec3_line_to_vec3(str, &actual);
@@ -50,14 +58,15 @@ int main() {
     0.447216f,
     0.000000f
   };
-  assert(vec3s_close_enough(
+  assert(vec3_equals_vec3(
     &actual,
     &expected,
-    FLT_EPSILON
+    &f_tol
   ));
   PASSED
 
   TEST("obj_vec3_line_to_vec3 run #2");
+  f_tol.tolerance = FLT_EPSILON;
   const char *str = "vn -0.5746 -0.3304 -0.7488";
   vec3 actual = {0};
   obj_vec3_line_to_vec3(str, &actual);
@@ -66,32 +75,51 @@ int main() {
     -0.3304f,
     -0.7488f
   };
-  assert(vec3s_close_enough(
+  assert(vec3_equals_vec3(
     &actual,
     &expected,
-    FLT_EPSILON
+    &f_tol
   ));
   PASSED
 
-  // TEST(
-  //   "obj_f_line_to_vec3 should convert the obj f string\n"
-  //   "into a vec3 of indices"
-  // );
-  //   const char *str = "f 5 2 4";
-  //   vec3 actual_v3 = {0};
-  //   obj_f_line_to_vec3(str, &actual_v3);
-  //   vec3 expected_v3 = { 5, 2, 4 };
-  //   assert(vec3s_close_enough(
-  //     &actual_v3,
-  //     &expected_v3,
-  //     FLT_EPSILON
-  //   ));
-  // PASSED
+  TEST(
+    "obj_f_line_to_3_ui_indices should convert the obj f string\n"
+    "into a vec3 of indices; remember i-1"
+  );
+    const char *str = "f 5 2 4";
+    unsigned int actual_indices[3] = {0};
+    obj_f_line_to_3_ui_indices(str, actual_indices);
+    unsigned int expected_indices[3] = { 4, 1, 3 };
+    for (int i = 0; i < 3; i++) {
+      assert(diff_is_within_tolerance(
+        actual_indices[i],
+        expected_indices[i],
+        FLT_EPSILON
+      ));
+    }
+  PASSED
+
+  TEST(
+    "obj_f_line_to_3_ui_indices run #2"
+  );
+    const char *str = "f 242 150 99";
+    unsigned int actual_indices[3] = {0};
+    obj_f_line_to_3_ui_indices(str, actual_indices);
+    unsigned int expected_indices[3] = { 241, 149, 98 };
+    for (int i = 0; i < 3; i++) {
+      assert(diff_is_within_tolerance(
+        actual_indices[i],
+        expected_indices[i],
+        FLT_EPSILON
+      ));
+    }
+  PASSED
 
   TEST(
     "obj_f_n_line_to_vec3s should convert the "
     "str into two corresponding vec3s; remember i-1"
   );
+  f_tol.tolerance = FLT_EPSILON;
   const char *str = "f 10//5 11//5 9//5";
   vec3 actual_vi = {0};
   vec3 actual_vni = {0};
@@ -102,21 +130,22 @@ int main() {
   );
   vec3 expected_vi = { 9, 10, 8 };
   vec3 expected_vni = { 4, 4, 4 };  
-  assert(vec3s_close_enough(
+  assert(vec3_equals_vec3(
     &actual_vi,
     &expected_vi,
-    FLT_EPSILON
+    &f_tol
   ));
-  assert(vec3s_close_enough(
+  assert(vec3_equals_vec3(
     &actual_vni,
     &expected_vni,
-    FLT_EPSILON
+    &f_tol
   ));
   PASSED
 
   TEST(
     "obj_f_n_line_to_vec3s run #2"
   );
+  f_tol.tolerance = FLT_EPSILON;
   const char *str = "f 285//30 311//30 600//30";
   vec3 actual_vi = {0};
   vec3 actual_vni = {0};
@@ -127,17 +156,125 @@ int main() {
   );
   vec3 expected_vi = { 284, 310, 599 };
   vec3 expected_vni = { 29, 29, 29 };  
-  assert(vec3s_close_enough(
+  assert(vec3_equals_vec3(
     &actual_vi,
     &expected_vi,
-    FLT_EPSILON
+    &f_tol
   ));
-  assert(vec3s_close_enough(
+  assert(vec3_equals_vec3(
     &actual_vni,
     &expected_vni,
-    FLT_EPSILON
+    &f_tol
   ));
   PASSED
+
+  TEST(
+    "calculate_face_normal should calculate a normalized\n"
+    "normal for the provided triangle of positions"
+  );
+  f_tol.tolerance = FLT_EPSILON;
+  vec3 positions[3] = {
+    { -1, 0, 0 },
+    { 0, 0, 1 },
+    { 0, 1, 0 }
+  };
+  vec3 actual = {0};
+  vec3 expected = {0};
+  calculate_face_normal(positions, &actual);
+  vec3_create(
+    -0.577350269f,
+    0.577350269f,
+    0.577350269f,
+    &expected
+  );
+  assert(vec3_equals_vec3(
+    &actual,
+    &expected,
+    &f_tol
+  ));
+  PASSED
+
+  TEST("calculate_face_normal run #2");
+  f_tol.tolerance = FLT_EPSILON;
+  vec3 positions[3] = {
+    { 0, 0, 0 },
+    { 0, 0, -1 },
+    { 0, 1, 0 }
+  };
+  vec3 actual = {0};
+  calculate_face_normal(positions, &actual);
+  vec3 expected = { 1, 0, 0 };
+  assert(vec3_equals_vec3(
+    &actual,
+    &expected,
+    &f_tol
+  ));
+  PASSED
+
+  // TEST(
+  //   "copy_vec3s should copy the vec3s values for the given indices\n"
+  //   "to the provided buffer"
+  // );
+  // f_tol.tolerance = FLT_EPSILON;
+  // vec3 vec3s[7] = {
+  //   { 0, 0, 0 },
+  //   { 1, 1, 1 },
+  //   { 2, 2, 2 },
+  //   { 3, 3, 3 },
+  //   { 4, 4, 4 },
+  //   { 5, 5, 5 },
+  //   { 6, 6, 6 }
+  // };
+  // vec3 actual_v3s[3] = {0};
+  // unsigned int indices[3] = { 2, 4, 5 };
+  // vec3 expected_v3s[3] = {
+  //   { 2, 2, 2 },
+  //   { 4, 4, 4 },
+  //   { 5, 5, 5 }
+  // };
+  // copy_vec3s(
+  //   vec3s,
+  //   indices,
+  //   3,
+  //   actual_v3s
+  // );
+  // for (int i = 0; i < 3; i++) {
+  //   assert(vec3_equals_vec3(
+  //     &actual_v3s[i],
+  //     &expected_v3s[i],
+  //     &f_tol
+  //   ));
+  // }
+  // PASSED
+
+  TEST(
+    "calculate_vertex_normal should calculate a\n"
+    "normalized normal for the given vert index"
+  );
+  f_tol.tolerance = FLT_EPSILON;
+  vec3 actual = {0};
+  calculate_vertex_normal(
+    0,
+    36,
+    cube_indices,
+    cube_vertex_positions,
+    &actual
+  );
+  vec3 expected = {
+    0.577350269f,
+    0.577350269f,
+    -0.577350269f,
+  };
+  assert(vec3_equals_vec3(
+    &actual,
+    &expected,
+    &f_tol
+  ));
+  PASSED
+
+  // TODO: add more tests for normal calc
+  // TEST("calculate_vertex_normal run #2");
+  // PASSED
 
   printf("\n\n");
   printf("_____________________________________\n");

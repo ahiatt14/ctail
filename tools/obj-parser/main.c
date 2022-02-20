@@ -4,6 +4,7 @@
 #include <ctype.h>
 
 #include "tail.h"
+#include "normals.h"
 #include "parser.h"
 
 vec3 obj_positions[5000];
