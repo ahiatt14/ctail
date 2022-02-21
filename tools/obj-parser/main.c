@@ -12,11 +12,13 @@ vec3 obj_normals[5000];
 unsigned int indices[10000];
 vertex vertices[20000];
 
+// TODO: clean this shite up!
 char obj_line[OBJ_LINE_MAX_LENGTH];
 int obj_position_count = 0;
 int obj_normal_count = 0;
 int vert_count = 0;
 int face_count = 0;
+int index_count = 0;
 vec3 temp_vec3a = {0};
 vec3 temp_vec3b = {0};
 
@@ -115,10 +117,11 @@ void parse_obj_into_smooth_mesh() {
     else if (strncmp(obj_line, "f ", 2) == 0) {
       obj_f_line_to_3_ui_indices(obj_line, index_trio);
       memcpy(
-        &indices[face_count++],
+        &indices[face_count++ * 3],
         index_trio,
         sizeof(unsigned int) * 3
       );
+      index_count += 3;
     }
   }
   vec3 temp_normal = {0};
@@ -129,6 +132,16 @@ void parse_obj_into_smooth_mesh() {
       indices,
       obj_positions,
       &temp_normal
+    );
+    memcpy(
+      &vertices[i].position.x,
+      &obj_positions[i].x,
+      sizeof(vec3)
+    );
+    memcpy(
+      &vertices[i].normal.x,
+      &temp_normal.x,
+      sizeof(vec3)
     );
   }
 }
@@ -154,4 +167,21 @@ void print_flat_mesh() {
 }
 
 void print_smooth_mesh() {
+  printf("vertex count: %i\n\n", obj_position_count);
+
+  printf("{\n");
+  for (int i = 0; i < obj_position_count; i++){
+    printf("\t");
+    print_vert(&vertices[i]);
+    if (i < obj_position_count - 1) printf(",");
+    printf("\n");
+  }
+  printf("}");
+
+  printf("\n\n");
+  printf("{\n");
+  for (int i = 0; i < index_count; i+=3) {
+    printf("\t%i, %i, %i,\n", indices[i], indices[i+1], indices[i+2]);
+  }
+  printf("}");
 }

@@ -211,42 +211,6 @@ int main() {
   ));
   PASSED
 
-  // TEST(
-  //   "copy_vec3s should copy the vec3s values for the given indices\n"
-  //   "to the provided buffer"
-  // );
-  // f_tol.tolerance = FLT_EPSILON;
-  // vec3 vec3s[7] = {
-  //   { 0, 0, 0 },
-  //   { 1, 1, 1 },
-  //   { 2, 2, 2 },
-  //   { 3, 3, 3 },
-  //   { 4, 4, 4 },
-  //   { 5, 5, 5 },
-  //   { 6, 6, 6 }
-  // };
-  // vec3 actual_v3s[3] = {0};
-  // unsigned int indices[3] = { 2, 4, 5 };
-  // vec3 expected_v3s[3] = {
-  //   { 2, 2, 2 },
-  //   { 4, 4, 4 },
-  //   { 5, 5, 5 }
-  // };
-  // copy_vec3s(
-  //   vec3s,
-  //   indices,
-  //   3,
-  //   actual_v3s
-  // );
-  // for (int i = 0; i < 3; i++) {
-  //   assert(vec3_equals_vec3(
-  //     &actual_v3s[i],
-  //     &expected_v3s[i],
-  //     &f_tol
-  //   ));
-  // }
-  // PASSED
-
   TEST(
     "calculate_vertex_normal should calculate a\n"
     "normalized normal for the given vert index"
@@ -272,9 +236,23 @@ int main() {
   ));
   PASSED
 
-  // TODO: add more tests for normal calc
-  // TEST("calculate_vertex_normal run #2");
-  // PASSED
+  TEST("calculate_vertex_normal run #2");
+  f_tol.tolerance = FLT_EPSILON;
+  vec3 actual = {0};
+  calculate_vertex_normal(
+    4,
+    18,
+    triangular_pyramid_indices,
+    triangular_pyramid_positions,
+    &actual
+  );
+  vec3 expected = { 0, 1, 0 };
+  assert(vec3_equals_vec3(
+    &actual,
+    &expected,
+    &f_tol
+  ));
+  PASSED
 
   printf("\n\n");
   printf("_____________________________________\n");

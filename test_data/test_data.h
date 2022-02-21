@@ -29,4 +29,21 @@ unsigned int cube_indices[36] = {
   4, 0, 1,
 };
 
+vec3 triangular_pyramid_positions[5] = {
+  { -0.5f, -0.5f, -0.5f }, // 0
+  { 0.5f, -0.5f, -0.5f }, // 1
+  { -0.5f, -0.5f, 0.5f }, // 2
+  { 0.5f, -0.5f, 0.5f }, // 3
+  { 0f, 0.5f, 0f } // 4
+};
+
+unsigned int triangular_pyramid_indices[18] = {
+  2, 3, 4,
+  3, 1, 4,
+  1, 0, 4,
+  0, 2, 4,
+  0, 1, 3,
+  0, 3, 2
+};
+
 #endif
