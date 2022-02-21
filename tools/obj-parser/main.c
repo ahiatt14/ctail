@@ -179,6 +179,7 @@ void print_smooth_mesh() {
   printf("}");
 
   printf("\n\n");
+  printf("index count: %i\n\n", index_count);
   printf("{\n");
   for (int i = 0; i < index_count; i+=3) {
     printf("\t%i, %i, %i,\n", indices[i], indices[i+1], indices[i+2]);
