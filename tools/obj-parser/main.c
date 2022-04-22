@@ -159,6 +159,7 @@ void print_flat_mesh() {
   printf("}");
 
   printf("\n\n");
+  printf("index count: %i\n\n", vert_count);
   printf("{\n");
   for (int i = 0; i < vert_count; i+=3) {
     printf("\t%i, %i, %i,\n", i, i+1, i+2);
