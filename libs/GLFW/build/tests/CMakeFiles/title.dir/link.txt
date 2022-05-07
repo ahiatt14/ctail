@@ -1,0 +1,3 @@
+/usr/bin/cmake -E remove -f CMakeFiles/title.dir/objects.a
+/usr/bin/i686-w64-mingw32-ar cr CMakeFiles/title.dir/objects.a @CMakeFiles/title.dir/objects1.rsp
+/usr/bin/i686-w64-mingw32-gcc   -mwindows -Wl,--whole-archive CMakeFiles/title.dir/objects.a -Wl,--no-whole-archive  -o title.exe -Wl,--out-implib,libtitle.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles/title.dir/linklibs.rsp

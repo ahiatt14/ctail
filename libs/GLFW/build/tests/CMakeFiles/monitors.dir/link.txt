@@ -1,0 +1,3 @@
+/usr/bin/cmake -E remove -f CMakeFiles/monitors.dir/objects.a
+/usr/bin/i686-w64-mingw32-ar cr CMakeFiles/monitors.dir/objects.a @CMakeFiles/monitors.dir/objects1.rsp
+/usr/bin/i686-w64-mingw32-gcc    -Wl,--whole-archive CMakeFiles/monitors.dir/objects.a -Wl,--no-whole-archive  -o monitors.exe -Wl,--out-implib,libmonitors.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles/monitors.dir/linklibs.rsp

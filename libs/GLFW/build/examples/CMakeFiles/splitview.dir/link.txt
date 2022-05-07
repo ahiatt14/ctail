@@ -1,0 +1,3 @@
+/usr/bin/cmake -E remove -f CMakeFiles/splitview.dir/objects.a
+/usr/bin/i686-w64-mingw32-ar cr CMakeFiles/splitview.dir/objects.a @CMakeFiles/splitview.dir/objects1.rsp
+/usr/bin/i686-w64-mingw32-gcc   -mwindows -Wl,--whole-archive CMakeFiles/splitview.dir/objects.a -Wl,--no-whole-archive  -o splitview.exe -Wl,--out-implib,libsplitview.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles/splitview.dir/linklibs.rsp

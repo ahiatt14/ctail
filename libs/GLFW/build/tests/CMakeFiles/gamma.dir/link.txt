@@ -1,0 +1,3 @@
+/usr/bin/cmake -E remove -f CMakeFiles/gamma.dir/objects.a
+/usr/bin/i686-w64-mingw32-ar cr CMakeFiles/gamma.dir/objects.a @CMakeFiles/gamma.dir/objects1.rsp
+/usr/bin/i686-w64-mingw32-gcc   -mwindows -Wl,--whole-archive CMakeFiles/gamma.dir/objects.a -Wl,--no-whole-archive  -o gamma.exe -Wl,--out-implib,libgamma.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles/gamma.dir/linklibs.rsp

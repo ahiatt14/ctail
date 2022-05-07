@@ -1,0 +1,3 @@
+/usr/bin/cmake -E remove -f CMakeFiles/msaa.dir/objects.a
+/usr/bin/i686-w64-mingw32-ar cr CMakeFiles/msaa.dir/objects.a @CMakeFiles/msaa.dir/objects1.rsp
+/usr/bin/i686-w64-mingw32-gcc    -Wl,--whole-archive CMakeFiles/msaa.dir/objects.a -Wl,--no-whole-archive  -o msaa.exe -Wl,--out-implib,libmsaa.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles/msaa.dir/linklibs.rsp

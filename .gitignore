@@ -1,4 +1,6 @@
 obj/
+libs/GLAD/obj
+libs/GLFW/obj
 test_report.txt
 tests.exe
 static/
