@@ -5,16 +5,16 @@
 
 static GLFWwindow *window;
 
-static typedef void (*on_window_minimize_ptr)();
-static typedef void (*on_window_restore_ptr)();
-static typedef void (*on_window_unfocus_ptr)();
-static typedef void (*on_window_focus_ptr)();
-static typedef void (*on_window_resize_ptr)();
-static on_window_minimize_ptr handle_window_minimize;
-static on_window_restore_ptr handle_window_restore;
-static on_window_unfocus_ptr handle_window_unfocus;
-static on_window_focus_ptr handle_window_focus;
-static on_window_resize_ptr handle_window_resize;
+typedef void (*on_window_minimize_ptr)();
+typedef void (*on_window_restore_ptr)();
+typedef void (*on_window_unfocus_ptr)();
+typedef void (*on_window_focus_ptr)();
+typedef void (*on_window_resize_ptr)();
+on_window_minimize_ptr handle_window_minimize;
+on_window_restore_ptr handle_window_restore;
+on_window_unfocus_ptr handle_window_unfocus;
+on_window_focus_ptr handle_window_focus;
+on_window_resize_ptr handle_window_resize;
 
 // TODO: add fullscreen/windowed toggling
 // TODO: handle monitor connecting/disconnecting
@@ -29,8 +29,8 @@ static void handle_window_iconification(
 );
 
 unsigned short int window__create(
-  int screen_width,
-  int screen_height,
+  int window_width,
+  int window_height,
   const char *name,
   unsigned short int vsync
 ) {
@@ -48,8 +48,8 @@ unsigned short int window__create(
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
 
   window = glfwCreateWindow(
-    GLFW_SCREEN_COORD_WIDTH,
-    GLFW_SCREEN_COORD_HEIGHT,
+    window_width,
+    window_height,
     "fool",
     NULL, // monitor handle. NOTE: forces fullscreen mode
     NULL // context obj sharing
@@ -70,7 +70,7 @@ unsigned short int window__create(
 }
 
 unsigned short int window__received_closed_event() {
-  return glfwWindowShouldClose(window)
+  return glfwWindowShouldClose(window);
 }
 
 void window__register_listener_for_minimize(void (*fn)()) {

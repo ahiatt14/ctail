@@ -1,7 +1,7 @@
 #ifndef __FOOL_RENDERER__
 #define __FOOL_RENDERER__
 
-#include "drawable_mesh.h"
+#include "mesh.h"
 #include "m4x4.h"
 #include "m3x3.h"
 

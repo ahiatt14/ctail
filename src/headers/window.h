@@ -1,11 +1,11 @@
 #ifndef __TAIL_WINDOW__
 #define __TAIL_WINDOW__
 
-int window__create(
-  int screen_width,
-  int screen_height,
+unsigned short int window__create(
+  int window_width,
+  int window_height,
   const char *name,
-  unsigned short int vsync,
+  unsigned short int vsync
   // unsigned short int fullscreen, TODO: add support
 );
 

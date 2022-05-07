@@ -1,6 +1,8 @@
 #ifndef __TAIL_MESH__
 #define __TAIL_MESH__
 
+#include "vec3.h"
+
 typedef struct VERTEX {
   vec3 position;
   vec3 normal;

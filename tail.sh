@@ -1,7 +1,7 @@
 default_target="win32"
 wsl_abs_path_to_root="/mnt/d/c/tail/"
 options="-O2 -Wall"
-includes="-Isrc/headers -Ilibs/GLAD/include -Ilibes/GLFW/include"
+includes="-Isrc/headers -Ilibs/GLAD/include -Ilibs/GLFW/include -Iinclude"
 
 declare -A targets
 targets[win32]=i686-w64-mingw32-gcc
@@ -25,19 +25,19 @@ clean() {
 build() {
   rm -rf obj
   mkdir obj
-  ${targets[${default_target}]} -c src/math/m2x2.c -o obj/m2x2.o ${options}
-  ${targets[${default_target}]} -c src/math/m3x3.c -o obj/m3x3.o ${options}
-  ${targets[${default_target}]} -c src/math/m4x4.c -o obj/m4x4.o ${options}
-  ${targets[${default_target}]} -c src/math/vec3.c -o obj/vec3.o ${options}
-  ${targets[${default_target}]} -c src/opengl_gpu.c -o obj/opengl_gpu.o ${options}
-  ${targets[${default_target}]} -c src/gl_util.c -o obj/gl_util.o ${options}
-  ${targets[${default_target}]} -c src/debugger.c -o obj/debugger.o ${options}
-  ${targets[${default_target}]} -c src/camera.c -o obj/camera.o ${options}
-  ${targets[${default_target}]} -c src/glfw_window.c -o obj/glfw_window.o ${options}
-  ${targets[${default_target}]} -c src/space.c -o obj/space.o ${options}
-  ${targets[${default_target}]} -c src/precision.c -o obj/precision.o ${options}
-  ${targets[${default_target}]} -c src/math/tail_math.c -o obj/tail_math.o ${options}
-  ${targets[${default_target}]} -c src/viewport.c -o obj/viewport.o ${options}
+  ${targets[${default_target}]} -c src/math/m2x2.c -o obj/m2x2.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/math/m3x3.c -o obj/m3x3.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/math/m4x4.c -o obj/m4x4.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/math/vec3.c -o obj/vec3.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/opengl_gpu.c -o obj/opengl_gpu.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/gl_util.c -o obj/gl_util.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/debugger.c -o obj/debugger.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/camera.c -o obj/camera.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/glfw_window.c -o obj/glfw_window.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/space.c -o obj/space.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/precision.c -o obj/precision.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/math/tail_math.c -o obj/tail_math.o ${includes} ${options}
+  ${targets[${default_target}]} -c src/viewport.c -o obj/viewport.o ${includes} ${options}
 }
 static() {
   rm -rf static
@@ -64,8 +64,8 @@ build_glad() {
 }
 build_tests() {
   rm -rf tests.o && \
-  ${target} -c tests.c -o tests.o -Iinclude -Itest_data -Wall && \
-  ${target} -o tests.exe \
+  ${targets[${default_target}]} -c tests.c -o tests.o -Itest_data ${options} ${includes} && \
+  ${targets[${default_target}]} -o tests.exe \
   tests.o \
   static/tail.a
 }
