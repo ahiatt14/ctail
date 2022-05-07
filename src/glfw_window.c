@@ -73,26 +73,21 @@ unsigned short int window__received_closed_event() {
   return glfwWindowShouldClose(window);
 }
 
-void window__register_listener_for_minimize(void (*fn)()) {
-  handle_window_minimize = fn;
+void window__register_listener_for_minimize(
+  void (*handle_minimize)(),
+  void (*handle_restore)()
+) {
+  handle_window_minimize = handle_minimize;
+  handle_window_restore = handle_restore;
   glfwSetWindowIconifyCallback(window, handle_window_iconification);
 }
 
-void window__register_listener_for_restore(void (*fn)()) {
-  handle_window_restore = fn;
-}
-
-void window__register_listener_for_unfocus(void (*fn)()) {
-  handle_window_unfocus = fn;
-  glfwSetWindowFocusCallback(window, handle_window_focus_change);
-  // TODO: no good.
-  // either provide 2 callbacks for a single listener and split in here
-  // or make a single callback that returns 0/1 for unfocus/focus for client
-  // to handle. Same goes for resize & iconify
-}
-
-void window__register_listener_for_focus(void (*fn)()) {
-  handle_window_focus = fn;
+void window__register_listener_for_focus(
+  void (*handle_focus)(),
+  void (*handle_unfocus)()
+) {
+  handle_window_unfocus = handle_unfocus;
+  handle_window_focus = handle_focus;
   glfwSetWindowFocusCallback(window, handle_window_focus_change);
 }
 
