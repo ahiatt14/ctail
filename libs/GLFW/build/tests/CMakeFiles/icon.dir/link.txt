@@ -1,3 +1,0 @@
-/usr/bin/cmake -E remove -f CMakeFiles/icon.dir/objects.a
-/usr/bin/i686-w64-mingw32-ar cr CMakeFiles/icon.dir/objects.a @CMakeFiles/icon.dir/objects1.rsp
-/usr/bin/i686-w64-mingw32-gcc   -mwindows -Wl,--whole-archive CMakeFiles/icon.dir/objects.a -Wl,--no-whole-archive  -o icon.exe -Wl,--out-implib,libicon.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles/icon.dir/linklibs.rsp

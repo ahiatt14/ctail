@@ -1,3 +1,0 @@
-/usr/bin/cmake -E remove -f CMakeFiles/sharing.dir/objects.a
-/usr/bin/i686-w64-mingw32-ar cr CMakeFiles/sharing.dir/objects.a @CMakeFiles/sharing.dir/objects1.rsp
-/usr/bin/i686-w64-mingw32-gcc   -mwindows -Wl,--whole-archive CMakeFiles/sharing.dir/objects.a -Wl,--no-whole-archive  -o sharing.exe -Wl,--out-implib,libsharing.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles/sharing.dir/linklibs.rsp

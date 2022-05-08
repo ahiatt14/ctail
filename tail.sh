@@ -1,3 +1,5 @@
+#!/bin/bash
+
 default_target="win32"
 wsl_abs_path_to_root="/mnt/d/c/tail/"
 options="-O2 -Wall"
@@ -43,7 +45,24 @@ static() {
   rm -rf static
   mkdir static
   ar -crs static/tail.a \
-  obj/*.o
+  obj/*.o \
+  libs/GLAD/obj/glad.o \
+  libs/GLFW/obj/context.c.obj \
+  libs/GLFW/obj/egl_context.c.obj \
+  libs/GLFW/obj/init.c.obj \
+  libs/GLFW/obj/input.c.obj \
+  libs/GLFW/obj/monitor.c.obj \
+  libs/GLFW/obj/osmesa_context.c.obj \
+  libs/GLFW/obj/vulkan.c.obj \
+  libs/GLFW/obj/wgl_context.c.obj \
+  libs/GLFW/obj/win32_init.c.obj \
+  libs/GLFW/obj/win32_joystick.c.obj \
+  libs/GLFW/obj/win32_monitor.c.obj \
+  libs/GLFW/obj/win32_thread.c.obj \
+  libs/GLFW/obj/win32_time.c.obj \
+  libs/GLFW/obj/win32_window.c.obj \
+  libs/GLFW/obj/window.c.obj \
+  # -lgdi32
 }
 run_and_log_tests() {
   ./tests.exe &> test_report.txt
@@ -52,8 +71,11 @@ build_glfw() {
   rm -rf libs/glfw/obj libs/glfw/build
   mkdir libs/glfw/obj libs/glfw/build
   cmake -S libs/glfw -B libs/glfw/build \
-  -DCMAKE_TOOLCHAIN_FILE=${wsl_abs_path_to_root}libs/glfw/CMake/i686-w64-mingw32.cmake
-  cmake --build libs/glfw/build
+  -DCMAKE_TOOLCHAIN_FILE=${wsl_abs_path_to_root}libs/glfw/CMake/i686-w64-mingw32.cmake \
+  && \
+  cmake --build libs/glfw/build \
+  && \
+  ar x --output libs/GLFW/obj libs/GLFW/build/src/libglfw3.a
 }
 build_glad() {
   rm -rf libs/GLAD/obj

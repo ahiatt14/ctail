@@ -3,39 +3,83 @@
 
 #include "window.h"
 
-static GLFWwindow *window;
-
-typedef void (*on_window_minimize_ptr)();
-typedef void (*on_window_restore_ptr)();
-typedef void (*on_window_unfocus_ptr)();
-typedef void (*on_window_focus_ptr)();
-typedef void (*on_window_resize_ptr)();
-on_window_minimize_ptr handle_window_minimize;
-on_window_restore_ptr handle_window_restore;
-on_window_unfocus_ptr handle_window_unfocus;
-on_window_focus_ptr handle_window_focus;
-on_window_resize_ptr handle_window_resize;
-
 // TODO: add fullscreen/windowed toggling
 // TODO: handle monitor connecting/disconnecting
-static void handle_framebuffer_resize(
-  GLFWwindow *window, int pixel_w, int pixel_h
-);
-static void handle_window_focus_change(
-  GLFWwindow *window, int gained_focus
-);
-static void handle_window_iconification(
-  GLFWwindow *window, int was_iconified
-);
 
-unsigned short int window__create(
+static GLFWwindow *glfw_window;
+static window_api *window;
+
+typedef void (*handle_window_minimize_ptr)();
+typedef void (*handle_window_restore_ptr)();
+typedef void (*handle_window_focus_ptr)();
+typedef void (*handle_window_unfocus_ptr)();
+typedef void (*handle_window_resize_ptr)();
+handle_window_minimize_ptr handle_window_minimize;
+handle_window_restore_ptr handle_window_restore;
+handle_window_focus_ptr handle_window_focus;
+handle_window_unfocus_ptr handle_window_unfocus;
+handle_window_resize_ptr handle_window_resize;
+
+unsigned short int window__received_closed_event() {
+  return glfwWindowShouldClose(glfw_window);
+}
+
+void window__poll_events() {
+  glfwPollEvents();
+}
+
+void window__end() {
+  glfwDestroyWindow(glfw_window);
+  glfwTerminate();
+}
+
+static void handle_framebuffer_resize(GLFWwindow *w, int width, int height) {
+  handle_window_resize(width, height);
+}
+
+static void handle_window_focus_change(GLFWwindow *w, int gained_focus) {
+  gained_focus ? handle_window_focus() : handle_window_unfocus();
+}
+
+static void handle_window_iconification(GLFWwindow *w, int is_minimized) {
+  is_minimized ? handle_window_minimize() : handle_window_restore();
+}
+
+static void register_listener_for_minimize(
+  void (*handle_minimize)(),
+  void (*handle_restore)()
+) {
+  handle_window_minimize = handle_minimize;
+  handle_window_restore = handle_restore;
+  glfwSetWindowIconifyCallback(glfw_window, handle_window_iconification);
+}
+
+static void register_listener_for_focus(
+  void (*handle_focus)(),
+  void (*handle_unfocus)()
+) {
+  handle_window_unfocus = handle_unfocus;
+  handle_window_focus = handle_focus;
+  glfwSetWindowFocusCallback(glfw_window, handle_window_focus_change);
+}
+
+static void register_listener_for_resize(void (*fn)()) {
+  handle_window_resize = fn;
+  glfwSetFramebufferSizeCallback(glfw_window, handle_framebuffer_resize);
+}
+
+static double get_seconds_since_creation() {
+  return glfwGetTime();
+}
+
+const window_api* window__create(
   int window_width,
   int window_height,
   const char *name,
   unsigned short int vsync
 ) {
 
-  if (!glfwInit()) return 0;
+  if (!glfwInit()) return NULL;
 
   // GLFW GL CONTEXT HINTS
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -47,7 +91,7 @@ unsigned short int window__create(
   glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
 
-  window = glfwCreateWindow(
+  glfw_window = glfwCreateWindow(
     window_width,
     window_height,
     "fool",
@@ -55,66 +99,23 @@ unsigned short int window__create(
     NULL // context obj sharing
   );
 
-  if (!window) return 0;
+  if (!glfw_window) return NULL;
 
-  glfwSetWindowPos(window, 100, 100); // see note A
-  glfwShowWindow(window); // see note A
+  glfwSetWindowPos(glfw_window, 100, 100); // see note A
+  glfwShowWindow(glfw_window); // see note A
 
-  glfwSetWindowRefreshCallback(window, glfwSwapBuffers);
+  glfwSetWindowRefreshCallback(glfw_window, glfwSwapBuffers);
 
-  glfwMakeContextCurrent(window);
+  glfwMakeContextCurrent(glfw_window);
 
   glfwSwapInterval(vsync);
 
-  return 1;
-}
+  window->get_seconds_since_creation = get_seconds_since_creation;
+  window->register_listener_for_minimize = register_listener_for_minimize;
+  window->register_listener_for_focus = register_listener_for_focus;
+  window->register_listener_for_resize = register_listener_for_resize;
 
-unsigned short int window__received_closed_event() {
-  return glfwWindowShouldClose(window);
-}
-
-void window__register_listener_for_minimize(
-  void (*handle_minimize)(),
-  void (*handle_restore)()
-) {
-  handle_window_minimize = handle_minimize;
-  handle_window_restore = handle_restore;
-  glfwSetWindowIconifyCallback(window, handle_window_iconification);
-}
-
-void window__register_listener_for_focus(
-  void (*handle_focus)(),
-  void (*handle_unfocus)()
-) {
-  handle_window_unfocus = handle_unfocus;
-  handle_window_focus = handle_focus;
-  glfwSetWindowFocusCallback(window, handle_window_focus_change);
-}
-
-void window__register_listener_for_resize(void (*fn)()) {
-  handle_window_resize = fn;
-  glfwSetFramebufferSizeCallback(window, handle_framebuffer_resize);
-}
-
-void handle_framebuffer_resize(GLFWwindow *window, int w, int h) {
-  handle_window_resize(w, h);
-}
-
-void handle_window_focus_change(GLFWwindow *window, int gained_focus) {
-  gained_focus ? handle_window_focus() : handle_window_unfocus();
-}
-
-void handle_window_iconification(GLFWwindow *window, int is_minimized) {
-  is_minimized ? handle_window_minimize() : handle_window_restore();
-}
-
-double window__get_seconds_since_game_start() {
-  return glfwGetTime();
-}
-
-void window__end() {
-  glfwDestroyWindow(window);
-  glfwTerminate();
+  return window;
 }
 
 /*
