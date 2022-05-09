@@ -18,6 +18,7 @@ usage() {
     build-glfw     compile glfw into local static library
     build          compile tail src into obj
     static         compile tail into static lib
+    create-copy    create dir for lib and header to easily copy into game
     test           build tail, run and log tests to file
   "
 }
@@ -41,28 +42,29 @@ build() {
   ${targets[${default_target}]} -c src/math/tail_math.c -o obj/tail_math.o ${includes} ${options}
   ${targets[${default_target}]} -c src/viewport.c -o obj/viewport.o ${includes} ${options}
 }
+# TODO: extracting gdi32 not gonna hold up for multiple targets as is
 static() {
   rm -rf static
   mkdir static
+  mkdir gdi32obj
+  ar x --output gdi32obj /usr/i686-w64-mingw32/lib/libgdi32.a \
+  && \
   ar -crs static/tail.a \
   obj/*.o \
+  gdi32obj/*.o \
   libs/GLAD/obj/glad.o \
-  libs/GLFW/obj/context.c.obj \
-  libs/GLFW/obj/egl_context.c.obj \
-  libs/GLFW/obj/init.c.obj \
-  libs/GLFW/obj/input.c.obj \
-  libs/GLFW/obj/monitor.c.obj \
-  libs/GLFW/obj/osmesa_context.c.obj \
-  libs/GLFW/obj/vulkan.c.obj \
-  libs/GLFW/obj/wgl_context.c.obj \
-  libs/GLFW/obj/win32_init.c.obj \
-  libs/GLFW/obj/win32_joystick.c.obj \
-  libs/GLFW/obj/win32_monitor.c.obj \
-  libs/GLFW/obj/win32_thread.c.obj \
-  libs/GLFW/obj/win32_time.c.obj \
-  libs/GLFW/obj/win32_window.c.obj \
-  libs/GLFW/obj/window.c.obj \
-  # -lgdi32
+  libs/GLFW/obj/*.c.obj \
+  && \
+  rm -rf gdi32obj
+}
+create-copy() {
+  rm -rf copy
+  mkdir copy
+  mkdir copy/tail
+  mkdir copy/tail/include
+  cp -a static/tail.a copy/tail/tail.a \
+  && \
+  gcc -E include/tail.h -o copy/tail/include/tail.h
 }
 run_and_log_tests() {
   ./tests.exe &> test_report.txt
@@ -98,6 +100,9 @@ then
 elif [ "$1" == "static" ]
 then
   build && static
+elif [ "$1" == "create-copy" ]
+then
+  create-copy
 elif [ "$1" == "test" ]
 then
   build && static && build_tests && run_and_log_tests

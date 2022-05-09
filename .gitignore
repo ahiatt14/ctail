@@ -5,6 +5,7 @@ libs/GLFW/build
 test_report.txt
 tests.exe
 static/
+copy/
 
 tools/obj-parser/obj_files/
 tools/obj-parser/output/
