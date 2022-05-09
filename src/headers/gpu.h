@@ -4,6 +4,7 @@
 #include "mesh.h"
 #include "m4x4.h"
 #include "m3x3.h"
+#include "vec3.h"
 
 typedef struct GPU_PROGRAM {
   unsigned int _frag_impl_id;
@@ -13,41 +14,48 @@ typedef struct GPU_PROGRAM {
   const char *vert_shader_src;
 } gpu_program;
 
-void renderer__clear(const float *color);
-void renderer__enable_depth_test();
+typedef struct GPU_API {
 
-void renderer__copy_program_to_gpu(
-  gpu_program *p,
-  short unsigned int log_comilation_status
-);
-void renderer__copy_mesh_to_gpu(drawable_mesh *dm);
-void renderer__select_gpu_program(const gpu_program *p);
-void renderer__set_vertex_shader_m3x3(
-  const gpu_program *p,
-  const char *name,
-  const m3x3 *m
-);
-void renderer__set_vertex_shader_m4x4(
-  const gpu_program *p,
-  const char *name,
-  const m4x4 *m
-);
-void renderer__set_fragment_shader_vec3(
-  const gpu_program *p,
-  const char *name,
-  const float *value
-);
-// void renderer__set_fragment_shader_float(
-//   const gpu_program *p,
-//   const char *name,
-//   float value
-// );
-void renderer__draw_mesh(const drawable_mesh *mesh);
+  void (*clear)(const float *color);
+  void (*enable_depth_test)();
+  void (*cull_back_faces)();
 
-void renderer__cull_back_faces();
-void renderer__set_viewport(int x, int y, int width, int height);
+  void (*copy_mesh_to_gpu)(drawable_mesh *dm);
 
-int renderer__get_viewport_width();
-int renderer__get_viewport_height();
+  void (*copy_program_to_gpu)(
+    gpu_program *gpup,
+    unsigned short int log_compilation_status
+  );
+  void (*select_gpu_program)(const gpu_program *gpup);
+
+  void (*set_viewport)(int x, int y, int w, int h);
+  int (*get_viewport_height)();
+  int (*get_viewport_width)();
+
+  void (*set_vertex_shader_m3x3)(
+    const gpu_program *gpup,
+    const char *name,
+    const m3x3 *value
+  );
+  void (*set_vertex_shader_m4x4)(
+    const gpu_program *gpup,
+    const char *name,
+    const m4x4 *value
+  );
+  void (*set_fragment_shader_vec3)(
+    const gpu_program *gpup,
+    const char *name,
+    const vec3 *value
+  );
+  void (*set_fragment_shader_float)(
+    const gpu_program *gpup,
+    const char *name,
+    float value
+  );
+
+  void (*draw_mesh)(const drawable_mesh*);
+} gpu_api;
+
+const gpu_api* gpu__create_api();
 
 #endif

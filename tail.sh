@@ -33,7 +33,6 @@ build() {
   ${targets[${default_target}]} -c src/math/m4x4.c -o obj/m4x4.o ${includes} ${options}
   ${targets[${default_target}]} -c src/math/vec3.c -o obj/vec3.o ${includes} ${options}
   ${targets[${default_target}]} -c src/opengl_gpu.c -o obj/opengl_gpu.o ${includes} ${options}
-  ${targets[${default_target}]} -c src/gl_util.c -o obj/gl_util.o ${includes} ${options}
   ${targets[${default_target}]} -c src/debugger.c -o obj/debugger.o ${includes} ${options}
   ${targets[${default_target}]} -c src/camera.c -o obj/camera.o ${includes} ${options}
   ${targets[${default_target}]} -c src/glfw_window.c -o obj/glfw_window.o ${includes} ${options}

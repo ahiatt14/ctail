@@ -6,7 +6,6 @@
 #include "../src/headers/m4x4.h"
 #include "../src/headers/vec3.h"
 #include "../src/headers/mesh.h"
-#include "../src/headers/gl_util.h"
 #include "../src/headers/gpu.h"
 #include "../src/headers/window.h"
 #include "../src/headers/debugger.h"
