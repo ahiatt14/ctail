@@ -7,7 +7,7 @@
 // TODO: handle monitor connecting/disconnecting
 
 static GLFWwindow *glfw_window;
-static window_api *window;
+static window_api window;
 
 typedef void (*handle_window_minimize_ptr)();
 typedef void (*handle_window_restore_ptr)();
@@ -110,12 +110,12 @@ const window_api* window__create(
 
   glfwSwapInterval(vsync);
 
-  window->get_seconds_since_creation = get_seconds_since_creation;
-  window->register_listener_for_minimize = register_listener_for_minimize;
-  window->register_listener_for_focus = register_listener_for_focus;
-  window->register_listener_for_resize = register_listener_for_resize;
+  window.get_seconds_since_creation = get_seconds_since_creation;
+  window.register_listener_for_minimize = register_listener_for_minimize;
+  window.register_listener_for_focus = register_listener_for_focus;
+  window.register_listener_for_resize = register_listener_for_resize;
 
-  return window;
+  return &window;
 }
 
 /*
