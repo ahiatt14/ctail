@@ -94,7 +94,7 @@ const window_api* window__create(
   glfw_window = glfwCreateWindow(
     window_width,
     window_height,
-    "fool",
+    name,
     NULL, // monitor handle. NOTE: forces fullscreen mode
     NULL // context obj sharing
   );
