@@ -23,7 +23,7 @@ usage() {
   "
 }
 clean() {
-  rm -rf obj static test_report.txt
+  rm -rf obj static copy test_report.txt
 }
 build() {
   rm -rf obj
@@ -97,6 +97,9 @@ build_tests() {
 if [ "$1" == "build" ]
 then
   build
+elif [ "$1" == "clean" ]
+then
+  clean
 elif [ "$1" == "static" ]
 then
   build && static
