@@ -108,7 +108,7 @@ then
 elif [ "$1" == "test" ]
 then
   build && static && build_tests && run_and_log_tests
-  rm -rf tests.exe tests.o
+  rm -f tests.exe tests.o
 elif [ "$1" == "build-glfw" ]
 then
   build_glfw
