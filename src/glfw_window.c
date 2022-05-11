@@ -1,5 +1,6 @@
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
+#include "glad.h"
 
 #include "window.h"
 
@@ -107,6 +108,7 @@ const window_api* window__create(
   glfwSetWindowRefreshCallback(glfw_window, glfwSwapBuffers);
 
   glfwMakeContextCurrent(glfw_window);
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return NULL;
 
   glfwSwapInterval(vsync);
 
