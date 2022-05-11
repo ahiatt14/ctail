@@ -73,7 +73,7 @@ static double get_seconds_since_creation() {
   return glfwGetTime();
 }
 
-const window_api* window__create(
+window_api* window__create(
   int window_width,
   int window_height,
   const char *name,

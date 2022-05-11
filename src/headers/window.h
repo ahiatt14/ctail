@@ -16,7 +16,7 @@ typedef struct WINDOW_API {
   );
 } window_api;
 
-const window_api* window__create(
+window_api* window__create(
   int window_width,
   int window_height,
   const char *name,
