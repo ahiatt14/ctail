@@ -1,6 +1,8 @@
 #ifndef __TAIL_MESH__
 #define __TAIL_MESH__
 
+#include <stddef.h>
+
 #include "vec3.h"
 
 typedef struct VERTEX {
