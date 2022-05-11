@@ -20,7 +20,7 @@ usage() {
     build          compile tail src into obj
     static         compile tail into static lib
     create-copy    create dir for lib and header to easily copy into game
-    template       
+    template       create a 
     test           build tail, run and log tests to file
 
     Options
@@ -84,9 +84,15 @@ template() {
     exit 1
   fi
 
-  mkdir "$output_path"
-  cp -R copy/tail "$output_path"
-  cp template_src/main.c "$output_path/main.c"
+  mkdir -p "$output_path/src" && \
+  mkdir -p "$output_path/libs/tail" && \
+  cp -R copy/tail "$output_path/libs/" && \
+  cp template_src/main.c "$output_path/src/main.c"
+
+  # TODO: add case for gcc
+  if [ $target == "win32" ]; then
+    cp template_src/win32-build.sh "$output_path/build.sh"
+  fi
 }
 run_and_log_tests() {
   ./tests.exe &> test_report.txt
