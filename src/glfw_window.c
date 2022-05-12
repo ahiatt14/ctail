@@ -14,7 +14,7 @@ typedef void (*handle_window_minimize_ptr)();
 typedef void (*handle_window_restore_ptr)();
 typedef void (*handle_window_focus_ptr)();
 typedef void (*handle_window_unfocus_ptr)();
-typedef void (*handle_window_resize_ptr)();
+typedef void (*handle_window_resize_ptr)(int width, int height);
 handle_window_minimize_ptr handle_window_minimize;
 handle_window_restore_ptr handle_window_restore;
 handle_window_focus_ptr handle_window_focus;
@@ -64,7 +64,7 @@ static void register_listener_for_focus(
   glfwSetWindowFocusCallback(glfw_window, handle_window_focus_change);
 }
 
-static void register_listener_for_resize(void (*fn)()) {
+static void register_listener_for_resize(void (*fn)(int width, int height)) {
   handle_window_resize = fn;
   glfwSetFramebufferSizeCallback(glfw_window, handle_framebuffer_resize);
 }

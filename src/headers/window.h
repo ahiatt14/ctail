@@ -12,7 +12,7 @@ typedef struct WINDOW_API {
     void (*handle_unfocus)()
   );
   void (*register_listener_for_resize)(
-    void (*handle_resize)()
+    void (*handle_resize)(int width, int height)
   );
 } window_api;
 
