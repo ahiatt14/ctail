@@ -1,6 +1,6 @@
 #!/bin/bash
 
-options="-O2 -Wall"
+options="-O2 -Wall -mwindows"
 includes="-Ilibs/tail/include -Isrc/headers"
 
 i686-w64-mingw32-gcc \
