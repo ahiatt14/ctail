@@ -25,6 +25,10 @@ unsigned short int window__received_closed_event() {
   return glfwWindowShouldClose(glfw_window);
 }
 
+void request_buffer_swap() {
+  glfwSwapBuffers(glfw_window);
+}
+
 void window__poll_events() {
   glfwPollEvents();
 }
@@ -116,6 +120,7 @@ window_api* window__create(
   window.register_listener_for_minimize = register_listener_for_minimize;
   window.register_listener_for_focus = register_listener_for_focus;
   window.register_listener_for_resize = register_listener_for_resize;
+  window.request_buffer_swap = request_buffer_swap;
 
   return &window;
 }

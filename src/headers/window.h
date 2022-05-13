@@ -14,6 +14,7 @@ typedef struct WINDOW_API {
   void (*register_listener_for_resize)(
     void (*handle_resize)(int width, int height)
   );
+  void (*request_buffer_swap)();
 } window_api;
 
 window_api* window__create(
