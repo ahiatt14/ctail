@@ -10,9 +10,11 @@
 
 static const int POSITION_ATTRIB_INDEX = 0;
 static const int NORMAL_ATTRIB_INDEX = 1;
+static const int UV_ATTRIB_INDEX = 2;
 
 static const int COUNT_OF_VALUES_PER_POSITION = 3;
 static const int COUNT_OF_VALUES_PER_NORMAL = 3;
+static const int COUNT_OF_VALUES_PER_UV = 2;
 
 static gpu_api gpu;
 
@@ -63,7 +65,27 @@ static void copy_program_to_gpu(
   glDeleteShader(frag_id);
 }
 
-void copy_mesh_to_gpu(drawable_mesh *dm) {
+static void copy_rgb_texture_to_gpu(texture *tex) {
+  glGenTextures(1, &tex->_impl_id);
+  glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  // TODO: will need to parameterize many of these
+  glTexImage2D(
+    GL_TEXTURE_2D,
+    0,
+    GL_RGB,
+    tex->width,
+    tex->height,
+    0, // "should always be 0 (legacy stuff)",
+    GL_RGB,
+    GL_UNSIGNED_BYTE,
+    tex->data
+  );
+}
+
+static void copy_mesh_to_gpu(drawable_mesh *dm) {
 
   glGenBuffers(1, &dm->_impl_vbo_id);
   glGenBuffers(1, &dm->_impl_ibo_id);
@@ -76,11 +98,12 @@ void copy_mesh_to_gpu(drawable_mesh *dm) {
     GL_ARRAY_BUFFER,
     dm->vertex_buffer_size,
     &(dm->vertex_buffer->position.x),
-    GL_STATIC_DRAW
+    GL_STATIC_DRAW // TODO: this should be parameterized!
   );
 
   glEnableVertexAttribArray(POSITION_ATTRIB_INDEX);
   glEnableVertexAttribArray(NORMAL_ATTRIB_INDEX);
+  glEnableVertexAttribArray(UV_ATTRIB_INDEX);
 
   glVertexAttribPointer(
     POSITION_ATTRIB_INDEX,
@@ -103,6 +126,15 @@ void copy_mesh_to_gpu(drawable_mesh *dm) {
     (GLvoid*)offsetof(vertex, normal)
   );
 
+  glVertexAttribPointer(
+    UV_ATTRIB_INDEX,
+    COUNT_OF_VALUES_PER_UV,
+    GL_FLOAT,
+    GL_FALSE,
+    sizeof(vertex),
+    (GLvoid*)offsetof(vertex, uv)
+  );
+
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dm->_impl_ibo_id);
   glBufferData(
     GL_ELEMENT_ARRAY_BUFFER,
@@ -112,20 +144,24 @@ void copy_mesh_to_gpu(drawable_mesh *dm) {
   );
 }
 
-void enable_depth_test() {
+static void enable_depth_test() {
   glEnable(GL_DEPTH_TEST);
 }
 
-void clear(const float *color) {
+static void clear(const float *color) {
   glClearColor(color[0], color[1], color[2], 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void select_gpu_program(const gpu_program *gpup) {
+static void select_texture(const texture *tex) {
+  glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
+}
+
+static void select_gpu_program(const gpu_program *gpup) {
   glUseProgram(gpup->_impl_id);
 }
 
-void set_vertex_shader_m3x3(
+static void set_vertex_shader_m3x3(
   const gpu_program *gpup,
   const char *name,
   const m3x3 *value
@@ -138,7 +174,7 @@ void set_vertex_shader_m3x3(
   );
 }
 
-void set_vertex_shader_m4x4(
+static void set_vertex_shader_m4x4(
   const gpu_program *gpup,
   const char *name,
   const m4x4 *value
@@ -153,7 +189,7 @@ void set_vertex_shader_m4x4(
   );
 }
 
-void set_fragment_shader_vec3(
+static void set_fragment_shader_vec3(
   const gpu_program *gpup,
   const char *name,
   const vec3 *value
@@ -165,7 +201,7 @@ void set_fragment_shader_vec3(
   );
 }
 
-void set_fragment_shader_float(
+static void set_fragment_shader_float(
   const gpu_program *gpup,
   const char *name,
   const float value
@@ -176,7 +212,7 @@ void set_fragment_shader_float(
   );
 }
 
-void draw_mesh(const drawable_mesh *mesh) {
+static void draw_mesh(const drawable_mesh *mesh) {
   glBindVertexArray(mesh->_impl_vao_id);
   glDrawElements(
     GL_TRIANGLES,
@@ -186,22 +222,22 @@ void draw_mesh(const drawable_mesh *mesh) {
   );
 }
 
-void cull_back_faces() {
+static void cull_back_faces() {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
 }
 
-void set_viewport(int x, int y, int width, int height) {
+static void set_viewport(int x, int y, int width, int height) {
   glViewport(x, y, width, height);
 }
 
-int get_viewport_width() {
+static int get_viewport_width() {
   GLint initial_viewport_dimensions[4] = {0};
   glGetIntegerv(GL_VIEWPORT, initial_viewport_dimensions);
   return initial_viewport_dimensions[2];
 }
 
-int get_viewport_height() {
+static int get_viewport_height() {
   GLint initial_viewport_dimensions[4] = {0};
   glGetIntegerv(GL_VIEWPORT, initial_viewport_dimensions);
   return initial_viewport_dimensions[3];
@@ -213,8 +249,10 @@ const gpu_api* gpu__create_api() {
   gpu.enable_depth_test = enable_depth_test;
   gpu.cull_back_faces = cull_back_faces;
   gpu.copy_mesh_to_gpu = copy_mesh_to_gpu;
+  gpu.copy_rgb_texture_to_gpu = copy_rgb_texture_to_gpu;
   gpu.copy_program_to_gpu = copy_program_to_gpu;
   gpu.select_gpu_program = select_gpu_program;
+  gpu.select_texture = select_texture;
   gpu.set_viewport = set_viewport;
   gpu.get_viewport_width = get_viewport_width;
   gpu.get_viewport_height = get_viewport_height;

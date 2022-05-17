@@ -5,9 +5,14 @@
 
 #include "vec3.h"
 
+typedef struct VEC2 {
+  float x, y;
+} vec2;
+
 typedef struct VERTEX {
   vec3 position;
   vec3 normal;
+  vec2 uv;
 } vertex;
 
 typedef struct DRAWABLE_MESH {
