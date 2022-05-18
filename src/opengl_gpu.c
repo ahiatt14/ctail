@@ -18,39 +18,17 @@ static const int COUNT_OF_VALUES_PER_UV = 2;
 
 static gpu_api gpu;
 
-void report_shader_health(unsigned int id, const char *nickname) {
-  GLint success = 0;
-  glGetShaderiv((GLuint)id, GL_COMPILE_STATUS, &success);
-  if (success != GL_FALSE) {
-    printf("Shader %s compiled successfully\n", nickname);
-    return;
-  }
-  GLsizei max_log_size = 0;
-  char *log;
-  glGetShaderiv((GLuint)id, GL_INFO_LOG_LENGTH, &max_log_size);
-  log = (char*)malloc(max_log_size);
-  glGetShaderInfoLog(id, max_log_size, NULL, log);
-  printf("Compilation of shader %s failed: %s\n", nickname, log);
-  free(log);
-  return;
-}
-
-static void copy_program_to_gpu(
-  gpu_program *gpup,
-  unsigned short int log_compilation_status
-) {
+static void copy_program_to_gpu(gpu_program *gpup) {
 
   GLuint vert_id = glCreateShader(GL_VERTEX_SHADER);
   gpup->_vert_impl_id = vert_id;
   glShaderSource(vert_id, 1, &(gpup->vert_shader_src), NULL);
   glCompileShader(vert_id);
-  if (log_compilation_status) report_shader_health((GLint)vert_id, "vert");
 
   GLuint frag_id = glCreateShader(GL_FRAGMENT_SHADER);
   gpup->_frag_impl_id = frag_id;
   glShaderSource(frag_id, 1, &(gpup->frag_shader_src), NULL);
   glCompileShader(frag_id);
-  if (log_compilation_status) report_shader_health((GLint)frag_id, "frag");
 
   GLuint prog_id = glCreateProgram();
   gpup->_impl_id = prog_id;

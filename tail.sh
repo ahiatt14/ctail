@@ -11,21 +11,23 @@ targets[gcc]=gcc
 
 usage() {
   echo "
-    usage: tail [-t|-o] <command>
+    usage: tail [-t|-o|-f] <command>
 
     Commands
-    clean          delete tail build artifacts
-    build-glad     compile glad opengl loader into obj
-    build-glfw     compile glfw into local static library
-    build          compile tail src into obj
-    static         compile tail into static lib
-    create-copy    create dir for lib and header to easily copy into game
-    template       create a 
-    test           build tail, run and log tests to file
+    clean               delete tail build artifacts
+    build-glad          compile glad opengl loader into obj
+    build-glfw          compile glfw into local static library
+    build               compile tail src into obj
+    static              compile tail into static lib
+    create-copy         create dir for lib and header to easily copy into game
+    template            bootstrap a new game project at output path
+    test                build tail, run and log tests to file
+    validate-glsl       check a glsl file for errors
 
     Options
-    -t             compile target, e.g. win32, gcc
-    -o             output directory for new project
+    -t                  compile target, e.g. win32, gcc
+    -o                  output directory for new project
+    -f                  filepath to glsl to compile
   "
 }
 clean() {
@@ -121,6 +123,9 @@ build_tests() {
   tests.o \
   static/tail.a
 }
+# validate_glsl() {
+
+# }
 
 while getopts ":t:o:" option; do
   case "$option" in
@@ -132,13 +137,6 @@ while getopts ":t:o:" option; do
       exit;;
   esac
 done
-
-# TODO: fires every time?
-# if [ $(( $# - $OPTIND )) -lt 1 ]; then
-#   echo "    You must specify a provided command."
-#   usage
-#   exit 1
-# fi
 
 ARG1=${@:$OPTIND:1}
 
@@ -160,6 +158,8 @@ elif [ "$ARG1" == "build-glfw" ]; then
   build_glfw
 elif [ "$ARG1" == "build-glad" ]; then
   build_glad
+elif [ "$ARG1" == "validate-glsl" ]; then
+  validate_glsl
 else
   echo "You must specify a provided command."
   usage

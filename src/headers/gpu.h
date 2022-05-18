@@ -31,10 +31,7 @@ typedef struct GPU_API {
   void (*copy_mesh_to_gpu)(drawable_mesh *dm);
   void (*copy_rgb_texture_to_gpu)(texture *tex);
 
-  void (*copy_program_to_gpu)(
-    gpu_program *gpup,
-    unsigned short int log_compilation_status
-  );
+  void (*copy_program_to_gpu)(gpu_program *gpup);
   void (*select_gpu_program)(const gpu_program *gpup);
   void (*select_texture)(const texture *tex);
 
