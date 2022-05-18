@@ -28,6 +28,7 @@ usage() {
     -t                  compile target, e.g. win32, gcc
     -o                  output directory for new project
     -f                  filepath to glsl to compile
+    -s                  shader type: \"frag\" | \"vert\"
   "
 }
 clean() {
@@ -123,14 +124,30 @@ build_tests() {
   tests.o \
   static/tail.a
 }
-# validate_glsl() {
+validate_glsl() {
 
-# }
+  if [ -f "$shader_filepath" ]; then
+    echo "Validating $shader_filepath"
+  else
+    echo "Shader file does not exist."
+    exit 1
+  fi
 
-while getopts ":t:o:" option; do
+  if [[ "$shader_type" != "vert" && "$shader_type" != "frag" ]]; then
+  echo "To validate glsl, shader type must be vert or frag."
+  exit 1
+  fi
+
+  $wsl_abs_path_to_root/tools/validate-glsl/validate-glsl.exe \
+  "$shader_filepath" "$shader_type"
+}
+
+while getopts ":t:o:f:s:" option; do
   case "$option" in
     "t") target=$OPTARG;;
     "o") output_path=$OPTARG;;
+    "f") shader_filepath=$OPTARG;;
+    "s") shader_type=$OPTARG;;
     ":")
       echo "    A value must be provided for the -$OPTARG option"
       usage
