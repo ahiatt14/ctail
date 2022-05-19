@@ -75,10 +75,13 @@ create_copy() {
   rm -rf copy
   mkdir copy
   mkdir copy/tail
+  mkdir copy/tail/src
   mkdir copy/tail/include
-  cp -a static/tail.a copy/tail/tail.a \
+  cp static/tail.a copy/tail/tail.a \
   && \
-  gcc -E include/tail.h -o copy/tail/include/tail.h
+  cp include/tail.h copy/tail/include/tail.h \
+  && \
+  cp -r src/headers copy/tail/src
 }
 template() {
   
