@@ -16,9 +16,7 @@ static const int COUNT_OF_VALUES_PER_POSITION = 3;
 static const int COUNT_OF_VALUES_PER_NORMAL = 3;
 static const int COUNT_OF_VALUES_PER_UV = 2;
 
-static gpu_api gpu;
-
-static void copy_program_to_gpu(gpu_program *gpup) {
+static void copy_program_to_gpu(struct gpu_program *gpup) {
 
   GLuint vert_id = glCreateShader(GL_VERTEX_SHADER);
   gpup->_vert_impl_id = vert_id;
@@ -43,7 +41,7 @@ static void copy_program_to_gpu(gpu_program *gpup) {
   glDeleteShader(frag_id);
 }
 
-static void copy_rgb_texture_to_gpu(texture *tex) {
+static void copy_rgb_texture_to_gpu(struct texture *tex) {
   glGenTextures(1, &tex->_impl_id);
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -63,7 +61,7 @@ static void copy_rgb_texture_to_gpu(texture *tex) {
   );
 }
 
-static void copy_mesh_to_gpu(drawable_mesh *dm) {
+static void copy_mesh_to_gpu(struct drawable_mesh *dm) {
 
   glGenBuffers(1, &dm->_impl_vbo_id);
   glGenBuffers(1, &dm->_impl_ibo_id);
@@ -88,8 +86,8 @@ static void copy_mesh_to_gpu(drawable_mesh *dm) {
     COUNT_OF_VALUES_PER_POSITION,
     GL_FLOAT,
     GL_FALSE,
-    sizeof(vertex),
-    (GLvoid*)offsetof(vertex, position)
+    sizeof(struct vertex),
+    (GLvoid*)offsetof(struct vertex, position)
   );
 
   // TODO: per khronos best practices doc,
@@ -100,8 +98,8 @@ static void copy_mesh_to_gpu(drawable_mesh *dm) {
     COUNT_OF_VALUES_PER_NORMAL,
     GL_FLOAT,
     GL_FALSE,
-    sizeof(vertex),
-    (GLvoid*)offsetof(vertex, normal)
+    sizeof(struct vertex),
+    (GLvoid*)offsetof(struct vertex, normal)
   );
 
   glVertexAttribPointer(
@@ -109,8 +107,8 @@ static void copy_mesh_to_gpu(drawable_mesh *dm) {
     COUNT_OF_VALUES_PER_UV,
     GL_FLOAT,
     GL_FALSE,
-    sizeof(vertex),
-    (GLvoid*)offsetof(vertex, uv)
+    sizeof(struct vertex),
+    (GLvoid*)offsetof(struct vertex, uv)
   );
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dm->_impl_ibo_id);
@@ -131,18 +129,18 @@ static void clear(const float *color) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-static void select_texture(const texture *tex) {
+static void select_texture(const struct texture *tex) {
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
 }
 
-static void select_gpu_program(const gpu_program *gpup) {
+static void select_gpu_program(const struct gpu_program *gpup) {
   glUseProgram(gpup->_impl_id);
 }
 
 static void set_vertex_shader_m3x3(
-  const gpu_program *gpup,
+  const struct gpu_program *gpup,
   const char *name,
-  const m3x3 *value
+  const struct m3x3 *value
 ) {
   glUniformMatrix3fv(
     glGetUniformLocation(gpup->_impl_id, name),
@@ -153,9 +151,9 @@ static void set_vertex_shader_m3x3(
 }
 
 static void set_vertex_shader_m4x4(
-  const gpu_program *gpup,
+  const struct gpu_program *gpup,
   const char *name,
-  const m4x4 *value
+  const struct m4x4 *value
 ) {
   // TODO: can optimize these by caching locations after
   // first retrieval
@@ -168,9 +166,9 @@ static void set_vertex_shader_m4x4(
 }
 
 static void set_fragment_shader_vec3(
-  const gpu_program *gpup,
+  const struct gpu_program *gpup,
   const char *name,
-  const vec3 *value
+  const struct vec3 *value
 ) {
   glUniform3fv(
     glGetUniformLocation(gpup->_impl_id, name),
@@ -180,7 +178,7 @@ static void set_fragment_shader_vec3(
 }
 
 static void set_fragment_shader_float(
-  const gpu_program *gpup,
+  const struct gpu_program *gpup,
   const char *name,
   const float value
 ) {
@@ -190,7 +188,7 @@ static void set_fragment_shader_float(
   );
 }
 
-static void draw_mesh(const drawable_mesh *mesh) {
+static void draw_mesh(const struct drawable_mesh *mesh) {
   glBindVertexArray(mesh->_impl_vao_id);
   glDrawElements(
     GL_TRIANGLES,
@@ -203,6 +201,10 @@ static void draw_mesh(const drawable_mesh *mesh) {
 static void cull_back_faces() {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
+}
+
+static void cull_no_faces() {
+  glDisable(GL_CULL_FACE);
 }
 
 static void set_viewport(int x, int y, int width, int height) {
@@ -221,24 +223,22 @@ static int get_viewport_height() {
   return initial_viewport_dimensions[3];
 }
 
-const gpu_api* gpu__create_api() {
-
-  gpu.clear = clear;
-  gpu.enable_depth_test = enable_depth_test;
-  gpu.cull_back_faces = cull_back_faces;
-  gpu.copy_mesh_to_gpu = copy_mesh_to_gpu;
-  gpu.copy_rgb_texture_to_gpu = copy_rgb_texture_to_gpu;
-  gpu.copy_program_to_gpu = copy_program_to_gpu;
-  gpu.select_gpu_program = select_gpu_program;
-  gpu.select_texture = select_texture;
-  gpu.set_viewport = set_viewport;
-  gpu.get_viewport_width = get_viewport_width;
-  gpu.get_viewport_height = get_viewport_height;
-  gpu.set_vertex_shader_m3x3 = set_vertex_shader_m3x3;
-  gpu.set_vertex_shader_m4x4 = set_vertex_shader_m4x4;
-  gpu.set_fragment_shader_vec3 = set_fragment_shader_vec3;
-  gpu.set_fragment_shader_float = set_fragment_shader_float;
-  gpu.draw_mesh = draw_mesh;
-
-  return &gpu;
+void gpu__create_api(struct gpu_api *gpu) {
+  gpu->clear = clear;
+  gpu->enable_depth_test = enable_depth_test;
+  gpu->cull_back_faces = cull_back_faces;
+  gpu->cull_no_faces = cull_no_faces;
+  gpu->copy_mesh_to_gpu = copy_mesh_to_gpu;
+  gpu->copy_rgb_texture_to_gpu = copy_rgb_texture_to_gpu;
+  gpu->copy_program_to_gpu = copy_program_to_gpu;
+  gpu->select_gpu_program = select_gpu_program;
+  gpu->select_texture = select_texture;
+  gpu->set_viewport = set_viewport;
+  gpu->get_viewport_width = get_viewport_width;
+  gpu->get_viewport_height = get_viewport_height;
+  gpu->set_vertex_shader_m3x3 = set_vertex_shader_m3x3;
+  gpu->set_vertex_shader_m4x4 = set_vertex_shader_m4x4;
+  gpu->set_fragment_shader_vec3 = set_fragment_shader_vec3;
+  gpu->set_fragment_shader_float = set_fragment_shader_float;
+  gpu->draw_mesh = draw_mesh;
 }

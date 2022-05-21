@@ -8,7 +8,6 @@
 // TODO: handle monitor connecting/disconnecting
 
 static GLFWwindow *glfw_window;
-static window_api window;
 
 typedef void (*handle_window_minimize_ptr)();
 typedef void (*handle_window_restore_ptr)();
@@ -77,14 +76,15 @@ static double get_seconds_since_creation() {
   return glfwGetTime();
 }
 
-window_api* window__create(
+unsigned short int window__create(
   int window_width,
   int window_height,
   const char *name,
-  unsigned short int vsync
+  unsigned short int vsync,
+  struct window_api *window
 ) {
 
-  if (!glfwInit()) return NULL;
+  if (!glfwInit()) return 0;
 
   // GLFW GL CONTEXT HINTS
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -104,7 +104,7 @@ window_api* window__create(
     NULL // context obj sharing
   );
 
-  if (!glfw_window) return NULL;
+  if (!glfw_window) return 0;
 
   glfwSetWindowPos(glfw_window, 100, 100); // see note A
   glfwShowWindow(glfw_window); // see note A
@@ -112,17 +112,17 @@ window_api* window__create(
   glfwSetWindowRefreshCallback(glfw_window, glfwSwapBuffers);
 
   glfwMakeContextCurrent(glfw_window);
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return NULL;
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return 0;
 
   glfwSwapInterval(vsync);
 
-  window.get_seconds_since_creation = get_seconds_since_creation;
-  window.register_listener_for_minimize = register_listener_for_minimize;
-  window.register_listener_for_focus = register_listener_for_focus;
-  window.register_listener_for_resize = register_listener_for_resize;
-  window.request_buffer_swap = request_buffer_swap;
+  window->get_seconds_since_creation = get_seconds_since_creation;
+  window->register_listener_for_minimize = register_listener_for_minimize;
+  window->register_listener_for_focus = register_listener_for_focus;
+  window->register_listener_for_resize = register_listener_for_resize;
+  window->request_buffer_swap = request_buffer_swap;
 
-  return &window;
+  return 1;
 }
 
 /*

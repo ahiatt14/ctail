@@ -25,7 +25,7 @@
 //   return 1;
 // }
 
-float_tolerance f_tol = {
+struct float_tolerance f_tol = {
   .within_tolerance = diff_is_within_tolerance,
   .tolerance = FLT_EPSILON
 };
@@ -51,9 +51,9 @@ int main() {
   TEST("obj_vec3_line_to_vec3 should convert the str to a vec3");
   f_tol.tolerance = FLT_EPSILON;
   const char *str = "v 0.894426 0.447216 0.000000";
-  vec3 actual = {0};
+  struct vec3 actual = {0};
   obj_vec3_line_to_vec3(str, &actual);
-  vec3 expected = {
+  struct vec3 expected = {
     0.894426f,
     0.447216f,
     0.000000f
@@ -68,9 +68,9 @@ int main() {
   TEST("obj_vec3_line_to_vec3 run #2");
   f_tol.tolerance = FLT_EPSILON;
   const char *str = "vn -0.5746 -0.3304 -0.7488";
-  vec3 actual = {0};
+  struct vec3 actual = {0};
   obj_vec3_line_to_vec3(str, &actual);
-  vec3 expected = {
+  struct vec3 expected = {
     -0.5746f,
     -0.3304f,
     -0.7488f
@@ -121,15 +121,15 @@ int main() {
   );
   f_tol.tolerance = FLT_EPSILON;
   const char *str = "f 10//5 11//5 9//5";
-  vec3 actual_vi = {0};
-  vec3 actual_vni = {0};
+  struct vec3 actual_vi = {0};
+  struct vec3 actual_vni = {0};
   obj_f_n_line_to_vec3s(
     str,
     &actual_vi,
     &actual_vni
   );
-  vec3 expected_vi = { 9, 10, 8 };
-  vec3 expected_vni = { 4, 4, 4 };  
+  struct vec3 expected_vi = { 9, 10, 8 };
+  struct vec3 expected_vni = { 4, 4, 4 };  
   assert(vec3_equals_vec3(
     &actual_vi,
     &expected_vi,
@@ -147,15 +147,15 @@ int main() {
   );
   f_tol.tolerance = FLT_EPSILON;
   const char *str = "f 285//30 311//30 600//30";
-  vec3 actual_vi = {0};
-  vec3 actual_vni = {0};
+  struct vec3 actual_vi = {0};
+  struct vec3 actual_vni = {0};
   obj_f_n_line_to_vec3s(
     str,
     &actual_vi,
     &actual_vni
   );
-  vec3 expected_vi = { 284, 310, 599 };
-  vec3 expected_vni = { 29, 29, 29 };  
+  struct vec3 expected_vi = { 284, 310, 599 };
+  struct vec3 expected_vni = { 29, 29, 29 };  
   assert(vec3_equals_vec3(
     &actual_vi,
     &expected_vi,
@@ -173,13 +173,13 @@ int main() {
     "normal for the provided triangle of positions"
   );
   f_tol.tolerance = FLT_EPSILON;
-  vec3 positions[3] = {
+  struct vec3 positions[3] = {
     { -1, 0, 0 },
     { 0, 0, 1 },
     { 0, 1, 0 }
   };
-  vec3 actual = {0};
-  vec3 expected = {0};
+  struct vec3 actual = {0};
+  struct vec3 expected = {0};
   calculate_face_normal(positions, &actual);
   vec3_create(
     -0.577350269f,
@@ -196,14 +196,14 @@ int main() {
 
   TEST("calculate_face_normal run #2");
   f_tol.tolerance = FLT_EPSILON;
-  vec3 positions[3] = {
+  struct vec3 positions[3] = {
     { 0, 0, 0 },
     { 0, 0, -1 },
     { 0, 1, 0 }
   };
-  vec3 actual = {0};
+  struct vec3 actual = {0};
   calculate_face_normal(positions, &actual);
-  vec3 expected = { 1, 0, 0 };
+  struct vec3 expected = { 1, 0, 0 };
   assert(vec3_equals_vec3(
     &actual,
     &expected,
@@ -216,7 +216,7 @@ int main() {
     "normalized normal for the given vert index"
   );
   f_tol.tolerance = FLT_EPSILON;
-  vec3 actual = {0};
+  struct vec3 actual = {0};
   calculate_vertex_normal(
     0,
     36,
@@ -224,7 +224,7 @@ int main() {
     cube_vertex_positions,
     &actual
   );
-  vec3 expected = {
+  struct vec3 expected = {
     0.577350269f,
     0.577350269f,
     -0.577350269f,
@@ -238,7 +238,7 @@ int main() {
 
   TEST("calculate_vertex_normal run #2");
   f_tol.tolerance = FLT_EPSILON;
-  vec3 actual = {0};
+  struct vec3 actual = {0};
   calculate_vertex_normal(
     4,
     18,
@@ -246,7 +246,7 @@ int main() {
     triangular_pyramid_positions,
     &actual
   );
-  vec3 expected = { 0, 1, 0 };
+  struct vec3 expected = { 0, 1, 0 };
   assert(vec3_equals_vec3(
     &actual,
     &expected,

@@ -7,10 +7,10 @@
 #include "normals.h"
 #include "parser.h"
 
-vec3 obj_positions[5000];
-vec3 obj_normals[5000];
+struct vec3 obj_positions[5000];
+struct vec3 obj_normals[5000];
 unsigned int indices[10000];
-vertex vertices[20000];
+struct vertex vertices[20000];
 
 // TODO: clean this shite up!
 char obj_line[OBJ_LINE_MAX_LENGTH];
@@ -19,8 +19,8 @@ int obj_normal_count = 0;
 int vert_count = 0;
 int face_count = 0;
 int index_count = 0;
-vec3 temp_vec3a = {0};
-vec3 temp_vec3b = {0};
+struct vec3 temp_vec3a = {0};
+struct vec3 temp_vec3b = {0};
 
 FILE *obj_file = NULL;
 
@@ -73,7 +73,7 @@ void parse_obj_into_flat_mesh() {
       memcpy(
         &obj_positions[obj_position_count++],
         &temp_vec3a.x,
-        sizeof(vec3)
+        sizeof(struct vec3)
       );
     }
     else if (strncmp(obj_line, "vn", 2) == 0) {
@@ -81,7 +81,7 @@ void parse_obj_into_flat_mesh() {
       memcpy(
         &obj_normals[obj_normal_count++],
         &temp_vec3a.x,
-        sizeof(vec3)
+        sizeof(struct vec3)
       );
     }
     else if (strncmp(obj_line, "f ", 2) == 0) {
@@ -90,12 +90,12 @@ void parse_obj_into_flat_mesh() {
         memcpy(
           &vertices[vert_count].position.x,
           &obj_positions[(int)(&temp_vec3a.x)[face_vert_index]],
-          sizeof(vec3)
+          sizeof(struct vec3)
         );
         memcpy(
           &vertices[vert_count].normal.x,
           &obj_normals[(int)(&temp_vec3b.x)[face_vert_index]],
-          sizeof(vec3)
+          sizeof(struct vec3)
         );
         vert_count++;
       }
@@ -111,7 +111,7 @@ void parse_obj_into_smooth_mesh() {
       memcpy(
         &obj_positions[obj_position_count++],
         &temp_vec3a.x,
-        sizeof(vec3)
+        sizeof(struct vec3)
       );
     }
     else if (strncmp(obj_line, "f ", 2) == 0) {
@@ -124,7 +124,7 @@ void parse_obj_into_smooth_mesh() {
       index_count += 3;
     }
   }
-  vec3 temp_normal = {0};
+  struct vec3 temp_normal = {0};
   for (int i = 0; i < obj_position_count; i++) {
     calculate_vertex_normal(
       i,
@@ -136,12 +136,12 @@ void parse_obj_into_smooth_mesh() {
     memcpy(
       &vertices[i].position.x,
       &obj_positions[i].x,
-      sizeof(vec3)
+      sizeof(struct vec3)
     );
     memcpy(
       &vertices[i].normal.x,
       &temp_normal.x,
-      sizeof(vec3)
+      sizeof(struct vec3)
     );
   }
 }

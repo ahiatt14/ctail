@@ -10,11 +10,11 @@ static inline int terminal(char c) {
   return (c == '\0' || c == '\n') ? 1 : 0;
 }
 
-void print_vec3(const vec3 *t) {
+void print_vec3(const struct vec3 *t) {
   printf("{ %.6ff, %.6ff, %.6ff }", t->x, t->y, t->z);
 }
 
-void print_vert(const vertex *v) {
+void print_vert(const struct vertex *v) {
   printf("{");
   print_vec3(&v->position);
   printf(",");
@@ -22,7 +22,7 @@ void print_vert(const vertex *v) {
   printf("}");
 }
 
-void obj_vec3_line_to_vec3(const char *obj_line, vec3 *t) {
+void obj_vec3_line_to_vec3(const char *obj_line, struct vec3 *t) {
   int obj_line_index = 0;
   int xyz_offset = 0;
   char *end_of_float;
@@ -53,8 +53,8 @@ void obj_f_line_to_3_ui_indices(
 
 void obj_f_n_line_to_vec3s(
   const char *obj_line,
-  vec3 *v_indices,
-  vec3 *vn_indices
+  struct vec3 *v_indices,
+  struct vec3 *vn_indices
 ) {
   int obj_line_index = 0;
   int is_position = 1;

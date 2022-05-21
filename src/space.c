@@ -4,17 +4,17 @@
 #include "tail_math.h"
 #include "m4x4.h"
 
-static m4x4 temp__model_scale;
-static m4x4 temp__model_translation;
-static m4x4 temp__model_z_rotation;
+static struct m4x4 temp__model_scale;
+static struct m4x4 temp__model_translation;
+static struct m4x4 temp__model_z_rotation;
 
-static m4x4 temp__rotate_x_scale;
+static struct m4x4 temp__rotate_x_scale;
 
 // TODO: add quaternion-based rotation
 void space__create_model(
-  const coordinate_space *space,
-  const transform *t,
-  m4x4 *model
+  const struct coordinate_space *space,
+  const struct transform *t,
+  struct m4x4 *model
 ) {
 
   m4x4_identity(model);

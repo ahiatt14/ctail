@@ -12,35 +12,35 @@
 #define QUIT return 0;
 
 int m2x2_equals_m2x2(
-  const m2x2 *m0,
-  const m2x2 *m1,
-  const float_tolerance *ft
+  const struct m2x2 *m0,
+  const struct m2x2 *m1,
+  const struct float_tolerance *ft
 );
 int m3x3_equals_m3x3(
-  const m3x3 *m0,
-  const m3x3 *m1,
-  const float_tolerance *ft
+  const struct m3x3 *m0,
+  const struct m3x3 *m1,
+  const struct float_tolerance *ft
 );
 int m4x4_equals_m4x4(
-  const m4x4 *m0,
-  const m4x4 *m1,
-  const float_tolerance *ft
+  const struct m4x4 *m0,
+  const struct m4x4 *m1,
+  const struct float_tolerance *ft
 );
-void print_m3x3(const char *name, const m3x3 *m);
-void print_m4x4(const char *name, const m4x4 *m);
-void print_vec3(const char *name, const vec3 *t);
+void print_m3x3(const char *name, const struct m3x3 *m);
+void print_m4x4(const char *name, const struct m4x4 *m);
+void print_vec3(const char *name, const struct vec3 *t);
 
-vec3 expected_v3, actual_v3, actual_v3b, actual_v3c, actual_v3d;
-m2x2 expected_m2, actual_m2;
-m3x3 expected_m3, actual_m3;
-m4x4 expected_m4, actual_m4, actual_m4b;
+struct vec3 expected_v3, actual_v3, actual_v3b, actual_v3c, actual_v3d;
+struct m2x2 expected_m2, actual_m2;
+struct m3x3 expected_m3, actual_m3;
+struct m4x4 expected_m4, actual_m4, actual_m4b;
 
-float_tolerance f_tol = {
+struct float_tolerance f_tol = {
   .within_tolerance = diff_is_within_tolerance,
   .tolerance = FLT_EPSILON
 };
 
-const coordinate_space DEFAULT_WORLDSPACE = {
+const struct coordinate_space DEFAULT_WORLDSPACE = {
   .up = { 0, 1, 0 },
   .right = { 1, 0, 0 },
   .forward = { 0, 0, 1 }
@@ -146,7 +146,7 @@ int main(void) {
 
   TEST("vec3_mean should calculate the mean vec3");
   f_tol.tolerance = FLT_EPSILON;
-  vec3 vecs[4] = {
+  struct vec3 vecs[4] = {
     { 2.3f, 4, 9 },
     { -2, 2.1f, 2.2f },
     { 0.1f, 0.1f, 0.1f },
@@ -405,7 +405,7 @@ int main(void) {
 
   TEST("m4x4_translation should create a translation matrix");
   f_tol.tolerance = FLT_EPSILON;
-  vec3 t = { 2.355f, 30, 1 };
+  struct vec3 t = { 2.355f, 30, 1 };
   m4x4_translation(&t, &actual_m4);
   m4x4_create(
     1, 0, 0, 2.355f,
@@ -454,8 +454,8 @@ int main(void) {
   // NOTE: math.h trig fns not very accurate (eg cos(90) != 0)
   // but idc really so set tolerance higher
   f_tol.tolerance = FLT_EPSILON * 1000;
-  vec3 axis;
-  m4x4 rotation;
+  struct vec3 axis;
+  struct m4x4 rotation;
   vec3_create(1.0f, 0.0f, 0.0f, &actual_v3);
   vec3_create(0.0f, 1.0f, 0.0f, &axis);
   m4x4_rotation(deg_to_rad(90), &axis, &rotation);
@@ -466,8 +466,8 @@ int main(void) {
 
   TEST("m4x4_rotation run #2");
   f_tol.tolerance = FLT_EPSILON * 1000;
-  vec3 axis;
-  m4x4 rotation;
+  struct vec3 axis;
+  struct m4x4 rotation;
   vec3_create(1.0f, 1.0f, 0, &axis);
   vec3_normalize(&axis, &axis);
   vec3_create(1.0f, 0.0f, 0.0f, &actual_v3);
@@ -479,7 +479,7 @@ int main(void) {
 
   TEST("m4x4_view should construct an inverted space transform matrix");
   f_tol.tolerance = FLT_EPSILON;
-  vec3 up, right, forward;
+  struct vec3 up, right, forward;
   vec3_create(0.0f, 1.0f, 0.0f, &up);
   vec3_create(1.0f, 0.0f, 0.0f, &right);
   vec3_create(0.0f, 0.0f, -1.0f, &forward);
@@ -545,19 +545,19 @@ int main(void) {
   */
 
   TEST("setting viewport width should set perspective_needs_recalculating to true");
-  viewport vwprt = {0};
+  struct viewport vwprt = {0};
   viewport__set_width(100, &vwprt);
   assert(viewport__perspective_needs_recalculating(&vwprt));
   PASSED
 
   TEST("setting viewport height should set perspective_needs_recalculating to true");
-  viewport vwprt = {0};
+  struct viewport vwprt = {0};
   viewport__set_height(200, &vwprt);
   assert(viewport__perspective_needs_recalculating(&vwprt));
   PASSED
 
   TEST("viewport__get_aspect_ratio should return the viewport width / height");
-  viewport vwprt = {0};
+  struct viewport vwprt = {0};
   viewport__set_width(1920, &vwprt);
   viewport__set_height(1080, &vwprt);
   assert(diff_is_within_tolerance(
@@ -575,9 +575,9 @@ int main(void) {
 
   TEST("camera__calculate_lookat should create a lookat matrix");
   f_tol.tolerance = FLT_EPSILON;
-  vec3 target = { 0.0f, 0.5f, -1.0f };
-  vec3 world_up = { 0.0f, 1.0f, 0.0f };
-  camera cam;
+  struct vec3 target = { 0.0f, 0.5f, -1.0f };
+  struct vec3 world_up = { 0.0f, 1.0f, 0.0f };
+  struct camera cam;
   camera__init(&cam);
   camera__set_position(0.0f, 0.25f, 0.5f, &cam);
   camera__set_look_target(&target, &cam);
@@ -597,25 +597,25 @@ int main(void) {
   PASSED
 
   TEST("moving the camera should set view_needs_recalculating to true");
-  camera cam;
+  struct camera cam;
   camera__init(&cam);
   camera__set_position(0.0f, 1.0f, 1.2f, &cam);
   assert(camera__lookat_needs_recalculating(&cam));
   PASSED
 
   TEST("changing the camera look target should set view_needs_recalculating to true");
-  camera cam;
+  struct camera cam;
   camera__init(&cam);
-  vec3 target = { 0.3f, 0.0f, 3.0f };
+  struct vec3 target = { 0.3f, 0.0f, 3.0f };
   camera__set_look_target(&target, &cam);
   assert(camera__lookat_needs_recalculating(&cam));
   PASSED
 
   TEST("calculating the camera view should set view_needs_recalculating to false");
-  camera cam;
+  struct camera cam;
   camera__init(&cam);
-  vec3 target = { 0.0f, 0.5f, -1.0f };
-  vec3 world_up = { 0.0f, 1.0f, 0.0f };
+  struct vec3 target = { 0.0f, 0.5f, -1.0f };
+  struct vec3 world_up = { 0.0f, 1.0f, 0.0f };
   camera__set_position(0.0f, 0.25f, 0.5f, &cam);
   camera__set_look_target(&target, &cam);
   camera__calculate_lookat(&world_up, &cam);
@@ -623,7 +623,7 @@ int main(void) {
   PASSED
 
   TEST("setting horiz fov should set perspective_needs_recalculating to true");
-  camera cam;
+  struct camera cam;
   camera__init(&cam);
   camera__set_horizontal_fov_in_deg(45, &cam);
   assert(camera__perspective_needs_recalculating(&cam));
@@ -634,12 +634,12 @@ int main(void) {
     "projection matrix"
   );
   f_tol.tolerance = FLT_EPSILON * 1000;
-  camera cam;
+  struct camera cam;
   camera__init(&cam);
   camera__set_horizontal_fov_in_deg(75, &cam);
   camera__set_near_clip_distance(0.1f, &cam);
   camera__set_far_clip_distance(10.0f, &cam);
-  viewport vwprt;
+  struct viewport vwprt;
   viewport__set_width(1920, &vwprt);
   viewport__set_height(1080, &vwprt);
   camera__calculate_perspective(&vwprt, &cam);
@@ -661,12 +661,12 @@ int main(void) {
     "camera__calculate_perspective should set perspective_needs_recalculating\n"
     "to false on the camera and viewport"
   );
-  camera cam;
+  struct camera cam;
   camera__init(&cam);
   camera__set_horizontal_fov_in_deg(75, &cam);
   camera__set_near_clip_distance(0.1f, &cam);
   camera__set_far_clip_distance(10.0f, &cam);
-  viewport vwprt;
+  struct viewport vwprt;
   viewport__set_width(1920, &vwprt);
   viewport__set_height(1080, &vwprt);
   camera__calculate_perspective(&vwprt, &cam);
@@ -685,7 +685,7 @@ int main(void) {
     "matrix for rotation around the z axis, scale, and translation"
   );
   f_tol.tolerance = FLT_EPSILON * 1000;
-  transform t = {
+  struct transform t = {
     .position = { 0.3f, -2.0f, -2.0f },
     .rotation_in_deg = { 0, 0, 45 },
     .scale = 1.3f
@@ -716,9 +716,9 @@ int main(void) {
 }
 
 int m2x2_equals_m2x2(
-  const m2x2 *m0,
-  const m2x2 *m1,
-  const float_tolerance *ft
+  const struct m2x2 *m0,
+  const struct m2x2 *m1,
+  const struct float_tolerance *ft
 ) {
   for (int i = 0; i < 4; i++) {
     if (!ft->within_tolerance(
@@ -731,9 +731,9 @@ int m2x2_equals_m2x2(
 }
 
 int m3x3_equals_m3x3(
-  const m3x3 *m0,
-  const m3x3 *m1,
-  const float_tolerance *ft
+  const struct m3x3 *m0,
+  const struct m3x3 *m1,
+  const struct float_tolerance *ft
 ) {
   for (int i = 0; i < 9; i++) {
     if (!ft->within_tolerance(
@@ -746,9 +746,9 @@ int m3x3_equals_m3x3(
 }
 
 int m4x4_equals_m4x4(
-  const m4x4 *m0,
-  const m4x4 *m1,
-  const float_tolerance *ft
+  const struct m4x4 *m0,
+  const struct m4x4 *m1,
+  const struct float_tolerance *ft
 ) {
   for (int i = 0; i < 16; i++) {
     if (!ft->within_tolerance(
@@ -760,7 +760,7 @@ int m4x4_equals_m4x4(
   return 1;
 }
 
-void print_m3x3(const char *name, const m3x3 *m) {
+void print_m3x3(const char *name, const struct m3x3 *m) {
   printf(name);
   printf("%.12f, ", m->data[0]);
   printf("%.12f, ", m->data[3]);
@@ -774,7 +774,7 @@ void print_m3x3(const char *name, const m3x3 *m) {
 }
 
 // TODO: this prints row-first! we're column-first! transpose in ur head
-void print_m4x4(const char *name, const m4x4 *m) {
+void print_m4x4(const char *name, const struct m4x4 *m) {
   printf(name);
   for (int i = 0; i < 16; i++) {
     printf("%.12f, ", m->data[i]);
@@ -786,7 +786,7 @@ void print_m4x4(const char *name, const m4x4 *m) {
   }
 }
 
-void print_vec3(const char *name, const vec3 *t) {
+void print_vec3(const char *name, const struct vec3 *t) {
   printf(name);
   for (int i = 0; i < 4; i++) {
     printf("%.12f, ", (&t->x)[i]);

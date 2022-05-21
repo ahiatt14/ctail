@@ -1,4 +1,3 @@
-#include <stdio.h> // TODO: remove
 #include <math.h>
 #include <string.h>
 
@@ -18,14 +17,14 @@ void m3x3_create(
   float i0, float i3, float i6,
   float i1, float i4, float i7,
   float i2, float i5, float i8,
-  m3x3 *m
+  struct m3x3 *m
 ) {
   m->data[0] = i0; m->data[3] = i3; m->data[6] = i6;
   m->data[1] = i1; m->data[4] = i4; m->data[7] = i7;
   m->data[2] = i2; m->data[5] = i5; m->data[8] = i8;
 }
 
-void m3x3_identity(m3x3 *m) {
+void m3x3_identity(struct m3x3 *m) {
   m3x3_create(
     1, 0, 0,
     0, 1, 0,
@@ -34,8 +33,8 @@ void m3x3_identity(m3x3 *m) {
   );
 }
 
-float m3x3_minor(int r, int c, const m3x3 *m) {
-  m2x2 sub_cache = {0};
+float m3x3_minor(int r, int c, const struct m3x3 *m) {
+  struct m2x2 sub_cache = {0};
   int sub_indices[4] = {0};
   int sub_index = 0;
   for (int sub_c = 0; sub_c < 3; sub_c++) {
@@ -50,23 +49,23 @@ float m3x3_minor(int r, int c, const m3x3 *m) {
   return m2x2_determinant(&sub_cache);
 }
 
-void m3x3_minors(const m3x3 *src, m3x3 *dest) {
-  m3x3 temp = {0};
+void m3x3_minors(const struct m3x3 *src, struct m3x3 *dest) {
+  struct m3x3 temp = {0};
   for (int c = 0; c < 3; c++) {
     for (int r = 0; r < 3; r++) {
       float minor = m3x3_minor(r, c, src);
       temp.data[m3x3_r_c_to_index(r, c)] = minor;
     }
   }
-  memcpy(&dest->data[0], &temp.data[0], sizeof(m3x3));
+  memcpy(&dest->data[0], &temp.data[0], sizeof(struct m3x3));
 }
 
-void m3x3_cofactors(const m3x3 *src, m3x3 *dest) {
+void m3x3_cofactors(const struct m3x3 *src, struct m3x3 *dest) {
   for (int i = 0; i < 9; i++)
     dest->data[i] = (i % 2 == 0) ? src->data[i] : -src->data[i];
 }
 
-void m3x3_transpose(const m3x3 *src, m3x3 *dest) {
+void m3x3_transpose(const struct m3x3 *src, struct m3x3 *dest) {
   float temp;
   dest->data[0] = src->data[0];
   dest->data[4] = src->data[4];
@@ -82,24 +81,24 @@ void m3x3_transpose(const m3x3 *src, m3x3 *dest) {
   dest->data[7] = temp;
 }
 
-float m3x3_determinant(const m3x3 *m) {
+float m3x3_determinant(const struct m3x3 *m) {
   return
     m->data[0]*(m->data[4]*m->data[8]-m->data[5]*m->data[7]) -
     m->data[3]*(m->data[1]*m->data[8]-m->data[2]*m->data[7]) +
     m->data[6]*(m->data[1]*m->data[5]-m->data[2]*m->data[4]);
 }
 
-void float_x_m3x3(float s, const m3x3 *src, m3x3 *dest) {
+void float_x_m3x3(float s, const struct m3x3 *src, struct m3x3 *dest) {
   for (int i = 0; i < 9; i++) dest->data[i] = s * src->data[i];
 }
 
-void m3x3_inverse(const m3x3 *src, m3x3 *dest) {
+void m3x3_inverse(const struct m3x3 *src, struct m3x3 *dest) {
   // TODO: it's possible for the determinant to be 0
   // and therefore to divide by 0! add a check
   // and/or learn about when that happens and if it ever would
-  m3x3 minors = {0};
-  m3x3 cofactors = {0};
-  m3x3 transposed = {0};
+  struct m3x3 minors = {0};
+  struct m3x3 cofactors = {0};
+  struct m3x3 transposed = {0};
   m3x3_minors(src, &minors);
   m3x3_cofactors(&minors, &cofactors);
   m3x3_transpose(&cofactors, &transposed);

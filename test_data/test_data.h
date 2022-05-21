@@ -3,7 +3,7 @@
 
 #include "tail.h"
 
-vec3 cube_vertex_positions[8] = {
+struct vec3 cube_vertex_positions[8] = {
   { 1.000000, 1.000000, -1.000000 }, // 0
   { 1.000000, -1.000000, -1.000000 }, // 1
   { 1.000000, 1.000000, 1.000000 }, // 2
@@ -29,7 +29,7 @@ unsigned int cube_indices[36] = {
   4, 0, 1,
 };
 
-vec3 triangular_pyramid_positions[5] = {
+struct vec3 triangular_pyramid_positions[5] = {
   { -0.5f, -0.5f, -0.5f }, // 0
   { 0.5f, -0.5f, -0.5f }, // 1
   { -0.5f, -0.5f, 0.5f }, // 2
