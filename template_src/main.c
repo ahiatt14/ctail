@@ -2,8 +2,8 @@
 
 #define VSYNC_ON 1
 
-struct window_api *window;
-struct gpu_api *gpu;
+struct window_api window;
+struct gpu_api gpu;
 
 int main() {
 
