@@ -3,8 +3,6 @@
 
 #include <stdlib.h>
 
-#define OBJ_LINE_MAX_LENGTH 100
-
 #include "tail.h"
 
 void print_vert(const struct vertex *v);
@@ -19,7 +17,13 @@ void obj_f_n_line_to_vec3s(
   struct vec3 *v_indices,
   struct vec3 *vn_indices
 );
-void parse_obj_into_smooth_mesh(FILE *obj_file);
+void parse_obj_into_smooth_mesh(
+  FILE *obj_file,
+  struct vertex *vertices,
+  unsigned int *indices,
+  int *vert_count_out,
+  int *index_count_out
+);
 void parse_obj_into_flat_mesh(FILE *obj_file);
 void print_flat_mesh();
 void print_smooth_mesh();

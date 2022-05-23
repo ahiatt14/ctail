@@ -7,19 +7,7 @@
 #include "parser.h"
 #include "normals.h"
 
-static struct vec3 obj_positions[5000];
-static struct vec3 obj_normals[5000];
-static struct vec2 obj_uvs[5000];
-static unsigned int indices[10000];
-static struct vertex vertices[20000];
-
-static char obj_line[OBJ_LINE_MAX_LENGTH];
-static int obj_position_count = 0;
-static int obj_normal_count = 0;
-static int obj_uv_count = 0;
-static int vert_count = 0;
-static int face_count = 0;
-static int index_count = 0;
+#define OBJ_LINE_MAX_LENGTH 100
 
 static inline int terminal(char c) {
   return (c == '\0' || c == '\n') ? 1 : 0;
@@ -29,11 +17,17 @@ void print_vec3(const struct vec3 *t) {
   printf("{ %.6ff, %.6ff, %.6ff }", t->x, t->y, t->z);
 }
 
+void print_vec2(const struct vec2 *t) {
+  printf("{ %.6ff, %.6ff }", t->x, t->y);
+}
+
 void print_vert(const struct vertex *v) {
   printf("{");
   print_vec3(&v->position);
   printf(",");
   print_vec3(&v->normal);
+  printf(",");
+  print_vec2(&v->uv);
   printf("}");
 }
 
@@ -98,10 +92,30 @@ void obj_f_n_line_to_vec3s(
   }
 }
 
-void parse_obj_into_smooth_mesh(FILE *obj_file) {
+void parse_obj_into_smooth_mesh(
+  FILE *obj_file,
+  struct vertex *vertices,
+  unsigned int *indices,
+  int *vert_count_out,
+  int *index_count_out
+) {
+
+  // TODO: could clean up these temps
+
+  struct vec3 obj_positions[5000] = {0};
+  struct vec2 obj_uvs[5000] = {0};
+
   struct vec3 temp_vec3a = {0};
   struct vec2 temp_vec2 = {0};
+
   unsigned int index_trio[3] = {0};
+  char obj_line[OBJ_LINE_MAX_LENGTH] = {0};
+
+  int obj_position_count = 0;
+  int obj_uv_count = 0;
+  int face_count = 0;
+  int index_count = 0;
+
   while (fgets(obj_line, OBJ_LINE_MAX_LENGTH, obj_file) != NULL) {
     if (strncmp(obj_line, "v ", 2) == 0) {
       obj_float_line_to_vector(obj_line, &temp_vec3a.x);
@@ -131,6 +145,7 @@ void parse_obj_into_smooth_mesh(FILE *obj_file) {
       );
     }
   }
+
   struct vec3 temp_normal = {0};
   for (int i = 0; i < obj_position_count; i++) {
     calculate_vertex_normal(
@@ -156,16 +171,24 @@ void parse_obj_into_smooth_mesh(FILE *obj_file) {
       sizeof(struct vec2)
     );
   }
+
+  *vert_count_out = obj_position_count;
+  *index_count_out = index_count;
 }
 
-void print_smooth_mesh() {
-  printf("vertex count: %i\n\n", obj_position_count);
+void print_smooth_mesh(
+  struct vertex *vertices,
+  unsigned int *indices,
+  unsigned int vertex_count,
+  unsigned int index_count
+) {
+  printf("vertex count: %i\n\n", vertex_count);
 
   printf("{\n");
-  for (int i = 0; i < obj_position_count; i++){
+  for (int i = 0; i < vertex_count; i++){
     printf("\t");
     print_vert(&vertices[i]);
-    if (i < obj_position_count - 1) printf(",");
+    if (i < vertex_count - 1) printf(",");
     printf("\n");
   }
   printf("}");
@@ -179,62 +202,68 @@ void print_smooth_mesh() {
   printf("}");
 }
 
-void parse_obj_into_flat_mesh(FILE *obj_file) {
-  struct vec3 temp_vec3a = {0};
-  struct vec3 temp_vec3b = {0};
-  while (fgets(obj_line, OBJ_LINE_MAX_LENGTH, obj_file) != NULL) {
-    if (strncmp(obj_line, "v ", 2) == 0) {
-      obj_float_line_to_vector(obj_line, &temp_vec3a.x);
-      memcpy(
-        &obj_positions[obj_position_count++],
-        &temp_vec3a.x,
-        sizeof(struct vec3)
-      );
-    }
-    else if (strncmp(obj_line, "vn", 2) == 0) {
-      obj_float_line_to_vector(obj_line, &temp_vec3a.x);
-      memcpy(
-        &obj_normals[obj_normal_count++],
-        &temp_vec3a.x,
-        sizeof(struct vec3)
-      );
-    }
-    else if (strncmp(obj_line, "f ", 2) == 0) {
-      obj_f_n_line_to_vec3s(obj_line, &temp_vec3a, &temp_vec3b);
-      for (int face_vert_index = 0; face_vert_index < 3; face_vert_index++) {
-        memcpy(
-          &vertices[vert_count].position.x,
-          &obj_positions[(int)(&temp_vec3a.x)[face_vert_index]],
-          sizeof(struct vec3)
-        );
-        memcpy(
-          &vertices[vert_count].normal.x,
-          &obj_normals[(int)(&temp_vec3b.x)[face_vert_index]],
-          sizeof(struct vec3)
-        );
-        vert_count++;
-      }
-    }
-  }
-}
+// void parse_obj_into_flat_mesh(
+//   FILE *obj_file,
+//   struct vertex *vertices
+// ) {
+//   struct vec3 temp_vec3a = {0};
+//   struct vec3 temp_vec3b = {0};
+//   while (fgets(obj_line, OBJ_LINE_MAX_LENGTH, obj_file) != NULL) {
+//     if (strncmp(obj_line, "v ", 2) == 0) {
+//       obj_float_line_to_vector(obj_line, &temp_vec3a.x);
+//       memcpy(
+//         &obj_positions[obj_position_count++],
+//         &temp_vec3a.x,
+//         sizeof(struct vec3)
+//       );
+//     }
+//     else if (strncmp(obj_line, "vn", 2) == 0) {
+//       obj_float_line_to_vector(obj_line, &temp_vec3a.x);
+//       memcpy(
+//         &obj_normals[obj_normal_count++],
+//         &temp_vec3a.x,
+//         sizeof(struct vec3)
+//       );
+//     }
+//     else if (strncmp(obj_line, "f ", 2) == 0) {
+//       obj_f_n_line_to_vec3s(obj_line, &temp_vec3a, &temp_vec3b);
+//       for (int face_vert_index = 0; face_vert_index < 3; face_vert_index++) {
+//         memcpy(
+//           &vertices[vert_count].position.x,
+//           &obj_positions[(int)(&temp_vec3a.x)[face_vert_index]],
+//           sizeof(struct vec3)
+//         );
+//         memcpy(
+//           &vertices[vert_count].normal.x,
+//           &obj_normals[(int)(&temp_vec3b.x)[face_vert_index]],
+//           sizeof(struct vec3)
+//         );
+//         vert_count++;
+//       }
+//     }
+//   }
+// }
 
-void print_flat_mesh() {
-  printf("vertex count: %i\n\n", vert_count);
+// void print_flat_mesh(
+//   struct vertex *vertices,
 
-  printf("{\n");
-  for (int i = 0; i < vert_count; i++) {
-    printf("\t");
-    print_vert(&vertices[i]);
-    if (i < vert_count - 1) printf(",");
-    printf("\n");
-  }
-  printf("}");
+// ) {
+//   printf("vertex count: %i\n\n", vert_count);
 
-  printf("\n\n");
-  printf("index count: %i\n\n", vert_count);
-  printf("{\n");
-  for (int i = 0; i < vert_count; i+=3) {
-    printf("\t%i, %i, %i,\n", i, i+1, i+2);
-  }
-  printf("}");
-}
+//   printf("{\n");
+//   for (int i = 0; i < vert_count; i++) {
+//     printf("\t");
+//     print_vert(&vertices[i]);
+//     if (i < vert_count - 1) printf(",");
+//     printf("\n");
+//   }
+//   printf("}");
+
+//   printf("\n\n");
+//   printf("index count: %i\n\n", vert_count);
+//   printf("{\n");
+//   for (int i = 0; i < vert_count; i+=3) {
+//     printf("\t%i, %i, %i,\n", i, i+1, i+2);
+//   }
+//   printf("}");
+// }

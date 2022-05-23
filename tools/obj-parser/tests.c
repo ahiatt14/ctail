@@ -18,6 +18,17 @@ struct float_tolerance f_tol = {
   .tolerance = FLT_EPSILON
 };
 
+unsigned int vert_equals_vert(
+  const struct vertex *v0,
+  const struct vertex *v1,
+  const struct float_tolerance *f_tol
+) {
+  if (!vec_equals_vec(&v0->position.x, &v1->position.y, 3, f_tol)) return 0;
+  if (!vec_equals_vec(&v0->normal.x, &v1->normal.y, 3, f_tol)) return 0;
+  if (!vec_equals_vec(&v0->uv.x, &v1->uv.x, 2, f_tol)) return 0;
+  return 1;
+}
+
 int main() {
 
   TEST("tolerance check 1");
@@ -269,9 +280,37 @@ int main() {
   ));
   PASSED
 
-  // TEST("");
-
-  // PASSED
+  TEST(
+    "parse_obj_into_smooth_mesh should process a smooth formatted quad obj\n"
+    "file into vertex and index arrays"
+  );
+  f_tol.tolerance = FLT_EPSILON;
+  struct vertex actual_vertices[4] = {0};
+  unsigned int actual_indices[4] = {0};
+  int actual_vertex_count = 0;
+  int actual_index_count = 0;
+  // TODO: will my normal generation work with a quad? :O
+  FILE *obj_file = fopen("test_data/quad.obj", "r");
+  parse_obj_into_smooth_mesh(
+    obj_file,
+    actual_vertices,
+    actual_indices,
+    &actual_vertex_count,
+    &actual_index_count
+  );
+  fclose(obj_file);
+  struct vertex expected_vertices[4] = {
+    {{ -1, 0, 1 }, { 0, 1, 0 }, { 0, 0 }},
+    {{ 1, 0, 1 }, { 0, 1, 0 }, { 1, 0 }},
+    {{ -1, 0, -1 }, { 0, 1, 0 }, { 0, 1 }},
+    {{ 1, 0, -1 }, { 0, 1, 0 }, { 1, 1 }}
+  };
+  for (int i = 0; i < 4; i++) assert(vert_equals_vert(
+    &expected_vertices[i],
+    &actual_vertices[i],
+    &f_tol
+  ));
+  PASSED
 
   printf("\n\n");
   printf("_____________________________________\n");
