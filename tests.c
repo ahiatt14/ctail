@@ -123,7 +123,7 @@ int main(void) {
   vec3_create(-2, -8, 3.8f, &actual_v3b);
   vec3_cross(&actual_v3, &actual_v3b, &actual_v3);
   vec3_create(25.58, -23.4, -35.8, &expected_v3);
-  assert(vec3_equals_vec3(&actual_v3, &expected_v3, &f_tol));
+  assert(vec_equals_vec(&actual_v3.x, &expected_v3.x, 3, &f_tol));
   PASSED
 
   TEST("vec3_minus_vec3 should subtract the 2nd vec3 from the 1st");
@@ -132,7 +132,7 @@ int main(void) {
   vec3_create(1, 0, -1, &actual_v3b);
   vec3_minus_vec3(&actual_v3, &actual_v3b, &actual_v3);
   vec3_create(2.4f, 1, -0.002f, &expected_v3);
-  assert(vec3_equals_vec3(&actual_v3, &expected_v3, &f_tol));
+  assert(vec_equals_vec(&actual_v3.x, &expected_v3.x, 3, &f_tol));
   PASSED
 
   TEST("vec3_plus_vec3 should add the vectors");
@@ -141,7 +141,7 @@ int main(void) {
   vec3_create(1, 0, -1, &actual_v3b);
   vec3_plus_vec3(&actual_v3, &actual_v3b, &actual_v3);
   vec3_create(4.4f, 1, -2.002f, &expected_v3);
-  assert(vec3_equals_vec3(&actual_v3, &expected_v3, &f_tol));
+  assert(vec_equals_vec(&actual_v3.x, &expected_v3.x, 3, &f_tol));
   PASSED
 
   TEST("vec3_mean should calculate the mean vec3");
@@ -154,7 +154,7 @@ int main(void) {
   };
   vec3_mean(vecs, 4, &actual_v3);
   vec3_create(0.6f, 1.75f, 3.575f, &expected_v3);
-  assert(vec3_equals_vec3(&actual_v3, &expected_v3, &f_tol));
+  assert(vec_equals_vec(&actual_v3.x, &expected_v3.x, 3, &f_tol));
   PASSED
 
   TEST("vec3_magnitude should calculate the mag of the vec3");
@@ -178,9 +178,10 @@ int main(void) {
     &expected_v3
   );
   vec3_normalize(&actual_v3, &actual_v3);
-  assert(vec3_equals_vec3(
-    &expected_v3,
-    &actual_v3,
+  assert(vec_equals_vec(
+    &expected_v3.x,
+    &actual_v3.x,
+    3,
     &f_tol
   ));
   PASSED
@@ -368,7 +369,7 @@ int main(void) {
   );
   m4x4_x_point(&actual_m4, &actual_v3, &actual_v3);
   vec3_create(10, 11.526f, -14.33f, &expected_v3);
-  assert(vec3_equals_vec3(&expected_v3, &actual_v3, &f_tol));
+  assert(vec_equals_vec(&expected_v3.x, &actual_v3.x, 3, &f_tol));
   PASSED
 
   TEST("m4x4_create should fill the matrix buffer column-first");
@@ -461,7 +462,7 @@ int main(void) {
   m4x4_rotation(deg_to_rad(90), &axis, &rotation);
   m4x4_x_point(&rotation, &actual_v3, &actual_v3);
   vec3_create(0.0f, 0.0f, -1.0f, &expected_v3);
-  assert(vec3_equals_vec3(&expected_v3, &actual_v3, &f_tol));
+  assert(vec_equals_vec(&expected_v3.x, &actual_v3.x, 3, &f_tol));
   PASSED
 
   TEST("m4x4_rotation run #2");
@@ -474,7 +475,7 @@ int main(void) {
   m4x4_rotation(deg_to_rad(180), &axis, &rotation);
   m4x4_x_point(&rotation, &actual_v3, &actual_v3);
   vec3_create(0.0f, 1.0f, 0, &expected_v3);
-  assert(vec3_equals_vec3(&expected_v3, &actual_v3, &f_tol));
+  assert(vec_equals_vec(&expected_v3.x, &actual_v3.x, 3, &f_tol));
   PASSED
 
   TEST("m4x4_view should construct an inverted space transform matrix");

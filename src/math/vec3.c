@@ -24,22 +24,6 @@ void vec3_plus_vec3(
   sum->z = t0->z + t1->z;
 }
 
-//TODO: may have to move to tail_math
-int vec3_equals_vec3(
-  const struct vec3 *t0,
-  const struct vec3 *t1,
-  const struct float_tolerance *ft
-) {
-  for (int i = 0; i < 3; i++) {
-    if (!ft->within_tolerance(
-      (&t0->x)[i],
-      (&t1->x)[i],
-      ft->tolerance
-    )) return 0;
-  }
-  return 1;
-}
-
 void vec3_create(float x, float y, float z, struct vec3 *t) {
   t->x = x; t->y = y; t->z = z;
 }

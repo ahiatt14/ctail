@@ -13,18 +13,6 @@
 #define PASSED printf(": PASSED\n"); }
 #define QUIT return 0;
 
-// int diff_is_within_tolerance(float a, float b, float tol) {
-//   float abs_diff = fabs(a - b);
-//   return abs_diff <= tol ? 1 : 0;
-// }
-
-// int vec3_equals_vec3(const vec3 *t0, const vec3 *t1, float tol) {
-//   if (!diff_is_within_tolerance(t0->x, t1->x, tol)) return 0;
-//   if (!diff_is_within_tolerance(t0->y, t1->y, tol)) return 0;
-//   if (!diff_is_within_tolerance(t0->z, t1->z, tol)) return 0;
-//   return 1;
-// }
-
 struct float_tolerance f_tol = {
   .within_tolerance = diff_is_within_tolerance,
   .tolerance = FLT_EPSILON
@@ -48,36 +36,55 @@ int main() {
   ) == 0);
   PASSED
 
-  TEST("obj_vec3_line_to_vec3 should convert the str to a vec3");
+  TEST("obj_float_line_to_vector should convert the str to a vec3");
   f_tol.tolerance = FLT_EPSILON;
   const char *str = "v 0.894426 0.447216 0.000000";
   struct vec3 actual = {0};
-  obj_vec3_line_to_vec3(str, &actual);
+  obj_float_line_to_vector(str, &actual.x);
   struct vec3 expected = {
     0.894426f,
     0.447216f,
     0.000000f
   };
-  assert(vec3_equals_vec3(
-    &actual,
-    &expected,
+  assert(vec_equals_vec(
+    &actual.x,
+    &expected.x,
+    3,
     &f_tol
   ));
   PASSED
 
-  TEST("obj_vec3_line_to_vec3 run #2");
+  TEST("obj_float_line_to_vector run #2");
   f_tol.tolerance = FLT_EPSILON;
   const char *str = "vn -0.5746 -0.3304 -0.7488";
   struct vec3 actual = {0};
-  obj_vec3_line_to_vec3(str, &actual);
+  obj_float_line_to_vector(str, &actual.x);
   struct vec3 expected = {
     -0.5746f,
     -0.3304f,
     -0.7488f
   };
-  assert(vec3_equals_vec3(
-    &actual,
-    &expected,
+  assert(vec_equals_vec(
+    &actual.x,
+    &expected.x,
+    3,
+    &f_tol
+  ));
+  PASSED
+
+  TEST(
+    "obj_float_line_to_vector should convert an obj vt line\n"
+    "into a vec2 of floats"
+  );
+  f_tol.tolerance = FLT_EPSILON;
+  const char *str = "vt 0.625000 0.750000";
+  struct vec2 actual = {0};
+  obj_float_line_to_vector(str, &actual.x);
+  struct vec2 expected = { 0.625000f, 0.750000f };
+  assert(vec_equals_vec(
+    &actual.x,
+    &expected.x,
+    2,
     &f_tol
   ));
   PASSED
@@ -130,14 +137,16 @@ int main() {
   );
   struct vec3 expected_vi = { 9, 10, 8 };
   struct vec3 expected_vni = { 4, 4, 4 };  
-  assert(vec3_equals_vec3(
-    &actual_vi,
-    &expected_vi,
+  assert(vec_equals_vec(
+    &actual_vi.x,
+    &expected_vi.x,
+    3,
     &f_tol
   ));
-  assert(vec3_equals_vec3(
-    &actual_vni,
-    &expected_vni,
+  assert(vec_equals_vec(
+    &actual_vni.x,
+    &expected_vni.x,
+    3,
     &f_tol
   ));
   PASSED
@@ -156,14 +165,16 @@ int main() {
   );
   struct vec3 expected_vi = { 284, 310, 599 };
   struct vec3 expected_vni = { 29, 29, 29 };  
-  assert(vec3_equals_vec3(
-    &actual_vi,
-    &expected_vi,
+  assert(vec_equals_vec(
+    &actual_vi.x,
+    &expected_vi.x,
+    3,
     &f_tol
   ));
-  assert(vec3_equals_vec3(
-    &actual_vni,
-    &expected_vni,
+  assert(vec_equals_vec(
+    &actual_vni.x,
+    &expected_vni.x,
+    3,
     &f_tol
   ));
   PASSED
@@ -187,9 +198,10 @@ int main() {
     0.577350269f,
     &expected
   );
-  assert(vec3_equals_vec3(
-    &actual,
-    &expected,
+  assert(vec_equals_vec(
+    &actual.x,
+    &expected.x,
+    3,
     &f_tol
   ));
   PASSED
@@ -204,9 +216,10 @@ int main() {
   struct vec3 actual = {0};
   calculate_face_normal(positions, &actual);
   struct vec3 expected = { 1, 0, 0 };
-  assert(vec3_equals_vec3(
-    &actual,
-    &expected,
+  assert(vec_equals_vec(
+    &actual.x,
+    &expected.x,
+    3,
     &f_tol
   ));
   PASSED
@@ -229,9 +242,10 @@ int main() {
     0.577350269f,
     -0.577350269f,
   };
-  assert(vec3_equals_vec3(
-    &actual,
-    &expected,
+  assert(vec_equals_vec(
+    &actual.x,
+    &expected.x,
+    3,
     &f_tol
   ));
   PASSED
@@ -247,12 +261,17 @@ int main() {
     &actual
   );
   struct vec3 expected = { 0, 1, 0 };
-  assert(vec3_equals_vec3(
-    &actual,
-    &expected,
+  assert(vec_equals_vec(
+    &actual.x,
+    &expected.x,
+    3,
     &f_tol
   ));
   PASSED
+
+  // TEST("");
+
+  // PASSED
 
   printf("\n\n");
   printf("_____________________________________\n");

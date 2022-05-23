@@ -52,7 +52,7 @@ static inline int contains_vec3(
   const struct vec3 *vec3s
 ) {
   for (int i = 0; i < count; i++) {
-    if (vec3_equals_vec3(t, &vec3s[i], &ft)) return 1;
+    if (vec_equals_vec(&t->x, &vec3s[i].x, 3, &ft)) return 1;
   }
   return 0;
 }
