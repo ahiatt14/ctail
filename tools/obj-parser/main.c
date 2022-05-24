@@ -41,12 +41,19 @@ int main(int argc, char *argv[]) {
   }
   
   if (strcmp(argv[2], "flat") == 0) {
-    // parse_obj_into_flat_mesh(
-    //   obj_file,
-    //   vertices,
-    //   indices
-    // );
-    // print_flat_mesh();
+    parse_obj_into_flat_mesh(
+      obj_file,
+      vertices,
+      indices,
+      &vertex_count,
+      &index_count
+    );
+    print_mesh(
+      vertices,
+      indices,
+      vertex_count,
+      index_count
+    );
   }
   if (strcmp(argv[2], "smooth") == 0) {
     parse_obj_into_smooth_mesh(
@@ -56,11 +63,11 @@ int main(int argc, char *argv[]) {
       &vertex_count,
       &index_count
     );
-    print_smooth_mesh(
+    print_mesh(
       vertices,
       indices,
-      &vertex_count,
-      &index_count
+      vertex_count,
+      index_count
     );
   }
 

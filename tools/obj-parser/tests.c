@@ -23,8 +23,8 @@ unsigned int vert_equals_vert(
   const struct vertex *v1,
   const struct float_tolerance *f_tol
 ) {
-  if (!vec_equals_vec(&v0->position.x, &v1->position.y, 3, f_tol)) return 0;
-  if (!vec_equals_vec(&v0->normal.x, &v1->normal.y, 3, f_tol)) return 0;
+  if (!vec_equals_vec(&v0->position.x, &v1->position.x, 3, f_tol)) return 0;
+  if (!vec_equals_vec(&v0->normal.x, &v1->normal.x, 3, f_tol)) return 0;
   if (!vec_equals_vec(&v0->uv.x, &v1->uv.x, 2, f_tol)) return 0;
   return 1;
 }
@@ -305,13 +305,65 @@ int main() {
     {{ -1, 0, -1 }, { 0, 1, 0 }, { 0, 1 }},
     {{ 1, 0, -1 }, { 0, 1, 0 }, { 1, 1 }}
   };
-  for (int i = 0; i < 4; i++) assert(vert_equals_vert(
-    &expected_vertices[i],
-    &actual_vertices[i],
-    &f_tol
-  ));
+  for (int i = 0; i < 4; i++)
+    assert(vert_equals_vert(
+      &expected_vertices[0],
+      &actual_vertices[0],
+      &f_tol
+    ));
+  unsigned int expected_indices[18] = {
+    1, 2, 0,
+    1, 3, 2
+  };
+  for (int i = 0; i < 6; i++)
+    assert(expected_indices[i] == actual_indices[i]);
   PASSED
 
+  // TEST(
+  //   "parse_obj_into_flat_mesh should process a flat formatted pyramid obj\n"
+  //   "file into vertex and idnex arrays"
+  // );
+  // f_tol.tolerance = FLT_EPSILON;
+  // struct vertex actual_vertices[4] = {0};
+  // unsigned int actual_indices[4] = {0};
+  // int actual_vertex_count = 0;
+  // int actual_index_count = 0;
+  // FILE *obj_file = fopen("test_data/flat_pyramid.obj", "r");
+  // parse_obj_into_flat_mesh(
+
+  // );
+  // fclose(obj_file);
+  // struct vertex expected_vertices[18] = {
+  //   {{ 0.707107f, -0.5f, 0.707107f },{},{}},
+  //   {{ -0.707107f, -0.5f, -0.707107f },{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}},
+  //   {{},{},{}}
+  // };
+  // unsigned int expected_indices[18] = {
+  //   0, 1, 2,
+  //   3, 4, 5,
+  //   6, 7, 8,
+  //   9, 10, 11,
+  //   12, 13, 14,
+  //   15, 16, 17
+  // };
+
+  // PASSED
+  
   printf("\n\n");
   printf("_____________________________________\n");
   printf("_________ALL_TESTS_PASSED_:)_________\n");
