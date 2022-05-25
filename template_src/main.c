@@ -12,7 +12,7 @@ int main() {
     800,
     "test",
     VSYNC_ON,
-    window
+    &window
   )) return 1;
 
   while (!window__received_closed_event()) {
