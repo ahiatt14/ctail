@@ -75,9 +75,10 @@ create_copy() {
   rm -rf copy
   mkdir copy
   mkdir copy/tail
+  mkdir copy/tail/static
   mkdir copy/tail/src
   mkdir copy/tail/include
-  cp static/tail.a copy/tail/tail.a \
+  cp static/tail.a copy/tail/static/tail.a \
   && \
   cp include/tail.h copy/tail/include/tail.h \
   && \

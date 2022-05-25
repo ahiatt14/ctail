@@ -8,4 +8,4 @@ ${includes} \
 ${options} \
 -o game.exe \
 src/*.c \
-libs/tail/tail.a
+libs/tail/static/tail.a
