@@ -10,6 +10,16 @@
 #define MAX_VERTICES 5000
 #define MAX_INDICES 15000
 
+void print_vert(const struct vertex *v);
+void print_vec3(const struct vec3 *t);
+void print_vec2(const struct vec2 *t);
+void print_mesh(
+  struct vertex *vertices,
+  unsigned int *indices,
+  unsigned int vertex_count,
+  unsigned int index_count
+);
+
 int main(int argc, char *argv[]) {
 
   FILE *obj_file = NULL;
@@ -48,12 +58,6 @@ int main(int argc, char *argv[]) {
       &vertex_count,
       &index_count
     );
-    print_mesh(
-      vertices,
-      indices,
-      vertex_count,
-      index_count
-    );
   }
   if (strcmp(argv[2], "smooth") == 0) {
     parse_obj_into_smooth_mesh(
@@ -63,14 +67,59 @@ int main(int argc, char *argv[]) {
       &vertex_count,
       &index_count
     );
-    print_mesh(
-      vertices,
-      indices,
-      vertex_count,
-      index_count
-    );
   }
+
+  print_mesh(
+    vertices,
+    indices,
+    vertex_count,
+    index_count
+  );
 
   fclose(obj_file);
   return 0;
+}
+
+void print_vec3(const struct vec3 *t) {
+  printf("{ %.6ff, %.6ff, %.6ff }", t->x, t->y, t->z);
+}
+
+void print_vec2(const struct vec2 *t) {
+  printf("{ %.6ff, %.6ff }", t->x, t->y);
+}
+
+void print_vert(const struct vertex *v) {
+  printf("{");
+  print_vec3(&v->position);
+  printf(",");
+  print_vec3(&v->normal);
+  printf(",");
+  print_vec2(&v->uv);
+  printf("}");
+}
+
+void print_mesh(
+  struct vertex *vertices,
+  unsigned int *indices,
+  unsigned int vertex_count,
+  unsigned int index_count
+) {
+  printf("vertex count: %i\n\n", vertex_count);
+
+  printf("{\n");
+  for (int i = 0; i < vertex_count; i++){
+    printf("\t");
+    print_vert(&vertices[i]);
+    if (i < vertex_count - 1) printf(",");
+    printf("\n");
+  }
+  printf("}");
+
+  printf("\n\n");
+  printf("index count: %i\n\n", index_count);
+  printf("{\n");
+  for (int i = 0; i < index_count; i+=3) {
+    printf("\t%i, %i, %i,\n", indices[i], indices[i+1], indices[i+2]);
+  }
+  printf("}");
 }
