@@ -9,11 +9,13 @@
 
 #define MAX_VERTICES 5000
 #define MAX_INDICES 15000
+#define MAX_FILENAME_LENGTH 100
 
 void print_vert(const struct vertex *v);
 void print_vec3(const struct vec3 *t);
 void print_vec2(const struct vec2 *t);
 void print_mesh(
+  const char *filename,
   struct vertex *vertices,
   unsigned int *indices,
   unsigned int vertex_count,
@@ -49,6 +51,11 @@ int main(int argc, char *argv[]) {
     printf("obj file not found.\n");
     return 1;
   }
+
+  char filename[MAX_FILENAME_LENGTH] = {'\0'};
+  char *last_slash = strrchr(argv[1], '/');
+  char *last_dot = strrchr(argv[1], '.');
+  strncpy(filename, last_slash, last_dot - ++last_slash);
   
   if (strcmp(argv[2], "flat") == 0) {
     parse_obj_into_flat_mesh(
@@ -70,6 +77,7 @@ int main(int argc, char *argv[]) {
   }
 
   print_mesh(
+    filename,
     vertices,
     indices,
     vertex_count,
@@ -99,27 +107,28 @@ void print_vert(const struct vertex *v) {
 }
 
 void print_mesh(
+  const char *filename,
   struct vertex *vertices,
   unsigned int *indices,
   unsigned int vertex_count,
   unsigned int index_count
 ) {
-  printf("vertex count: %i\n\n", vertex_count);
+  printf("unsigned int %s_vertex_count = %i;\n", filename, vertex_count);
 
-  printf("{\n");
+  printf("vertex %s_vertices[%i] = {\n", filename, vertex_count);
   for (int i = 0; i < vertex_count; i++){
     printf("\t");
     print_vert(&vertices[i]);
     if (i < vertex_count - 1) printf(",");
     printf("\n");
   }
-  printf("}");
+  printf("};\n");
 
-  printf("\n\n");
-  printf("index count: %i\n\n", index_count);
-  printf("{\n");
+  printf("unsigned int %s_index_count = %i;\n", filename, index_count);
+
+  printf("unsigned int %s_indices[%i] = {\n", filename, index_count);
   for (int i = 0; i < index_count; i+=3) {
     printf("\t%i, %i, %i,\n", indices[i], indices[i+1], indices[i+2]);
   }
-  printf("}");
+  printf("};\n");
 }
