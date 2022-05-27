@@ -11,7 +11,7 @@ targets[gcc]=gcc
 
 usage() {
   echo "
-    usage: tail [-t|-o|-f] <command>
+    usage: tail [-t|-o|-f|-s|-m] <command>
 
     Commands
     clean               delete tail build artifacts
@@ -19,16 +19,18 @@ usage() {
     build-glfw          compile glfw into local static library
     build               compile tail src into obj
     static              compile tail into static lib
-    create-copy         create dir for lib and header to easily copy into game
+    create-slim         create dir for lib and header to easily copy into game
     template            bootstrap a new game project at output path
     test                build tail, run and log tests to file
     validate-glsl       check a glsl file for errors
+    parse-obj           process obj file into c src and print to stdout
 
     Options
     -t                  compile target, e.g. win32, gcc
     -o                  output directory for new project
-    -f                  filepath to glsl to compile
+    -f                  filepath to input file for glsl validator and obj parser
     -s                  shader type: \"frag\" | \"vert\"
+    -m                  mesh shading style: \"flat\" | \"smooth\"
   "
 }
 clean() {
@@ -71,18 +73,23 @@ static() {
   && \
   rm -rf gdi32obj
 }
-create_copy() {
+create_slim() {
   rm -rf copy
   mkdir copy
   mkdir copy/tail
   mkdir copy/tail/static
   mkdir copy/tail/src
   mkdir copy/tail/include
+  mkdir copy/tail/tools
   cp static/tail.a copy/tail/static/tail.a \
   && \
   cp include/tail.h copy/tail/include/tail.h \
   && \
-  cp -r src/headers copy/tail/src
+  cp -r src/headers copy/tail/src \
+  && \
+  cp tools/obj-parser/bin/obj-parser.exe copy/tail/tools \
+  && \
+  cp tools/validate-glsl/validate-glsl.exe copy/tail/tools
 }
 template() {
   
@@ -93,7 +100,9 @@ template() {
 
   mkdir -p "$output_path/src" && \
   mkdir -p "$output_path/libs/tail" && \
+  mkdir -p "$output_path/tools" && \
   cp -R copy/tail "$output_path/libs/" && \
+  cp -R copy/tail/tools "$output_path/" && \
   cp template_src/main.c "$output_path/src/main.c"
 
   # TODO: add case for gcc
@@ -128,10 +137,17 @@ build_tests() {
   tests.o \
   static/tail.a
 }
+build_tools() {
+  # creates windows executables (doesn't matter for wsl but target should be
+  # parameter here)
+  cd tools/obj-parser && ./build.sh build
+  cd ../validate-glsl && ./build.sh && \
+  cd ../..
+}
 validate_glsl() {
 
-  if [ -f "$shader_filepath" ]; then
-    echo "Validating $shader_filepath"
+  if [ -f "$input_filepath" ]; then
+    echo "Validating $input_filepath"
   else
     echo "Shader file does not exist."
     exit 1
@@ -143,15 +159,33 @@ validate_glsl() {
   fi
 
   $wsl_abs_path_to_root/tools/validate-glsl/validate-glsl.exe \
-  "$shader_filepath" "$shader_type"
+  "$input_filepath" "$shader_type"
+}
+parse_obj() {
+  if [ -f "$input_filepath" ]; then
+    echo "Parsting $input_filepath"
+  else
+    echo "Obj file not found."
+    exit 1
+  fi
+  if [ -f "$input_filepath" ]; then
+    echo "Parsting $input_filepath"
+  else
+    echo "Obj file not found."
+    exit 1
+  fi
+
+  $wsl_abs_path_to_root/tools/obj-parser/bin/parser.exe \
+  "$input_filepath"
 }
 
-while getopts ":t:o:f:s:" option; do
+while getopts ":t:o:f:s:m:" option; do
   case "$option" in
     "t") target=$OPTARG;;
     "o") output_path=$OPTARG;;
-    "f") shader_filepath=$OPTARG;;
+    "f") input_filepath=$OPTARG;;
     "s") shader_type=$OPTARG;;
+    "m") shading_style=$OPTARG;;
     ":")
       echo "    A value must be provided for the -$OPTARG option"
       usage
@@ -167,10 +201,10 @@ elif [ "$ARG1" == "clean" ]; then
   clean
 elif [ "$ARG1" == "static" ]; then
   clean && build && static
-elif [ "$ARG1" == "create-copy" ]; then
-  create_copy
+elif [ "$ARG1" == "create-slim" ]; then
+  clean && build && static && build_tools && create_slim
 elif [ "$ARG1" == "template" ]; then
-  clean && build && static && create_copy && template
+  clean && build && static && build_tools && create_slim && template
   clean
 elif [ "$ARG1" == "test" ]; then
   clean && build && static && build_tests && run_and_log_tests
@@ -181,6 +215,8 @@ elif [ "$ARG1" == "build-glad" ]; then
   build_glad
 elif [ "$ARG1" == "validate-glsl" ]; then
   validate_glsl
+elif [ "$ARG1" == "parse-obj" ]; then
+  parse_obj
 else
   echo "You must specify a provided command."
   usage

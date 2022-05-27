@@ -3,7 +3,7 @@ then
   rm -rf bin && \
   mkdir bin && \
   i686-w64-mingw32-gcc main.c parser.c normals.c \
-  -o bin/parser.exe \
+  -o bin/obj-parser.exe \
   ../../static/tail.a \
   -I../../include \
   -Wall

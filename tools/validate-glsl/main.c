@@ -70,5 +70,5 @@ int main(int argc, char *argv[]) {
   printf("Compilation failed: %s\n", log);
   free(log);
 
-  return 1;
+  return 0;
 }
