@@ -113,22 +113,23 @@ void print_mesh(
   unsigned int vertex_count,
   unsigned int index_count
 ) {
-  printf("unsigned int %s_vertex_count = %i;\n", filename, vertex_count);
+  // NOTE: for the purposes of redirecting/capturing this output in
+  // a bash variable and including via mingw32 -D option,
+  // apparently spaces between the outermost { } on the vertices matters? 
+  printf("unsigned int %s_vertex_count = %i; ", filename, vertex_count);
 
-  printf("vertex %s_vertices[%i] = {\n", filename, vertex_count);
+  printf("struct vertex %s_vertices[%i] = { ", filename, vertex_count);
   for (int i = 0; i < vertex_count; i++){
-    printf("\t");
     print_vert(&vertices[i]);
-    if (i < vertex_count - 1) printf(",");
-    printf("\n");
+    if (i < vertex_count - 1) printf(", ");
   }
-  printf("};\n");
+  printf("}; ");
 
-  printf("unsigned int %s_index_count = %i;\n", filename, index_count);
+  printf("unsigned int %s_index_count = %i; ", filename, index_count);
 
-  printf("unsigned int %s_indices[%i] = {\n", filename, index_count);
+  printf("unsigned int %s_indices[%i] = { ", filename, index_count);
   for (int i = 0; i < index_count; i+=3) {
-    printf("\t%i, %i, %i,\n", indices[i], indices[i+1], indices[i+2]);
+    printf("%i, %i, %i, ", indices[i], indices[i+1], indices[i+2]);
   }
-  printf("};\n");
+  printf("};");
 }
