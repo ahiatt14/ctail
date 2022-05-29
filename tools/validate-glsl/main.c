@@ -6,6 +6,7 @@
 #include "GLFW/glfw3.h"
 #include "glad.h"
 
+#define MAX_FILENAME_LENGTH 100
 #define MAX_GLSL_CHARS 10000
 #define MAX_GLSL_LINE_LENGTH 200
 
@@ -13,6 +14,17 @@ char file_data[MAX_GLSL_CHARS];
 char line[MAX_GLSL_LINE_LENGTH];
 
 int main(int argc, char *argv[]) {
+
+  FILE *file;
+  if ((file = fopen(argv[1], "r"))) {
+    while(fgets(line, MAX_GLSL_CHARS, file)) {
+      strcat(file_data, line);
+    }
+    fclose(file);
+  } else {
+    printf("File not found. First arg must be valid filepath.\n");
+    return 1;
+  }
 
   if (!glfwInit()) return 1;
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -24,34 +36,24 @@ int main(int argc, char *argv[]) {
   glfwMakeContextCurrent(window);
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return 1;
 
-  FILE *file;
-  if ((file = fopen(argv[1], "r"))) {
-    while(fgets(line, MAX_GLSL_CHARS, file)) {
-      strcat(file_data, line);
-    }
-    fclose(file);
-  } else {
-    printf("File does not exist.\n");
-    return 1;
-  }
-
-  // TODO: clean up flow here
   GLuint id;
-  if (strlen(argv[2]) > 4) {
-    printf("Must specify either frag or vert for 2nd param.\n");
-    return 1;
-  }
-  if (strncmp(argv[2], "frag", 4) == 0) {
+  if (strcmp(argv[2], "frag") == 0) {
     id = glCreateShader(GL_FRAGMENT_SHADER);
-  } else if (strncmp(argv[2], "vert", 4) == 0) {
+  } else if (strcmp(argv[2], "vert") == 0) {
     id = glCreateShader(GL_VERTEX_SHADER); 
   } else {
-    printf("Must specify either frag or vert for 2nd param.\n");
+    printf("Second argument must by \"frag\" or \"vert\".\n");
     return 1;
   }
 
   const char *src = file_data;
-  printf("%s\n\n", src);
+
+  // TODO: abstract this and add to obj-parser
+  char filename[MAX_FILENAME_LENGTH] = {'\0'};
+  char *last_slash = strrchr(argv[1], '/');
+  if (last_slash == NULL) last_slash = argv[1] - 1;
+  char *last_dot = strrchr(argv[1], '.');
+  strncpy(filename, last_slash, last_dot - ++last_slash);
 
   glShaderSource(id, 1, &src, NULL);
   glCompileShader(id);
@@ -59,7 +61,7 @@ int main(int argc, char *argv[]) {
   GLint success = 0;
   glGetShaderiv((GLuint)id, GL_COMPILE_STATUS, &success);
   if (success != GL_FALSE) {
-    printf("Shader compiled successfully\n");
+    printf("%s compiled successfully\n", filename);
     return 0;
   }
   GLsizei max_log_size = 0;
@@ -67,7 +69,7 @@ int main(int argc, char *argv[]) {
   glGetShaderiv(id, GL_INFO_LOG_LENGTH, &max_log_size);
   log = (char*)malloc(max_log_size);
   glGetShaderInfoLog(id, max_log_size, NULL, log);
-  printf("Compilation failed: %s\n", log);
+  printf("%s compilation failed: %s\n", filename, log);
   free(log);
 
   return 0;
