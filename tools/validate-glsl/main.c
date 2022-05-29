@@ -75,7 +75,6 @@ int main(int argc, char *argv[]) {
   printf("%s compilation failed: %s\n", filename, log);
   free(log);
 
-  fclose(file);
   return 0;
 }
 
