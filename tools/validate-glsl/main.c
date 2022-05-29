@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
   glfwMakeContextCurrent(window);
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return 1;
 
+  // TODO: somehow able to get past this???
   GLuint id;
   if (strcmp(argv[2], "frag") == 0) {
     id = glCreateShader(GL_FRAGMENT_SHADER);
