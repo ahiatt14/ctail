@@ -13,6 +13,12 @@
 char file_data[MAX_GLSL_CHARS];
 char line[MAX_GLSL_LINE_LENGTH];
 
+void filename_from_path(
+  char *filename_out,
+  char *filepath,
+  size_t max_length
+);
+
 int main(int argc, char *argv[]) {
 
   FILE *file;
@@ -50,10 +56,7 @@ int main(int argc, char *argv[]) {
 
   // TODO: abstract this and add to obj-parser
   char filename[MAX_FILENAME_LENGTH] = {'\0'};
-  char *last_slash = strrchr(argv[1], '/');
-  if (last_slash == NULL) last_slash = argv[1] - 1;
-  char *last_dot = strrchr(argv[1], '.');
-  strncpy(filename, last_slash, last_dot - ++last_slash);
+  filename_from_path(filename, argv[1], MAX_FILENAME_LENGTH);
 
   glShaderSource(id, 1, &src, NULL);
   glCompileShader(id);
@@ -73,4 +76,15 @@ int main(int argc, char *argv[]) {
   free(log);
 
   return 0;
+}
+
+void filename_from_path(
+  char *filename_out,
+  char *filepath,
+  size_t max_length
+) {
+  char *last_slash = strrchr(filepath, '/');
+  if (last_slash == NULL) last_slash = filepath - 1;
+  char *last_dot = strrchr(filepath, '.');
+  strncpy(filename_out, last_slash, last_dot - ++last_slash);
 }

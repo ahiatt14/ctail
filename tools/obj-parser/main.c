@@ -21,6 +21,11 @@ void print_mesh(
   unsigned int vertex_count,
   unsigned int index_count
 );
+void filename_from_path(
+  char *filename_out,
+  char *filepath,
+  size_t max_length
+);
 
 int main(int argc, char *argv[]) {
 
@@ -53,9 +58,7 @@ int main(int argc, char *argv[]) {
   }
 
   char filename[MAX_FILENAME_LENGTH] = {'\0'};
-  char *last_slash = strrchr(argv[1], '/');
-  char *last_dot = strrchr(argv[1], '.');
-  strncpy(filename, last_slash, last_dot - ++last_slash);
+  filename_from_path(filename, argv[1], MAX_FILENAME_LENGTH);
   
   if (strcmp(argv[2], "flat") == 0) {
     parse_obj_into_flat_mesh(
@@ -132,4 +135,15 @@ void print_mesh(
     printf("%i, %i, %i, ", indices[i], indices[i+1], indices[i+2]);
   }
   printf("};");
+}
+
+void filename_from_path(
+  char *filename_out,
+  char *filepath,
+  size_t max_length
+) {
+  char *last_slash = strrchr(filepath, '/');
+  if (last_slash == NULL) last_slash = filepath - 1;
+  char *last_dot = strrchr(filepath, '.');
+  strncpy(filename_out, last_slash, last_dot - ++last_slash);
 }
