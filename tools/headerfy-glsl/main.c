@@ -22,20 +22,17 @@ int main(int argc, char *argv[]) {
   char filename[100] = {0};
   filename_from_path(filename, argv[1], 100);
 
-  char src[MAX_SRC_CHAR_COUNT] = {0};
   char line[MAX_SRC_LINE_LENGTH] = {0};
-  printf("const char *%s_src = \"", filename);
+  printf("#ifndef __TAIL_%s_SRC__\n", filename);
+  printf("#define __TAIL_%s_SRC__\n", filename);
+  printf("const char *%s_src = \"\"\n", filename);
   while(fgets(line, MAX_SRC_LINE_LENGTH, file)) {
-    int line_length = strlen(line);
-    line[line_length - 1] = '\\';
-    line[line_length] = 'n';
-    strncat(src, line, line_length + 1);
+    char temp_line[MAX_SRC_LINE_LENGTH] = {0};
+    strncpy(temp_line, line, strlen(line) - 1);
+    printf("\"%s\\n\"\n", temp_line);
   }
-  // TODO: pretty hacky! could get caught by edge cases of glsl style/formatting
-  strcat(src, "}");
-  printf("%s", src);
-  printf("\";");
-
+  printf("\"}\\n\";\n");
+  printf("#endif");
   fclose(file);
   return 0;
 }
