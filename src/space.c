@@ -2,15 +2,21 @@
 
 #include "space.h"
 #include "tail_math.h"
+#include "quaternion.h"
 #include "m4x4.h"
 
-static struct m4x4 temp__model_scale;
-static struct m4x4 temp__model_translation;
-static struct m4x4 temp__model_z_rotation;
+// TODO: more efficient caching? we'll be performing create_model a lot
+static struct m4x4 temp__scale;
+static struct m4x4 temp__translation;
 
-static struct m4x4 temp__rotate_x_scale;
+static struct m4x4 temp__x_rotation;
+static struct m4x4 temp__y_rotation;
+static struct m4x4 temp__z_rotation;
+static struct m4x4 temp__zx_rotation;
+static struct m4x4 temp__zxy_rotation;
 
-// TODO: add quaternion-based rotation
+static struct m4x4 temp__rotate_and_scale;
+
 void space__create_model(
   const struct coordinate_space *space,
   const struct transform *t,
@@ -19,22 +25,43 @@ void space__create_model(
 
   m4x4_identity(model);
   
-  m4x4_translation(&t->position, &temp__model_translation);
-  m4x4_scaling(t->scale, &temp__model_scale);
+  m4x4_translation(&t->position, &temp__translation);
+  m4x4_scaling(t->scale, &temp__scale);
+
+  m4x4_rotation(
+    deg_to_rad(t->rotation_in_deg.x),
+    &space->right,
+    &temp__x_rotation 
+  );
+  m4x4_rotation(
+    deg_to_rad(t->rotation_in_deg.y),
+    &space->forward,
+    &temp__y_rotation 
+  );
   m4x4_rotation(
     deg_to_rad(t->rotation_in_deg.z),
     &space->up,
-    &temp__model_z_rotation
+    &temp__z_rotation 
+  );
+  m4x4_x_m4x4(
+    &temp__x_rotation,
+    &temp__z_rotation,
+    &temp__zx_rotation
+  );
+  m4x4_x_m4x4(
+    &temp__y_rotation,
+    &temp__zx_rotation,
+    &temp__zxy_rotation
   );
 
   m4x4_x_m4x4(
-    &temp__model_z_rotation,
-    &temp__model_scale,
-    &temp__rotate_x_scale
+    &temp__zxy_rotation,
+    &temp__scale,
+    &temp__rotate_and_scale
   );
   m4x4_x_m4x4(
-    &temp__model_translation,
-    &temp__rotate_x_scale,
+    &temp__translation,
+    &temp__rotate_and_scale,
     model
   );
 }

@@ -48,6 +48,7 @@ build() {
   ${targets[${target}]} -c src/math/m2x2.c -o obj/m2x2.o ${includes} ${options}
   ${targets[${target}]} -c src/math/m3x3.c -o obj/m3x3.o ${includes} ${options}
   ${targets[${target}]} -c src/math/m4x4.c -o obj/m4x4.o ${includes} ${options}
+  ${targets[${target}]} -c src/math/quaternion.c -o obj/quaternion.o ${includes} ${options}
   ${targets[${target}]} -c src/math/vec3.c -o obj/vec3.o ${includes} ${options}
   ${targets[${target}]} -c src/opengl_gpu.c -o obj/opengl_gpu.o ${includes} ${options}
   ${targets[${target}]} -c src/debugger.c -o obj/debugger.o ${includes} ${options}
@@ -91,7 +92,7 @@ create_slim() {
   && \
   cp tools/validate-glsl/bin/validate-glsl.exe copy/tail/tools \
   && \
-  cp tools/macrofy-glsl/bin/macrofy-glsl.exe copy/tail/tools
+  cp tools/headerfy-glsl/bin/headerfy-glsl.exe copy/tail/tools
 }
 template() {
   
@@ -113,7 +114,8 @@ template() {
   fi
 }
 run_and_log_tests() {
-  ./tests.exe &> test_report.txt
+  ./tests.exe
+  #  &> test_report.txt
 }
 build_glfw() {
   rm -rf libs/glfw/obj libs/glfw/build
@@ -144,7 +146,7 @@ build_tools() {
   # parameter here)
   cd tools/obj-parser && ./build.sh build
   cd ../validate-glsl && ./build.sh && \
-  cd ../macrofy-glsl && ./build.sh && \
+  cd ../headerfy-glsl && ./build.sh && \
   cd ../..
 }
 validate_glsl() {

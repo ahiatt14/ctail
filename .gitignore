@@ -11,5 +11,5 @@ tools/obj-parser/obj_files/
 tools/obj-parser/output/
 tools/obj-parser/bin/
 tools/validate-glsl/bin/
-tools/macrofy-glsl/bin/
+tools/headerfy-glsl/bin/
 tools/obj-parser/test_report.txt

@@ -25,7 +25,7 @@ void m4x4_x_point(const struct m4x4 *m, const struct vec3 *t, struct vec3 *dest)
 void m4x4_translation(const struct vec3 *t, struct m4x4 *m);
 void m4x4_inverted_translation(const struct vec3 *t, struct m4x4 *m);
 void m4x4_scaling(float s, struct m4x4 *m);
-void m4x4_rotation(float rads, const struct vec3 *t, struct m4x4 *m);
+void m4x4_rotation(float rads, const struct vec3 *axis, struct m4x4 *m);
 void m4x4_view(
   const struct vec3 *right,
   const struct vec3 *up,

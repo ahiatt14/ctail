@@ -710,10 +710,39 @@ int main(void) {
   ));
   PASSED
 
+  // TODO: finish this test smh
+  // TEST("space__create_model run #2");
+  // f_tol.tolerance = FLT_EPSILON * 1000;
+  // struct transform t = {
+  //   .position = { 0, 0, 1 },
+  //   .rotation_in_deg = { 90, 0, 0 },
+  //   .scale = 1
+  // };
+  // space__create_model(
+  //   &DEFAULT_WORLDSPACE,
+  //   &t,
+  //   &actual_m4
+  // );
+  // m4x4_create(
+  //   1, 0, 0, 0,
+  //   0, 1, 0, 0,
+  //   0, 0, 1, 1,
+  //   0, 0, 0, 1,
+  //   &expected_m4
+  // );
+  // assert(m4x4_equals_m4x4(
+  //   &expected_m4,
+  //   &actual_m4,
+  //   &f_tol
+  // ));
+  // PASSED
+
   printf("\n\n");
   printf("_____________________________________\n");
   printf("_________ALL_TESTS_PASSED_:)_________\n");
   printf("_____________________________________\n");
+
+  return 0;
 }
 
 int m2x2_equals_m2x2(
