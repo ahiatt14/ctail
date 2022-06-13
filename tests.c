@@ -107,44 +107,44 @@ int main(void) {
 
   */
 
-  TEST("vec3_dot should calculate the dot product of 2 vectors");
-  vec3_create(1.0f, 1.0f, 2.0f, &actual_v3b);
-  vec3_create(4.2f, 35.3f, 0.1f, &actual_v3);
+  TEST("vec3__dot should calculate the dot product of 2 vectors");
+  vec3__create(1.0f, 1.0f, 2.0f, &actual_v3b);
+  vec3__create(4.2f, 35.3f, 0.1f, &actual_v3);
   assert(diff_is_within_tolerance(
-    vec3_dot(&actual_v3, &actual_v3b),
+    vec3__dot(&actual_v3, &actual_v3b),
     39.7f,
     FLT_EPSILON
   ));
   PASSED
 
-  TEST("vec3_cross should calculate the cross product");
+  TEST("vec3__cross should calculate the cross product");
   f_tol.tolerance = FLT_EPSILON;
-  vec3_create(5, 2.1f, 2.2f, &actual_v3);
-  vec3_create(-2, -8, 3.8f, &actual_v3b);
-  vec3_cross(&actual_v3, &actual_v3b, &actual_v3);
-  vec3_create(25.58, -23.4, -35.8, &expected_v3);
+  vec3__create(5, 2.1f, 2.2f, &actual_v3);
+  vec3__create(-2, -8, 3.8f, &actual_v3b);
+  vec3__cross(&actual_v3, &actual_v3b, &actual_v3);
+  vec3__create(25.58, -23.4, -35.8, &expected_v3);
   assert(vec_equals_vec(&actual_v3.x, &expected_v3.x, 3, &f_tol));
   PASSED
 
   TEST("vec3_minus_vec3 should subtract the 2nd vec3 from the 1st");
   f_tol.tolerance = FLT_EPSILON;
-  vec3_create(3.4f, 1, -1.002f, &actual_v3);
-  vec3_create(1, 0, -1, &actual_v3b);
+  vec3__create(3.4f, 1, -1.002f, &actual_v3);
+  vec3__create(1, 0, -1, &actual_v3b);
   vec3_minus_vec3(&actual_v3, &actual_v3b, &actual_v3);
-  vec3_create(2.4f, 1, -0.002f, &expected_v3);
+  vec3__create(2.4f, 1, -0.002f, &expected_v3);
   assert(vec_equals_vec(&actual_v3.x, &expected_v3.x, 3, &f_tol));
   PASSED
 
   TEST("vec3_plus_vec3 should add the vectors");
   f_tol.tolerance = FLT_EPSILON * 10;
-  vec3_create(3.4f, 1, -1.002f, &actual_v3);
-  vec3_create(1, 0, -1, &actual_v3b);
+  vec3__create(3.4f, 1, -1.002f, &actual_v3);
+  vec3__create(1, 0, -1, &actual_v3b);
   vec3_plus_vec3(&actual_v3, &actual_v3b, &actual_v3);
-  vec3_create(4.4f, 1, -2.002f, &expected_v3);
+  vec3__create(4.4f, 1, -2.002f, &expected_v3);
   assert(vec_equals_vec(&actual_v3.x, &expected_v3.x, 3, &f_tol));
   PASSED
 
-  TEST("vec3_mean should calculate the mean vec3");
+  TEST("vec3__mean should calculate the mean vec3");
   f_tol.tolerance = FLT_EPSILON;
   struct vec3 vecs[4] = {
     { 2.3f, 4, 9 },
@@ -152,15 +152,15 @@ int main(void) {
     { 0.1f, 0.1f, 0.1f },
     { 2, 0.8f, 3 }
   };
-  vec3_mean(vecs, 4, &actual_v3);
-  vec3_create(0.6f, 1.75f, 3.575f, &expected_v3);
+  vec3__mean(vecs, 4, &actual_v3);
+  vec3__create(0.6f, 1.75f, 3.575f, &expected_v3);
   assert(vec_equals_vec(&actual_v3.x, &expected_v3.x, 3, &f_tol));
   PASSED
 
-  TEST("vec3_magnitude should calculate the mag of the vec3");
+  TEST("vec3__magnitude should calculate the mag of the vec3");
   f_tol.tolerance = FLT_EPSILON;
-  vec3_create(4.5f, 8, -2.2f, &actual_v3);
-  float actual_magnitude = vec3_magnitude(&actual_v3);
+  vec3__create(4.5f, 8, -2.2f, &actual_v3);
+  float actual_magnitude = vec3__magnitude(&actual_v3);
   assert(diff_is_within_tolerance(
     9.438749917229f,
     actual_magnitude,
@@ -168,16 +168,16 @@ int main(void) {
   ));
   PASSED
 
-  TEST("vec3_normalize should normalize the vec3");
+  TEST("vec3__normalize should normalize the vec3");
   f_tol.tolerance = FLT_EPSILON;
-  vec3_create(23.2f, 12.49f, 92.3f, &actual_v3);
-  vec3_create(
+  vec3__create(23.2f, 12.49f, 92.3f, &actual_v3);
+  vec3__create(
     0.2416991f,
     0.1301216f,
     0.9615872f,
     &expected_v3
   );
-  vec3_normalize(&actual_v3, &actual_v3);
+  vec3__normalize(&actual_v3, &actual_v3);
   assert(vec_equals_vec(
     &expected_v3.x,
     &actual_v3.x,
@@ -193,19 +193,19 @@ int main(void) {
   */
 
   TEST("m2x2_deterimant should correctly calculate the determinant");
-  m2x2_create(
+  m2x2__create(
     3, 2,
     2, -2,
     &actual_m2
   );
-  float actual = m2x2_determinant(&actual_m2);
+  float actual = m2x2__determinant(&actual_m2);
   float expected = -10;
   assert(diff_is_within_tolerance(actual, expected, FLT_EPSILON));
   PASSED
 
-  TEST("m3x3_determinant should calculate the determinant");
+  TEST("m3x3__determinant should calculate the determinant");
   f_tol.tolerance = FLT_EPSILON * 10;
-  m3x3_create(
+  m3x3__create(
     3, 1.3f, 4,
     0, 1.2f, 3,
     -1, 0.3f, 0.3f,
@@ -213,62 +213,62 @@ int main(void) {
   );
   assert(diff_is_within_tolerance(
     -0.72f,
-    m3x3_determinant(&actual_m3),
+    m3x3__determinant(&actual_m3),
     f_tol.tolerance
   ));
   PASSED
 
-  TEST("m3x3_minor should calculate the minor for the given r and c");
-  m3x3_create(
+  TEST("m3x3__minor should calculate the minor for the given r and c");
+  m3x3__create(
     3, 0, 2,
     2, 0, -2,
     0, 1, 1,
     &actual_m3
   );
-  float actual = m3x3_minor(2, 1, &actual_m3);
+  float actual = m3x3__minor(2, 1, &actual_m3);
   float expected = -10;
   assert(diff_is_within_tolerance(actual, expected, FLT_EPSILON));
   PASSED
 
-  TEST("m3x3_minor run #2");
-  m3x3_create(
+  TEST("m3x3__minor run #2");
+  m3x3__create(
     2, 3, 3.4,
     2, -2, 1,
     1, 1, 2,
     &actual_m3
   );
-  float actual = m3x3_minor(1, 2, &actual_m3);
+  float actual = m3x3__minor(1, 2, &actual_m3);
   float expected = -1;
   assert(diff_is_within_tolerance(actual, expected, FLT_EPSILON));
   PASSED
 
-  TEST("m3x3_minor run #3");
-  m3x3_create(
+  TEST("m3x3__minor run #3");
+  m3x3__create(
     2, 3, 3.4,
     2, -2, 1,
     1, 1, 2,
     &actual_m3
   );
-  float actual = m3x3_minor(0, 0, &actual_m3);
+  float actual = m3x3__minor(0, 0, &actual_m3);
   float expected = -5;
   assert(diff_is_within_tolerance(actual, expected, FLT_EPSILON));
   PASSED
 
-  TEST("m3x3_minors should create a 3x3 of minors for the original");
+  TEST("m3x3__minors should create a 3x3 of minors for the original");
   f_tol.tolerance = FLT_EPSILON;
-  m3x3_create(
+  m3x3__create(
     3, 0, 2,
     2, 0, -2,
     0, 1, 1,
     &actual_m3
   );
-  m3x3_create(
+  m3x3__create(
     2, 2, 2,
     -2, 3, 3,
     0, -10, 0,
     &expected_m3
   );
-  m3x3_minors(
+  m3x3__minors(
     &actual_m3,
     &actual_m3
   );
@@ -279,21 +279,21 @@ int main(void) {
   ));
   PASSED
 
-  TEST("m3x3_cofactors should create a cofactor matrix of the original");
+  TEST("m3x3__cofactors should create a cofactor matrix of the original");
   f_tol.tolerance = FLT_EPSILON;
-  m3x3_create(
+  m3x3__create(
     2, 2, 2,
     -2, 3, 3,
     0, -10, 0,
     &actual_m3
   );
-  m3x3_create(
+  m3x3__create(
     2, -2, 2,
     2, 3, -3,
     0, 10, 0,
     &expected_m3
   );
-  m3x3_cofactors(
+  m3x3__cofactors(
     &actual_m3,
     &actual_m3
   );
@@ -304,19 +304,19 @@ int main(void) {
   ));
   PASSED
 
-  TEST("m3x3_transpose should transpose the matrix");
+  TEST("m3x3__transpose should transpose the matrix");
   f_tol.tolerance = FLT_EPSILON;
-  m3x3_create(
+  m3x3__create(
     2, 2, 0,
     -2, 3, 10,
     2, -3, 0,
     &actual_m3
   );
-  m3x3_transpose(
+  m3x3__transpose(
     &actual_m3,
     &actual_m3
   );
-  m3x3_create(
+  m3x3__create(
     2, -2, 2,
     2, 3, -3,
     0, 10, 0,
@@ -329,19 +329,19 @@ int main(void) {
   ));
   PASSED
 
-  TEST("m3x3_inverse should correctly invert the matrix");
+  TEST("m3x3__inverse should correctly invert the matrix");
   f_tol.tolerance = FLT_EPSILON * 100;
-  m3x3_create(
+  m3x3__create(
     3, 0, 2,
     2, 0, -2,
     0, 1, 1,
     &actual_m3
   );
-  m3x3_inverse(
+  m3x3__inverse(
     &actual_m3,
     &actual_m3
   );
-  m3x3_create(
+  m3x3__create(
     0.2f, 0.2f, 0,
     -0.2f, 0.3f, 1,
     0.2f, -0.3f, 0,
@@ -355,26 +355,26 @@ int main(void) {
   PASSED
 
   TEST(
-    "m4x4_x_point should correctly multiply a 4d matrix by a\n"
+    "m4x4__x_point should correctly multiply a 4d matrix by a\n"
     "vec3 with an assumed w comp of 1"
   );
   f_tol.tolerance = FLT_EPSILON * 100;
-  vec3_create(6.0f, -20.0f, -14.33f, &actual_v3);
-  m4x4_create(
+  vec3__create(6.0f, -20.0f, -14.33f, &actual_v3);
+  m4x4__create(
     1, 0, 0, 4.0f,
     0, 1, -2.2f, 0,
     0, 0, 1, 0,
     0, 0, 0, 1,
     &actual_m4
   );
-  m4x4_x_point(&actual_m4, &actual_v3, &actual_v3);
-  vec3_create(10, 11.526f, -14.33f, &expected_v3);
+  m4x4__x_point(&actual_m4, &actual_v3, &actual_v3);
+  vec3__create(10, 11.526f, -14.33f, &expected_v3);
   assert(vec_equals_vec(&expected_v3.x, &actual_v3.x, 3, &f_tol));
   PASSED
 
-  TEST("m4x4_create should fill the matrix buffer column-first");
+  TEST("m4x4__create should fill the matrix buffer column-first");
   f_tol.tolerance = FLT_EPSILON;
-  m4x4_create(
+  m4x4__create(
     1, 1, 0, 0,
     6, 6, 0, 0,
     7, 7, 1, 1,
@@ -391,10 +391,10 @@ int main(void) {
   assert(m4x4_equals_m4x4(&expected_m4, &actual_m4, &f_tol));
   PASSED
   
-  TEST("m4x4_identity should create a 4d identity matrix");
+  TEST("m4x4__identity should create a 4d identity matrix");
   f_tol.tolerance = FLT_EPSILON;
-  m4x4_identity(&actual_m4);
-  m4x4_create(
+  m4x4__identity(&actual_m4);
+  m4x4__create(
     1, 0, 0, 0,
     0, 1, 0, 0,
     0, 0, 1, 0,
@@ -404,11 +404,11 @@ int main(void) {
   assert(m4x4_equals_m4x4(&expected_m4, &actual_m4, &f_tol));
   PASSED
 
-  TEST("m4x4_translation should create a translation matrix");
+  TEST("m4x4__translation should create a translation matrix");
   f_tol.tolerance = FLT_EPSILON;
   struct vec3 t = { 2.355f, 30, 1 };
-  m4x4_translation(&t, &actual_m4);
-  m4x4_create(
+  m4x4__translation(&t, &actual_m4);
+  m4x4__create(
     1, 0, 0, 2.355f,
     0, 1, 0, 30,
     0, 0, 1, 1,
@@ -418,17 +418,17 @@ int main(void) {
   assert(m4x4_equals_m4x4(&expected_m4, &actual_m4, &f_tol));
   PASSED
 
-  TEST("m4x4_transpose should transpose the matrix");
+  TEST("m4x4__transpose should transpose the matrix");
   f_tol.tolerance = FLT_EPSILON;
-  m4x4_create(
+  m4x4__create(
     1, 0, 0, 0,
     2, 1, 0, 0,
     0, 1, 1, 0,
     0, 0, 0, 1,
     &actual_m4
   );
-  m4x4_transpose(&actual_m4);
-  m4x4_create(
+  m4x4__transpose(&actual_m4);
+  m4x4__create(
     1, 2, 0, 0,
     0, 1, 1, 0,
     0, 0, 1, 0,
@@ -438,10 +438,10 @@ int main(void) {
   assert(m4x4_equals_m4x4(&expected_m4, &actual_m4, &f_tol));
   PASSED
 
-  TEST("m4x4_scaling should create a scaling matrix");
+  TEST("m4x4__scaling should create a scaling matrix");
   f_tol.tolerance = FLT_EPSILON;
-  m4x4_scaling(3, &actual_m4);
-  m4x4_create(
+  m4x4__scaling(3, &actual_m4);
+  m4x4__create(
     3, 0, 0, 0,
     0, 3, 0, 0,
     0, 0, 3, 0,
@@ -451,46 +451,46 @@ int main(void) {
   assert(m4x4_equals_m4x4(&expected_m4, &actual_m4, &f_tol));
   PASSED
 
-  TEST("m4x4_rotation should create a working rotation matrix");
+  TEST("m4x4__rotation should create a working rotation matrix");
   // NOTE: math.h trig fns not very accurate (eg cos(90) != 0)
   // but idc really so set tolerance higher
   f_tol.tolerance = FLT_EPSILON * 1000;
   struct vec3 axis;
   struct m4x4 rotation;
-  vec3_create(1.0f, 0.0f, 0.0f, &actual_v3);
-  vec3_create(0.0f, 1.0f, 0.0f, &axis);
-  m4x4_rotation(deg_to_rad(90), &axis, &rotation);
-  m4x4_x_point(&rotation, &actual_v3, &actual_v3);
-  vec3_create(0.0f, 0.0f, -1.0f, &expected_v3);
+  vec3__create(1.0f, 0.0f, 0.0f, &actual_v3);
+  vec3__create(0.0f, 1.0f, 0.0f, &axis);
+  m4x4__rotation(deg_to_rad(90), &axis, &rotation);
+  m4x4__x_point(&rotation, &actual_v3, &actual_v3);
+  vec3__create(0.0f, 0.0f, -1.0f, &expected_v3);
   assert(vec_equals_vec(&expected_v3.x, &actual_v3.x, 3, &f_tol));
   PASSED
 
-  TEST("m4x4_rotation run #2");
+  TEST("m4x4__rotation run #2");
   f_tol.tolerance = FLT_EPSILON * 1000;
   struct vec3 axis;
   struct m4x4 rotation;
-  vec3_create(1.0f, 1.0f, 0, &axis);
-  vec3_normalize(&axis, &axis);
-  vec3_create(1.0f, 0.0f, 0.0f, &actual_v3);
-  m4x4_rotation(deg_to_rad(180), &axis, &rotation);
-  m4x4_x_point(&rotation, &actual_v3, &actual_v3);
-  vec3_create(0.0f, 1.0f, 0, &expected_v3);
+  vec3__create(1.0f, 1.0f, 0, &axis);
+  vec3__normalize(&axis, &axis);
+  vec3__create(1.0f, 0.0f, 0.0f, &actual_v3);
+  m4x4__rotation(deg_to_rad(180), &axis, &rotation);
+  m4x4__x_point(&rotation, &actual_v3, &actual_v3);
+  vec3__create(0.0f, 1.0f, 0, &expected_v3);
   assert(vec_equals_vec(&expected_v3.x, &actual_v3.x, 3, &f_tol));
   PASSED
 
-  TEST("m4x4_view should construct an inverted space transform matrix");
+  TEST("m4x4__view should construct an inverted space transform matrix");
   f_tol.tolerance = FLT_EPSILON;
   struct vec3 up, right, forward;
-  vec3_create(0.0f, 1.0f, 0.0f, &up);
-  vec3_create(1.0f, 0.0f, 0.0f, &right);
-  vec3_create(0.0f, 0.0f, -1.0f, &forward);
-  m4x4_view(
+  vec3__create(0.0f, 1.0f, 0.0f, &up);
+  vec3__create(1.0f, 0.0f, 0.0f, &right);
+  vec3__create(0.0f, 0.0f, -1.0f, &forward);
+  m4x4__view(
     &right,
     &up,
     &forward,
     &actual_m4
   );
-  m4x4_create(
+  m4x4__create(
     1, 0, 0, 0,
     0, 1, 0, 0,
     0, 0, -1, 0,
@@ -506,14 +506,14 @@ int main(void) {
 
   TEST("m4x4_x_m4x4 should correctly multiply 2 matrices");
   f_tol.tolerance = FLT_EPSILON;
-  m4x4_create(
+  m4x4__create(
     1, 0.3f, 3, 0,
     0, -0.2f, 1, 0,
     -2.2f, 0, 1, 0,
     0, 0, 0, 1,
     &actual_m4
   );
-  m4x4_create(
+  m4x4__create(
     1, 0, 0, 0.3f,
     0, 1, 0, 0,
     0, 0, 1, -1.3f,
@@ -525,7 +525,7 @@ int main(void) {
     &actual_m4b,
     &actual_m4
   );
-  m4x4_create(
+  m4x4__create(
     1, 0.3f, 3, -3.6f,
     0, -0.2f, 1, -1.3f,
     -2.2f, 0, 1, -1.96f,
@@ -583,7 +583,7 @@ int main(void) {
   camera__set_position(0.0f, 0.25f, 0.5f, &cam);
   camera__set_look_target(&target, &cam);
   camera__calculate_lookat(&world_up, &cam);
-  m4x4_create(
+  m4x4__create(
     1, 0, 0, 0,
     0, 0.98639392853f, 0.16439899802f, -0.3287979960f,
     0, -0.16439899802f, 0.98639392853f, -0.4520971775f,
@@ -644,7 +644,7 @@ int main(void) {
   viewport__set_width(1920, &vwprt);
   viewport__set_height(1080, &vwprt);
   camera__calculate_perspective(&vwprt, &cam);
-  m4x4_create(
+  m4x4__create(
     1.303221243f, 0, 0, 0,
     0, 2.31683776546f, 0, 0,
     0, 0, -1.0202020202f, -0.20202020202f,
@@ -696,7 +696,7 @@ int main(void) {
     &t,
     &actual_m4
   );
-  m4x4_create(
+  m4x4__create(
     0.919187997f, 0, 0.919187997f, 0.3f,
     0, 1.3f, 0, -2,
     -0.919187997f, 0, 0.919187997f, -2,
@@ -723,7 +723,7 @@ int main(void) {
   //   &t,
   //   &actual_m4
   // );
-  // m4x4_create(
+  // m4x4__create(
   //   1, 0, 0, 0,
   //   0, 1, 0, 0,
   //   0, 0, 1, 1,

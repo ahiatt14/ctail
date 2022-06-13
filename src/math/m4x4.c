@@ -17,7 +17,7 @@ static inline void fill_m4x4_data(
   m[3] = i12; m[7] = i13; m[11] = i14; m[15] = i15;
 };
 
-void m4x4_create(
+void m4x4__create(
   float i0, float i1, float i2, float i3,
   float i4, float i5, float i6, float i7,
   float i8, float i9, float i10, float i11,
@@ -46,7 +46,7 @@ void m4x4_x_m4x4(
       m0->data[12+i%4] * m1->data[(int)(floor(i/4)*4+3)];
 }
 
-static inline void m4x4_transpose_p(float *m) {
+static inline void m4x4__transpose_p(float *m) {
   float temp;
   temp = m[4];
   m[4] = m[1];
@@ -68,11 +68,11 @@ static inline void m4x4_transpose_p(float *m) {
   m[11] = temp;
 }
 
-void m4x4_transpose(struct m4x4 *m) {
-  m4x4_transpose_p(&(m->data[0]));
+void m4x4__transpose(struct m4x4 *m) {
+  m4x4__transpose_p(&(m->data[0]));
 }
 
-void m4x4_identity(struct m4x4 *m) {
+void m4x4__identity(struct m4x4 *m) {
   fill_m4x4_data(
     1, 0, 0, 0,
     0, 1, 0, 0,
@@ -83,7 +83,7 @@ void m4x4_identity(struct m4x4 *m) {
 }
 
 // TODO: is this used anywhere?
-void m4x4_x_point(
+void m4x4__x_point(
   const struct m4x4 *m,
   const struct vec3 *t,
   struct vec3 *dest
@@ -98,7 +98,7 @@ void m4x4_x_point(
   memcpy(&dest->x, &temp.x, sizeof(struct vec3));
 }
 
-void m4x4_translation(const struct vec3 *t, struct m4x4 *m) {
+void m4x4__translation(const struct vec3 *t, struct m4x4 *m) {
   fill_m4x4_data(
     1, 0, 0, t->x,
     0, 1, 0, t->y,
@@ -109,7 +109,7 @@ void m4x4_translation(const struct vec3 *t, struct m4x4 *m) {
 }
 
 // TODO: could update to scale on each axis if we want idk
-void m4x4_scaling(float s, struct m4x4 *m) {
+void m4x4__scaling(float s, struct m4x4 *m) {
   fill_m4x4_data(
     s, 0, 0, 0,
     0, s, 0, 0,
@@ -119,7 +119,7 @@ void m4x4_scaling(float s, struct m4x4 *m) {
   );
 }
 
-void m4x4_rotation(float rads, const struct vec3 *t, struct m4x4 *m) {
+void m4x4__rotation(float rads, const struct vec3 *t, struct m4x4 *m) {
 
   double c = cos(rads);
   double s = sin(rads);
@@ -142,7 +142,7 @@ void m4x4_rotation(float rads, const struct vec3 *t, struct m4x4 *m) {
   );
 }
 
-void m4x4_view(
+void m4x4__view(
   const struct vec3 *right,
   const struct vec3 *up,
   const struct vec3 *forward,
@@ -157,7 +157,7 @@ void m4x4_view(
   );
 }
 
-void m4x4_inverted_translation(
+void m4x4__inverted_translation(
   const struct vec3 *t,
   struct m4x4 *m
 ) {

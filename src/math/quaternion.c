@@ -56,7 +56,7 @@ void quaternion__to_m4x4(
   wx = p->w * p->v.x;
   wy = p->w * p->v.y;
   wz = p->w * p->v.z;
-  m4x4_create(
+  m4x4__create(
     1 - 2 * (y2 + z2), 2 * (xy - wz), 2 * (xz + wy), 0,
     2 * (xy + wz), 1 - 2 * (x2 + z2), 2 * (yz - wx), 0,
     2 * (xz - wy), 2 * (yz + wx), 1 - 2 * (x2 + y2), 0,

@@ -16,8 +16,8 @@ static struct vec3 camera_forward, camera_right, camera_up;
 static struct m4x4 view, offset;
 
 void camera__init(struct camera *c) {
-  m4x4_identity(&c->_lookat);
-  m4x4_identity(&c->_perspective);
+  m4x4__identity(&c->_lookat);
+  m4x4__identity(&c->_perspective);
 }
 
 const struct m4x4* camera__get_lookat(const struct camera *c) {
@@ -96,7 +96,7 @@ const struct m4x4* camera__calculate_perspective(
     -(2 * cam->_far_clip_distance * cam->_near_clip_distance) /
     (cam->_far_clip_distance - cam->_near_clip_distance);
 
-  m4x4_create(
+  m4x4__create(
     m0, 0, m8, 0,
     0, m5, m9, 0,
     0, 0, m10, m14,
@@ -116,19 +116,19 @@ const struct m4x4* camera__calculate_lookat(
 ) {
 
   vec3_minus_vec3(&cam->_position, &cam->_look_target, &camera_forward);
-  vec3_normalize(&camera_forward, &camera_forward);
-  vec3_cross(up, &camera_forward, &camera_right);
-  vec3_normalize(&camera_right, &camera_right);
-  vec3_cross(&camera_forward, &camera_right, &camera_up);
-  vec3_normalize(&camera_up, &camera_up);
+  vec3__normalize(&camera_forward, &camera_forward);
+  vec3__cross(up, &camera_forward, &camera_right);
+  vec3__normalize(&camera_right, &camera_right);
+  vec3__cross(&camera_forward, &camera_right, &camera_up);
+  vec3__normalize(&camera_up, &camera_up);
 
-  m4x4_view(
+  m4x4__view(
     &camera_right,
     &camera_up,
     &camera_forward,
     &view
   );
-  m4x4_inverted_translation(
+  m4x4__inverted_translation(
     &cam->_position,
     &offset
   );

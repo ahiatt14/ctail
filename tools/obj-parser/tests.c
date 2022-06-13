@@ -203,7 +203,7 @@ int main() {
   struct vec3 actual = {0};
   struct vec3 expected = {0};
   calculate_face_normal(positions, &actual);
-  vec3_create(
+  vec3__create(
     -0.577350269f,
     0.577350269f,
     0.577350269f,

@@ -24,18 +24,18 @@ void vec3_plus_vec3(
   sum->z = t0->z + t1->z;
 }
 
-void vec3_create(float x, float y, float z, struct vec3 *t) {
+void vec3__create(float x, float y, float z, struct vec3 *t) {
   t->x = x; t->y = y; t->z = z;
 }
 
-float vec3_dot(const struct vec3 *t0, const struct vec3 *t1) {
+float vec3__dot(const struct vec3 *t0, const struct vec3 *t1) {
   return
     t0->x * t1->x +
     t0->y * t1->y +
     t0->z * t1->z;
 }
 
-void vec3_cross(
+void vec3__cross(
   const struct vec3 *t0,
   const struct vec3 *t1,
   struct vec3 *cross
@@ -47,7 +47,7 @@ void vec3_cross(
   memcpy(&cross->x, &temp.x, sizeof(struct vec3));
 }
 
-void vec3_mean(const struct vec3 *vec3s, int count, struct vec3 *avg) {
+void vec3__mean(const struct vec3 *vec3s, int count, struct vec3 *avg) {
   for (int component = 0; component < 3; component++) {
     float temp_mean = 0;
     for (int i = 0; i < count; i++) {
@@ -59,7 +59,7 @@ void vec3_mean(const struct vec3 *vec3s, int count, struct vec3 *avg) {
   }
 }
 
-float vec3_magnitude(const struct vec3 *t) {
+float vec3__magnitude(const struct vec3 *t) {
   return sqrt(
     t->x * t->x +
     t->y * t->y +
@@ -67,8 +67,8 @@ float vec3_magnitude(const struct vec3 *t) {
   );
 }
 
-void vec3_normalize(const struct vec3 *t, struct vec3 *normalized) {
-  float m = vec3_magnitude(t);
+void vec3__normalize(const struct vec3 *t, struct vec3 *normalized) {
+  float m = vec3__magnitude(t);
   normalized->x = t->x / m;
   normalized->y = t->y / m;
   normalized->z = t->z / m;

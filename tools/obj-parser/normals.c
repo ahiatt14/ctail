@@ -21,12 +21,12 @@ void calculate_face_normal(
     &ccw_triangle_positions[1],
     &temp_edge2
   );
-  vec3_cross(
+  vec3__cross(
     &temp_edge1,
     &temp_edge2,
     cross_product
   );
-  vec3_normalize(cross_product, cross_product);
+  vec3__normalize(cross_product, cross_product);
 }
 
 static void copy_vec3s(
@@ -93,6 +93,6 @@ void calculate_vertex_normal(
       sizeof(struct vec3)
     );
   }
-  vec3_mean(cross_vectors, cross_count, normalized_output);
-  vec3_normalize(normalized_output, normalized_output);
+  vec3__mean(cross_vectors, cross_count, normalized_output);
+  vec3__normalize(normalized_output, normalized_output);
 }
