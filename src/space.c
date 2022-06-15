@@ -4,6 +4,7 @@
 #include "tail_math.h"
 #include "quaternion.h"
 #include "m4x4.h"
+#include "m3x3.h"
 
 // TODO: more efficient caching? we'll be performing create_model a lot
 static struct m4x4 temp__scale;
@@ -20,10 +21,10 @@ static struct m4x4 temp__rotate_and_scale;
 void space__create_model(
   const struct coordinate_space *space,
   const struct transform *t,
-  struct m4x4 *model
+  struct m4x4 *dest
 ) {
 
-  m4x4__identity(model);
+  m4x4__identity(dest);
   
   m4x4__translation(&t->position, &temp__translation);
   m4x4__scaling(t->scale, &temp__scale);
@@ -62,6 +63,15 @@ void space__create_model(
   m4x4_x_m4x4(
     &temp__translation,
     &temp__rotate_and_scale,
-    model
+    dest
   );
+}
+
+void space__create_normals_model(
+  const struct m4x4 *mesh_model,
+  struct m3x3 *dest
+) {
+  m4x4__sub3x3_from00(mesh_model, dest);
+  m3x3__inverse(dest, dest);
+  m3x3__transpose(dest, dest);
 }

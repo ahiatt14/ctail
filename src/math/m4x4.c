@@ -33,6 +33,8 @@ void m4x4__create(
   );
 }
 
+void m4x4__sub3x3_from00(const struct m4x4 *src, struct m3x3 *dest);
+
 void m4x4_x_m4x4(
   const struct m4x4 *m0,
   const struct m4x4 *m1,
@@ -83,7 +85,7 @@ void m4x4__identity(struct m4x4 *m) {
 }
 
 // TODO: is this used anywhere?
-void m4x4__x_point(
+void m4x4_x_point(
   const struct m4x4 *m,
   const struct vec3 *t,
   struct vec3 *dest
@@ -168,6 +170,14 @@ void m4x4__inverted_translation(
     0, 0, 0, 1,
     m->data
   );
+}
+
+void m4x4__sub3x3_from00(
+  const struct m4x4 *src,
+  struct m3x3 *dest
+) {
+  for (int c = 0; c < 3; c++) for (int r = 0; r < 3; r++)
+    dest->data[3 * c + r] = src->data[4 * c + r];
 }
 
 // void m4x4_ortho_projection(

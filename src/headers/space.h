@@ -22,6 +22,11 @@ void space__create_model(
   struct m4x4 *model
 );
 
+void space__create_normals_model(
+  const struct m4x4 *mesh_model,
+  struct m3x3 *dest
+);
+
 void space__slerp_righthand_rotate(
   const struct transform *obj,
   const struct vec3 *axis,

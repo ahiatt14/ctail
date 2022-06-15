@@ -21,7 +21,8 @@ usage() {
     static              compile tail into static lib
     create-slim         create dir for lib and header to easily copy into game
     template            bootstrap a new game project at output path
-    test                build tail, run and log tests to file
+    test                build tail, run tests, print results to console
+    testlog             build tail, run tests, print results to file
     validate-glsl       check a glsl file for errors
     parse-obj           process obj file into c src and print to stdout
 
@@ -114,8 +115,7 @@ template() {
   fi
 }
 run_and_log_tests() {
-  ./tests.exe
-  #  &> test_report.txt
+  ./tests.exe &> test_report.txt
 }
 build_glfw() {
   rm -rf libs/glfw/obj libs/glfw/build
@@ -212,6 +212,9 @@ elif [ "$ARG1" == "template" ]; then
   clean && build && static && build_tools && create_slim && template
   clean
 elif [ "$ARG1" == "test" ]; then
+  clean && build && static && build_tests && ./tests.exe
+  rm -f tests.exe tests.o
+elif [ "$ARG1" == "testlog" ]; then
   clean && build && static && build_tests && run_and_log_tests
   rm -f tests.exe tests.o
 elif [ "$ARG1" == "build-glfw" ]; then

@@ -355,7 +355,7 @@ int main(void) {
   PASSED
 
   TEST(
-    "m4x4__x_point should correctly multiply a 4d matrix by a\n"
+    "m4x4_x_point should correctly multiply a 4d matrix by a\n"
     "vec3 with an assumed w comp of 1"
   );
   f_tol.tolerance = FLT_EPSILON * 100;
@@ -367,7 +367,7 @@ int main(void) {
     0, 0, 0, 1,
     &actual_m4
   );
-  m4x4__x_point(&actual_m4, &actual_v3, &actual_v3);
+  m4x4_x_point(&actual_m4, &actual_v3, &actual_v3);
   vec3__create(10, 11.526f, -14.33f, &expected_v3);
   assert(vec_equals_vec(&expected_v3.x, &actual_v3.x, 3, &f_tol));
   PASSED
@@ -460,7 +460,7 @@ int main(void) {
   vec3__create(1.0f, 0.0f, 0.0f, &actual_v3);
   vec3__create(0.0f, 1.0f, 0.0f, &axis);
   m4x4__rotation(deg_to_rad(90), &axis, &rotation);
-  m4x4__x_point(&rotation, &actual_v3, &actual_v3);
+  m4x4_x_point(&rotation, &actual_v3, &actual_v3);
   vec3__create(0.0f, 0.0f, -1.0f, &expected_v3);
   assert(vec_equals_vec(&expected_v3.x, &actual_v3.x, 3, &f_tol));
   PASSED
@@ -473,7 +473,7 @@ int main(void) {
   vec3__normalize(&axis, &axis);
   vec3__create(1.0f, 0.0f, 0.0f, &actual_v3);
   m4x4__rotation(deg_to_rad(180), &axis, &rotation);
-  m4x4__x_point(&rotation, &actual_v3, &actual_v3);
+  m4x4_x_point(&rotation, &actual_v3, &actual_v3);
   vec3__create(0.0f, 1.0f, 0, &expected_v3);
   assert(vec_equals_vec(&expected_v3.x, &actual_v3.x, 3, &f_tol));
   PASSED
@@ -535,6 +535,35 @@ int main(void) {
   assert(m4x4_equals_m4x4(
     &actual_m4,
     &expected_m4,
+    &f_tol
+  ));
+  PASSED
+
+  TEST(
+    "m4x4__sub3x3_from00 should extract the 0,0 index 3x3 submatrix"
+    "from the source 4x4"
+  );
+  f_tol.tolerance = FLT_EPSILON;
+  struct m4x4 m;
+  m4x4__create(
+    1, 0.3f, 3, 0,
+    0, -0.2f, 1, 0,
+    -2.2f, 0, 1, 0,
+    0, 0, 0, 1,
+    &m
+  );
+  struct m3x3 actual_m3;
+  m4x4__sub3x3_from00(&m, &actual_m3);
+  struct m3x3 expected_m3;
+  m3x3__create(
+    1, 0.3f, 3,
+    0, -0.2f, 1,
+    -2.2f, 0, 1,
+    &expected_m3
+  );
+  assert(m3x3_equals_m3x3(
+    &actual_m3,
+    &expected_m3,
     &f_tol
   ));
   PASSED
