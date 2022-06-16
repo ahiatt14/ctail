@@ -1,3 +1,3 @@
 i686-w64-mingw32-gcc -Wall \
--o bin/headerfy-glsl.exe \
+-o bin/sourcify-glsl.exe \
 main.c
