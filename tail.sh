@@ -93,7 +93,7 @@ create_slim() {
   && \
   cp tools/validate-glsl/bin/validate-glsl.exe copy/tail/tools \
   && \
-  cp tools/headerfy-glsl/bin/headerfy-glsl.exe copy/tail/tools
+  cp tools/sourcify-glsl/bin/sourcify-glsl.exe copy/tail/tools
 }
 template() {
   
@@ -146,7 +146,7 @@ build_tools() {
   # parameter here)
   cd tools/obj-parser && ./build.sh build
   cd ../validate-glsl && ./build.sh && \
-  cd ../headerfy-glsl && ./build.sh && \
+  cd ../sourcify-glsl && ./build.sh && \
   cd ../..
 }
 validate_glsl() {
