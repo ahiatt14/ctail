@@ -129,6 +129,10 @@ static void clear(const float *color) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+static void clear_depth_buffer() {
+  glClear(GL_DEPTH_BUFFER_BIT);
+}
+
 static void select_texture(const struct texture *tex) {
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
 }
@@ -225,6 +229,7 @@ static int get_viewport_height() {
 
 void gpu__create_api(struct gpu_api *gpu) {
   gpu->clear = clear;
+  gpu->clear_depth_buffer = clear_depth_buffer;
   gpu->enable_depth_test = enable_depth_test;
   gpu->cull_back_faces = cull_back_faces;
   gpu->cull_no_faces = cull_no_faces;
