@@ -87,6 +87,7 @@ int main(int argc, char *argv[]) {
   char header_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
   strcat(header_filepath, argv[3]);
   strcat(header_filepath, filename);
+  strcat(header_filepath, "_mesh");
   strcat(header_filepath, ".h");
   FILE *header_file = fopen(header_filepath, "w");
   // TODO: I much prefer putting input validation at the top
@@ -104,8 +105,9 @@ int main(int argc, char *argv[]) {
 
   // TODO: could abstract this file opening stuff
   char src_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
-  strcat(src_filepath, argv[3]);
+  strcat(src_filepath, argv[4]);
   strcat(src_filepath, filename);
+  strcat(src_filepath, "_mesh");
   strcat(src_filepath, ".c");
   FILE *src_file = fopen(src_filepath, "w");
   // TODO: I much prefer putting input validation at the top
@@ -170,7 +172,7 @@ void write_src_file(
   FILE *file
 ) {
   fprintf(file, "#include \"tail.h\"\n");
-  fprintf(file, "#include \"%s.h\"\n", filename);
+  fprintf(file, "#include \"%s_mesh.h\"\n", filename);
   fprintf(file, "unsigned int %s_vertex_count = %i;\n", filename, vertex_count);
   fprintf(file, "struct vertex %s_vertices[%i] = {\n", filename, vertex_count);
   for (int i = 0; i < vertex_count; i++){

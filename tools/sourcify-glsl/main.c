@@ -60,6 +60,7 @@ int main(int argc, char *argv[]) {
   }
 
   char line[MAX_SRC_LINE_LENGTH] = {0};
+  fprintf(src_file, "#include \"%s.h\"\n", filename);
   fprintf(src_file, "const char *%s_src = ", filename);
   while(fgets(line, MAX_SRC_LINE_LENGTH, glsl_file)) {
     char temp_line[MAX_SRC_LINE_LENGTH] = {0};
