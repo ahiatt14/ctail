@@ -11,20 +11,29 @@
 #define MAX_INDICES 15000
 #define MAX_FILENAME_LENGTH 100
 
-void print_vert(const struct vertex *v);
-void print_vec3(const struct vec3 *t);
-void print_vec2(const struct vec2 *t);
-void print_mesh(
-  const char *filename,
-  struct vertex *vertices,
-  unsigned int *indices,
-  unsigned int vertex_count,
-  unsigned int index_count
-);
+#define MAX_OUTPUT_PATH_CHAR_COUNT 200
+
+void fprint_vert(FILE *file, const struct vertex *v);
+void fprint_vec3(FILE *file, const struct vec3 *t);
+void fprint_vec2(FILE *file, const struct vec2 *t);
 void filename_from_path(
   char *filename_out,
   char *filepath,
   size_t max_length
+);
+void write_header_file(
+  const char *filename,
+  unsigned int vertex_count,
+  unsigned int index_count,
+  FILE *file
+);
+void write_src_file(
+  const char *filename,
+  struct vertex *vertices,
+  unsigned int *indices,
+  unsigned int vertex_count,
+  unsigned int index_count,
+  FILE *file
 );
 
 int main(int argc, char *argv[]) {
@@ -34,11 +43,6 @@ int main(int argc, char *argv[]) {
   unsigned int indices[MAX_INDICES] = {0};
   int vertex_count = 0;
   int index_count = 0;
-
-  if (argc != 3) {
-    printf("must include filepath and shading type\n");
-    return 1;
-  }
 
   if (
     strcmp(argv[2], "smooth") != 0 &&
@@ -79,66 +83,108 @@ int main(int argc, char *argv[]) {
     );
   }
 
-  print_mesh(
+  // TODO: could abstract this file opening stuff
+  char header_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
+  strcat(header_filepath, argv[3]);
+  strcat(header_filepath, filename);
+  strcat(header_filepath, ".h");
+  FILE *header_file = fopen(header_filepath, "w");
+  // TODO: I much prefer putting input validation at the top
+  if (!header_file) {
+    printf("Could not open %s for writing", header_filepath);
+    return 1;
+  }
+  write_header_file(
+    filename,
+    vertex_count,
+    index_count,
+    header_file
+  );
+  fclose(header_file);
+
+  // TODO: could abstract this file opening stuff
+  char src_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
+  strcat(src_filepath, argv[3]);
+  strcat(src_filepath, filename);
+  strcat(src_filepath, ".c");
+  FILE *src_file = fopen(src_filepath, "w");
+  // TODO: I much prefer putting input validation at the top
+  if (!src_file) {
+    printf("Could not open %s for writing", src_filepath);
+    return 1;
+  }
+  write_src_file(
     filename,
     vertices,
     indices,
     vertex_count,
-    index_count
+    index_count,
+    src_file
   );
+  fclose(src_file);
 
   fclose(obj_file);
   return 0;
 }
 
-void print_vec3(const struct vec3 *t) {
-  printf("{ %.6ff, %.6ff, %.6ff }", t->x, t->y, t->z);
+void fprint_vec3(FILE *file, const struct vec3 *t) {
+  fprintf(file, "{ %.6ff, %.6ff, %.6ff }", t->x, t->y, t->z);
 }
 
-void print_vec2(const struct vec2 *t) {
-  printf("{ %.6ff, %.6ff }", t->x, t->y);
+void fprint_vec2(FILE *file, const struct vec2 *t) {
+  fprintf(file, "{ %.6ff, %.6ff }", t->x, t->y);
 }
 
-void print_vert(const struct vertex *v) {
-  printf("{");
-  print_vec3(&v->position);
-  printf(",");
-  print_vec3(&v->normal);
-  printf(",");
-  print_vec2(&v->uv);
-  printf("}");
+void fprint_vert(FILE *file, const struct vertex *v) {
+  fprintf(file, "{");
+  fprint_vec3(file, &v->position);
+  fprintf(file, ",");
+  fprint_vec3(file, &v->normal);
+  fprintf(file, ",");
+  fprint_vec2(file, &v->uv);
+  fprintf(file, "}");
 }
 
-void print_mesh(
+void write_header_file(
+  const char *filename,
+  unsigned int vertex_count,
+  unsigned int index_count,
+  FILE *file
+) {
+  fprintf(file, "#ifndef __TAIL_%s_MESH__\n", filename);
+  fprintf(file, "#define __TAIL_%s_MESH__\n", filename);
+  fprintf(file, "#include \"tail.h\"\n");
+  fprintf(file, "extern unsigned int %s_vertex_count;\n", filename);
+  fprintf(file, "extern struct vertex %s_vertices[%i];\n", filename, vertex_count);
+  fprintf(file, "extern unsigned int %s_index_count;\n", filename);
+  fprintf(file, "extern unsigned int %s_indices[%i];\n", filename, index_count);
+  fprintf(file, "#endif");
+}
+
+void write_src_file(
   const char *filename,
   struct vertex *vertices,
   unsigned int *indices,
   unsigned int vertex_count,
-  unsigned int index_count
+  unsigned int index_count,
+  FILE *file
 ) {
-  
-  printf("#ifndef __TAIL_%s_MESH__\n", filename);
-  printf("#define __TAIL_%s_MESH__\n", filename);
-
-  printf("unsigned int %s_vertex_count = %i;\n", filename, vertex_count);
-
-  printf("struct vertex %s_vertices[%i] = {\n", filename, vertex_count);
+  fprintf(file, "#include \"tail.h\"\n");
+  fprintf(file, "#include \"%s.h\"\n", filename);
+  fprintf(file, "unsigned int %s_vertex_count = %i;\n", filename, vertex_count);
+  fprintf(file, "struct vertex %s_vertices[%i] = {\n", filename, vertex_count);
   for (int i = 0; i < vertex_count; i++){
-    print_vert(&vertices[i]);
-    if (i < vertex_count - 1) printf(",");
-    printf("\n");
+    fprint_vert(file, &vertices[i]);
+    if (i < vertex_count - 1) fprintf(file, ",");
+    fprintf(file, "\n");
   }
-  printf("};\n");
-
-  printf("unsigned int %s_index_count = %i;\n", filename, index_count);
-
-  printf("unsigned int %s_indices[%i] = {\n", filename, index_count);
+  fprintf(file, "};\n");
+  fprintf(file, "unsigned int %s_index_count = %i;\n", filename, index_count);
+  fprintf(file, "unsigned int %s_indices[%i] = {\n", filename, index_count);
   for (int i = 0; i < index_count; i+=3) {
-    printf("%i, %i, %i,\n", indices[i], indices[i+1], indices[i+2]);
+    fprintf(file, "%i, %i, %i,\n", indices[i], indices[i+1], indices[i+2]);
   }
-  printf("};\n");
-
-  printf("#endif\n");
+  fprintf(file, "};\n");
 }
 
 void filename_from_path(
