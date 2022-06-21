@@ -1,4 +1,5 @@
-#include <stdio.h>
+// #include <stdio.h> // TODO: remove?
+#include <string.h>
 #include <stdlib.h>
 
 #include "glad.h"
@@ -61,7 +62,7 @@ static void copy_rgb_texture_to_gpu(struct texture *tex) {
   );
 }
 
-static void copy_mesh_to_gpu(struct drawable_mesh *dm) {
+static void copy_mesh_to_gpu(struct drawable_mesh *dm, GLenum usage) {
 
   glGenBuffers(1, &dm->_impl_vbo_id);
   glGenBuffers(1, &dm->_impl_ibo_id);
@@ -74,7 +75,7 @@ static void copy_mesh_to_gpu(struct drawable_mesh *dm) {
     GL_ARRAY_BUFFER,
     dm->vertex_buffer_size,
     &(dm->vertex_buffer->position.x),
-    GL_STATIC_DRAW // TODO: this should be parameterized!
+    usage
   );
 
   glEnableVertexAttribArray(POSITION_ATTRIB_INDEX);
@@ -118,6 +119,26 @@ static void copy_mesh_to_gpu(struct drawable_mesh *dm) {
     dm->index_buffer,
     GL_STATIC_DRAW
   );
+}
+
+void *temp_buffer_map;
+static void update_gpu_mesh_data(const struct drawable_mesh *dm) {
+  glBindBuffer(GL_ARRAY_BUFFER, dm->_impl_vbo_id);
+  temp_buffer_map = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+  memcpy(
+    temp_buffer_map,
+    &dm->vertex_buffer[0].position.x,
+    dm->vertex_buffer_size
+  );
+  glUnmapBuffer(GL_ARRAY_BUFFER);
+}
+
+static void copy_static_mesh_to_gpu(struct drawable_mesh *dm) {
+  copy_mesh_to_gpu(dm, GL_STATIC_DRAW);
+}
+
+static void copy_dynamic_mesh_to_gpu(struct drawable_mesh *dm) {
+  copy_mesh_to_gpu(dm, GL_DYNAMIC_DRAW);
 }
 
 static void enable_depth_test() {
@@ -233,7 +254,9 @@ void gpu__create_api(struct gpu_api *gpu) {
   gpu->enable_depth_test = enable_depth_test;
   gpu->cull_back_faces = cull_back_faces;
   gpu->cull_no_faces = cull_no_faces;
-  gpu->copy_mesh_to_gpu = copy_mesh_to_gpu;
+  gpu->copy_static_mesh_to_gpu = copy_static_mesh_to_gpu;
+  gpu->copy_dynamic_mesh_to_gpu = copy_dynamic_mesh_to_gpu;
+  gpu->update_gpu_mesh_data = update_gpu_mesh_data;
   gpu->copy_rgb_texture_to_gpu = copy_rgb_texture_to_gpu;
   gpu->copy_program_to_gpu = copy_program_to_gpu;
   gpu->select_gpu_program = select_gpu_program;
