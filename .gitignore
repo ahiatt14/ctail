@@ -7,9 +7,9 @@ tests.exe
 static/
 slim/
 
-tools/obj-parser/obj_files/
-tools/obj-parser/output/
-tools/obj-parser/bin/
+tools/sourcify-obj/obj_files/
+tools/sourcify-obj/output/
+tools/sourcify-obj/bin/
 tools/validate-glsl/bin/
 tools/sourcify-glsl/bin/
-tools/obj-parser/test_report.txt
+tools/sourcify-obj/test_report.txt

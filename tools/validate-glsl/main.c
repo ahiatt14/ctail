@@ -55,7 +55,6 @@ int main(int argc, char *argv[]) {
 
   const char *src = file_data;
 
-  // TODO: abstract this and add to obj-parser
   char filename[MAX_FILENAME_LENGTH] = {'\0'};
   filename_from_path(filename, argv[1], MAX_FILENAME_LENGTH);
 

@@ -85,7 +85,7 @@ create_slim() {
   && \
   cp -r src/headers slim/tail/src \
   && \
-  cp tools/obj-parser/bin/obj-parser.exe slim/tail/tools \
+  cp tools/sourcify-obj/bin/sourcify-obj.exe slim/tail/tools \
   && \
   cp tools/validate-glsl/bin/validate-glsl.exe slim/tail/tools \
   && \
@@ -139,7 +139,7 @@ build_tests() {
 build_tools() {
   # creates windows executables (doesn't matter for wsl but target should be
   # parameter here)
-  cd tools/obj-parser && ./build.sh build
+  cd tools/sourcify-obj && ./build.sh build
   cd ../validate-glsl && ./build.sh && \
   cd ../sourcify-glsl && ./build.sh && \
   cd ../..

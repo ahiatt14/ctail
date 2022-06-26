@@ -23,16 +23,14 @@ void filename_from_path(
 );
 void write_header_file(
   const char *filename,
-  unsigned int vertex_count,
-  unsigned int index_count,
   FILE *file
 );
 void write_src_file(
   const char *filename,
   struct vertex *vertices,
   unsigned int *indices,
-  unsigned int vertex_count,
-  unsigned int index_count,
+  int vertex_count,
+  int index_count,
   FILE *file
 );
 
@@ -95,12 +93,7 @@ int main(int argc, char *argv[]) {
     printf("Could not open %s for writing", header_filepath);
     return 1;
   }
-  write_header_file(
-    filename,
-    vertex_count,
-    index_count,
-    header_file
-  );
+  write_header_file(filename, header_file);
   fclose(header_file);
 
   // TODO: could abstract this file opening stuff
@@ -149,14 +142,12 @@ void fprint_vert(FILE *file, const struct vertex *v) {
 
 void write_header_file(
   const char *filename,
-  unsigned int vertex_count,
-  unsigned int index_count,
   FILE *file
 ) {
   fprintf(file, "#ifndef __TAIL_%s_MESH__\n", filename);
   fprintf(file, "#define __TAIL_%s_MESH__\n", filename);
   fprintf(file, "#include \"tail.h\"\n");
-  fprintf(file, "extern drawable_mesh %s_mesh;\n", filename);
+  fprintf(file, "extern struct drawable_mesh %s_mesh;\n", filename);
   fprintf(file, "#endif");
 }
 
@@ -164,26 +155,28 @@ void write_src_file(
   const char *filename,
   struct vertex *vertices,
   unsigned int *indices,
-  unsigned int vertex_count,
-  unsigned int index_count,
+  int vertex_count,
+  int index_count,
   FILE *file
 ) {
   fprintf(file, "#include \"tail.h\"\n");
   fprintf(file, "#include \"%s_mesh.h\"\n", filename);
-  fprintf(file, "unsigned int %s_vertex_count = %i;\n", filename, vertex_count);
-  fprintf(file, "struct vertex %s_vertices[%i] = {\n", filename, vertex_count);
+  fprintf(file, "struct drawable_mesh %s_mesh = {\n", filename);
+  fprintf(file, ".vertices_size = %u,\n", sizeof(struct vertex) * vertex_count);
+  fprintf(file, ".indices_size = %u,\n", sizeof(unsigned int) * index_count);
+  fprintf(file, ".indices_length = %i,\n", index_count);
+  fprintf(file, ".indices = (unsigned int[]){\n");
+  for (int i = 0; i < index_count; i+=3) {
+    fprintf(file, "%i, %i, %i,\n", indices[i], indices[i+1], indices[i+2]);
+  }
+  fprintf(file, "},\n");
+  fprintf(file, ".vertices = (struct vertex[]){\n");
   for (int i = 0; i < vertex_count; i++){
     fprint_vert(file, &vertices[i]);
     if (i < vertex_count - 1) fprintf(file, ",");
     fprintf(file, "\n");
   }
-  fprintf(file, "};\n");
-  fprintf(file, "unsigned int %s_index_count = %i;\n", filename, index_count);
-  fprintf(file, "unsigned int %s_indices[%i] = {\n", filename, index_count);
-  for (int i = 0; i < index_count; i+=3) {
-    fprintf(file, "%i, %i, %i,\n", indices[i], indices[i+1], indices[i+2]);
-  }
-  fprintf(file, "};\n");
+  fprintf(file, "}};\n");
 }
 
 void filename_from_path(
