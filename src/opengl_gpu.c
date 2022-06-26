@@ -93,8 +93,8 @@ static void copy_mesh_to_gpu(struct drawable_mesh *dm, GLenum usage) {
   glBindBuffer(GL_ARRAY_BUFFER, dm->_impl_vbo_id);
   glBufferData(
     GL_ARRAY_BUFFER,
-    dm->vertex_buffer_size,
-    &(dm->vertex_buffer->position.x),
+    dm->vertices_size,
+    &(dm->vertices->position.x),
     usage
   );
 
@@ -135,8 +135,8 @@ static void copy_mesh_to_gpu(struct drawable_mesh *dm, GLenum usage) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dm->_impl_ibo_id);
   glBufferData(
     GL_ELEMENT_ARRAY_BUFFER,
-    dm->index_buffer_size,
-    dm->index_buffer,
+    dm->indices_size,
+    dm->indices,
     GL_STATIC_DRAW
   );
 }
@@ -147,8 +147,8 @@ static void update_gpu_mesh_data(const struct drawable_mesh *dm) {
   temp_buffer_map = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
   memcpy(
     temp_buffer_map,
-    &dm->vertex_buffer[0].position.x,
-    dm->vertex_buffer_size
+    &dm->vertices[0].position.x,
+    dm->vertices_size
   );
   glUnmapBuffer(GL_ARRAY_BUFFER);
 }
@@ -237,7 +237,7 @@ static void draw_mesh(const struct drawable_mesh *mesh) {
   glBindVertexArray(mesh->_impl_vao_id);
   glDrawElements(
     GL_TRIANGLES,
-    mesh->index_buffer_length,
+    mesh->indices_length,
     GL_UNSIGNED_INT,
     (GLvoid*)0
   );

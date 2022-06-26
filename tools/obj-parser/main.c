@@ -156,10 +156,7 @@ void write_header_file(
   fprintf(file, "#ifndef __TAIL_%s_MESH__\n", filename);
   fprintf(file, "#define __TAIL_%s_MESH__\n", filename);
   fprintf(file, "#include \"tail.h\"\n");
-  fprintf(file, "extern unsigned int %s_vertex_count;\n", filename);
-  fprintf(file, "extern struct vertex %s_vertices[%i];\n", filename, vertex_count);
-  fprintf(file, "extern unsigned int %s_index_count;\n", filename);
-  fprintf(file, "extern unsigned int %s_indices[%i];\n", filename, index_count);
+  fprintf(file, "extern drawable_mesh %s_mesh;\n", filename);
   fprintf(file, "#endif");
 }
 
