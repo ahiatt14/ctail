@@ -19,7 +19,7 @@ usage() {
     build-glfw          compile glfw into local static library
     build               compile tail src into obj
     static              compile tail into static lib
-    create-slim         create dir for lib and header to easily copy into game
+    slim         create dir for lib and header to easily copy into game
     template            bootstrap a new game project at output path
     test                build tail, run tests, print results to console
     testlog             build tail, run tests, print results to file
@@ -71,7 +71,7 @@ static() {
   && \
   rm -rf gdi32obj
 }
-create_slim() {
+slim() {
   rm -rf slim
   mkdir slim
   mkdir slim/tail
@@ -89,7 +89,9 @@ create_slim() {
   && \
   cp tools/validate-glsl/bin/validate-glsl.exe slim/tail/tools \
   && \
-  cp tools/sourcify-glsl/bin/sourcify-glsl.exe slim/tail/tools
+  cp tools/sourcify-glsl/bin/sourcify-glsl.exe slim/tail/tools \
+  && \
+  cp tools/sourcify-png/bin/sourcify-png.exe slim/tail/tools
 }
 template() {
   
@@ -142,6 +144,7 @@ build_tools() {
   cd tools/sourcify-obj && ./build.sh build
   cd ../validate-glsl && ./build.sh && \
   cd ../sourcify-glsl && ./build.sh && \
+  cd ../sourcify-png && ./build.sh && \
   cd ../..
 }
 
@@ -164,10 +167,10 @@ elif [ "$ARG1" == "clean" ]; then
   clean
 elif [ "$ARG1" == "static" ]; then
   clean && build && static
-elif [ "$ARG1" == "create-slim" ]; then
-  clean && build && static && build_tools && create_slim
+elif [ "$ARG1" == "slim" ]; then
+  clean && build && static && build_tools && slim
 elif [ "$ARG1" == "template" ]; then
-  clean && build && static && build_tools && create_slim && template
+  clean && build && static && build_tools && slim && template
   clean
 elif [ "$ARG1" == "test" ]; then
   clean && build && static && build_tests && ./tests.exe
