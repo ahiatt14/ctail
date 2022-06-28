@@ -710,34 +710,34 @@ int main(void) {
   */
 
   // TODO: test is failing smdh
-  // TEST(
-  //   "space__create_model should use a transform to create a compound\n"
-  //   "matrix for rotation around the z axis, scale, and translation"
-  // );
-  // f_tol.tolerance = FLT_EPSILON * 1000;
-  // struct transform t = {
-  //   .position = { 0.3f, -2.0f, -2.0f },
-  //   .rotation_in_deg = { 0, 0, 45 },
-  //   .scale = 1.3f
-  // };
-  // space__create_model(
-  //   &DEFAULT_WORLDSPACE,
-  //   &t,
-  //   &actual_m4
-  // );
-  // m4x4__create(
-  //   0.919187997f, 0, 0.919187997f, 0.3f,
-  //   0, 1.3f, 0, -2,
-  //   -0.919187997f, 0, 0.919187997f, -2,
-  //   0, 0, 0, 1,
-  //   &expected_m4
-  // );
-  // assert(m4x4_equals_m4x4(
-  //   &expected_m4,
-  //   &actual_m4,
-  //   &f_tol
-  // ));
-  // PASSED
+  TEST(
+    "space__create_model should use a transform to create a compound\n"
+    "matrix for rotation around the z axis, scale, and translation"
+  );
+  f_tol.tolerance = FLT_EPSILON * 1000;
+  struct transform t = {
+    .position = { 0.3f, -2.0f, -2.0f },
+    .rotation_in_deg = { 0, 0, 45 },
+    .scale = 1.3f
+  };
+  space__create_model(
+    &DEFAULT_WORLDSPACE,
+    &t,
+    &actual_m4
+  );
+  m4x4__create(
+    0.9192387f, -0.9192387f, 0, 0.3f,
+    0.9192387f, 0.9192387f, 0, -2,
+    0, 0, 1.3f, -2,
+    0, 0, 0, 1,
+    &expected_m4
+  );
+  assert(m4x4_equals_m4x4(
+    &expected_m4,
+    &actual_m4,
+    &f_tol
+  ));
+  PASSED
 
   // TODO: finish this test smh
   // TEST("space__create_model run #2");
@@ -832,17 +832,21 @@ void print_m3x3(const char *name, const struct m3x3 *m) {
   printf("%.12f\n", m->data[8]);
 }
 
-// TODO: this prints row-first! we're column-first! transpose in ur head
 void print_m4x4(const char *name, const struct m4x4 *m) {
+  struct m4x4 transposed = {0};
+  memcpy(&transposed.data, &m->data, sizeof(struct m4x4));
+  m4x4__transpose(&transposed);
   printf(name);
+  printf("\n");
   for (int i = 0; i < 16; i++) {
-    printf("%.12f, ", m->data[i]);
+    printf("%.12f, ", transposed.data[i]);
     if (
       i == 3 ||
       i == 7 ||
       i == 11
     ) printf("\n");
   }
+  printf("\n\n");
 }
 
 void print_vec3(const char *name, const struct vec3 *t) {
