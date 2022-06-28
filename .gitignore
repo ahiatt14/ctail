@@ -11,7 +11,7 @@ tools/sourcify-obj/obj_files/
 tools/sourcify-obj/output/
 
 tools/sourcify-obj/bin/
-# tools/sourcify-png/bin/
+tools/sourcify-png/bin/
 tools/validate-glsl/bin/
 tools/sourcify-glsl/bin/
 tools/sourcify-obj/test_report.txt
