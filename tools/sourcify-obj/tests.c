@@ -29,6 +29,21 @@ unsigned int vert_equals_vert(
   return 1;
 }
 
+void print_vec3(const struct vec3 v) {
+  printf("{%.8f, %.8f, %.8f}\n", v.x, v.y, v.z);
+}
+
+void print_vert(const struct vertex v) {
+  printf(
+    "{{%.8f,%.8f,%.8f},"
+    "{%.8f,%.8f,%.8f},"
+    "{%.8f,%.8f}}\n",
+    v.position.x, v.position.y, v.position.z,
+    v.normal.x, v.normal.y, v.normal.z,
+    v.uv.x, v.uv.y
+  );
+}
+
 int main() {
 
   TEST("tolerance check 1");
@@ -134,20 +149,23 @@ int main() {
   PASSED
 
   TEST(
-    "obj_f_n_line_to_vec3s should convert the "
-    "str into two corresponding vec3s; remember i-1"
+    "obj_f_triplet_line_to_vec3s should convert the "
+    "str into 3 corresponding vectors; remember i-1"
   );
   f_tol.tolerance = FLT_EPSILON;
-  const char *str = "f 10//5 11//5 9//5";
+  const char *str = "f 10/6/5 11/3/5 9/12/5";
   struct vec3 actual_vi = {0};
   struct vec3 actual_vni = {0};
-  obj_f_n_line_to_vec3s(
+  struct vec3 actual_vti = {0};
+  obj_f_triplet_line_to_vec3s(
     str,
-    &actual_vi,
-    &actual_vni
+    &actual_vi.x,
+    &actual_vni.x,
+    &actual_vti.x
   );
   struct vec3 expected_vi = { 9, 10, 8 };
-  struct vec3 expected_vni = { 4, 4, 4 };  
+  struct vec3 expected_vni = { 4, 4, 4 };
+  struct vec3 expected_vti = { 5, 2, 11 };
   assert(vec_equals_vec(
     &actual_vi.x,
     &expected_vi.x,
@@ -160,31 +178,9 @@ int main() {
     3,
     &f_tol
   ));
-  PASSED
-
-  TEST(
-    "obj_f_n_line_to_vec3s run #2"
-  );
-  f_tol.tolerance = FLT_EPSILON;
-  const char *str = "f 285//30 311//30 600//30";
-  struct vec3 actual_vi = {0};
-  struct vec3 actual_vni = {0};
-  obj_f_n_line_to_vec3s(
-    str,
-    &actual_vi,
-    &actual_vni
-  );
-  struct vec3 expected_vi = { 284, 310, 599 };
-  struct vec3 expected_vni = { 29, 29, 29 };  
   assert(vec_equals_vec(
-    &actual_vi.x,
-    &expected_vi.x,
-    3,
-    &f_tol
-  ));
-  assert(vec_equals_vec(
-    &actual_vni.x,
-    &expected_vni.x,
+    &actual_vti.x,
+    &expected_vti.x,
     3,
     &f_tol
   ));
@@ -307,62 +303,72 @@ int main() {
   };
   for (int i = 0; i < 4; i++)
     assert(vert_equals_vert(
-      &expected_vertices[0],
-      &actual_vertices[0],
+      &expected_vertices[i],
+      &actual_vertices[i],
       &f_tol
     ));
   unsigned int expected_indices[18] = {
     1, 2, 0,
     1, 3, 2
   };
-  for (int i = 0; i < 6; i++)
-    assert(expected_indices[i] == actual_indices[i]);
+  for (int i = 0; i < 6; i++) assert(expected_indices[i] == actual_indices[i]);
   PASSED
 
-  // TEST(
-  //   "parse_obj_into_flat_mesh should process a flat formatted pyramid obj\n"
-  //   "file into vertex and idnex arrays"
-  // );
-  // f_tol.tolerance = FLT_EPSILON;
-  // struct vertex actual_vertices[4] = {0};
-  // unsigned int actual_indices[4] = {0};
-  // int actual_vertex_count = 0;
-  // int actual_index_count = 0;
-  // FILE *obj_file = fopen("test_data/flat_pyramid.obj", "r");
-  // parse_obj_into_flat_mesh(
-
-  // );
-  // fclose(obj_file);
-  // struct vertex expected_vertices[18] = {
-  //   {{ -0.5f, 0, 0.5f }, {}, {}}, // lf -- 1
-  //   {{ 0.5, 0, 0.5f },{},{}}, // rf
-  //   {{ 0, 0.5, 0 },{},{}}, // t
-  //   {{ 0.5, 0, 0.5f },{},{}}, // rf -- 2
-  //   {{ 0.5, 0, -0.5 },{},{}}, // rb
-  //   {{ 0, 0.5, 0 },{},{}}, // t
-  //   {{ 0.5f, 0, -0.5f },{},{}}, // rb -- 3
-  //   {{ -0.5f, 0, -0.5f },{},{}}, // lb
-  //   {{ 0, 0.5f, 0 },{},{}}, // t
-  //   {{ -0.5f, 0, -0.5f },{},{}}, // lb -- 4
-  //   {{ -0.5f, 0, 0.5f },{},{}}, // lf
-  //   {{ 0, 0.5, 0 },{},{}}, // t
-  //   {{ -0.5f, 0, 0.5f },{},{}}, // lf -- 5
-  //   {{ 0.5, 0, -0.5 },{},{}}, // rb
-  //   {{ 0.5, 0, 0.5f },{},{}}, // rf
-  //   {{ -0.5f, 0, 0.5f },{},{}}, // lf -- 6
-  //   {{ -0.5f, 0, -0.5f },{},{}}, // lb
-  //   {{ 0.5, 0, -0.5 },{},{}} // rb
-  // };
-  // unsigned int expected_indices[18] = {
-  //   0, 1, 2,
-  //   3, 4, 5,
-  //   6, 7, 8,
-  //   9, 10, 11,
-  //   12, 13, 14,
-  //   15, 16, 17
-  // };
-
-  // PASSED
+  TEST(
+    "parse_obj_into_flat_mesh should process a flat formatted pyramid obj\n"
+    "file into vertex and idnex arrays"
+  );
+  f_tol.tolerance = FLT_EPSILON;
+  struct vertex actual_vertices[18] = {0};
+  unsigned int actual_indices[18] = {0};
+  int actual_vertex_count = 0;
+  int actual_index_count = 0;
+  FILE *obj_file = fopen("test_data/flat_pyramid.obj", "r");
+  parse_obj_into_flat_mesh(
+    obj_file,
+    actual_vertices,
+    actual_indices,
+    &actual_vertex_count,
+    &actual_index_count
+  );
+  fclose(obj_file);
+  struct vertex expected_vertices[18] = {
+    {{ -0.5f, 0, -0.5f }, { -0.0000f, 0.7071f, -0.7071f }, { 0.250000f, 0.490000f }}, // 1
+    {{ 0, 0.5f, 0 },{ -0.0000f, 0.7071f, -0.7071f },{ 0.250000f, 0.250000f }},
+    {{ 0.5f, 0, -0.5f },{ -0.0000f, 0.7071f, -0.7071f },{ 0.490000f, 0.250000f }},
+    {{ 0.5f, 0, -0.5f },{ 0.7071f, 0.7071f, -0.0000f },{ 0.490000f, 0.250000f }}, // 2
+    {{ 0, 0.5f, 0 },{ 0.7071f, 0.7071f, -0.0000f },{ 0.250000f, 0.250000f }},
+    {{ 0.5f, 0, 0.5f },{ 0.7071f, 0.7071f, -0.0000f },{ 0.250000f, 0.010000f }},
+    {{ 0.5f, 0, -0.5f },{ -0.0000f, -1.0000f, -0.0000f },{ 0.990000f, 0.250000f }}, // 3
+    {{ -0.5f, 0, 0.5f },{ -0.0000f, -1.0000f, -0.0000f },{ 0.510000f, 0.250000f }},
+    {{ -0.5f, 0, -0.5f },{ -0.0000f, -1.0000f, -0.0000f },{ 0.750000f, 0.490000f }},
+    {{ 0.5f, 0, 0.5f },{ -0.0000f, 0.7071f, 0.7071f },{ 0.250000f, 0.010000f }}, // 4
+    {{ 0, 0.5f, 0 },{ -0.0000f, 0.7071f, 0.7071f },{ 0.250000f, 0.250000f }},
+    {{ -0.5f, 0, 0.5f },{ -0.0000f, 0.7071f, 0.7071f },{ 0.010000f, 0.250000f }},
+    {{ -0.5f, 0, 0.5f },{ -0.7071f, 0.7071f, -0.0000f },{ 0.010000f, 0.250000f }}, // 5
+    {{ 0, 0.5f, 0 },{ -0.7071f, 0.7071f, -0.0000f },{ 0.250000f, 0.250000f }},
+    {{ -0.5, 0, -0.5f },{ -0.7071f, 0.7071f, -0.0000f },{ 0.250000f, 0.490000f }},
+    {{ 0.5f, 0, -0.5f },{ -0.0000f, -1.0000f, -0.0000f },{ 0.990000f, 0.250000f }}, // 6
+    {{ 0.5f, 0, 0.5f },{ -0.0000f, -1.0000f, -0.0000f },{ 0.750000f, 0.010000f }},
+    {{ -0.5, 0, 0.5 },{ -0.0000f, -1.0000f, -0.0000f },{ 0.510000f, 0.250000f }}
+  };
+  unsigned int expected_indices[18] = {
+    0, 1, 2,
+    3, 4, 5,
+    6, 7, 8,
+    9, 10, 11,
+    12, 13, 14,
+    15, 16, 17
+  };
+  for (int i = 0; i < 18; i++) {
+    assert(vert_equals_vert(
+      &expected_vertices[i],
+      &actual_vertices[i],
+      &f_tol
+    ));
+    assert(expected_indices[i] == actual_indices[i]);
+  }
+  PASSED
   
   printf("\n\n");
   printf("_____________________________________\n");

@@ -10,10 +10,11 @@ void obj_f_line_to_3_ui_indices(
   const char *obj_line,
   unsigned int *indices
 );
-void obj_f_n_line_to_vec3s(
+void obj_f_triplet_line_to_vec3s(
   const char *obj_line,
-  struct vec3 *v_indices,
-  struct vec3 *vn_indices
+  float *v_indices,
+  float *vn_indices,
+  float *vt_indices
 );
 void parse_obj_into_smooth_mesh(
   FILE *obj_file,

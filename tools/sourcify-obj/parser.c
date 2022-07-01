@@ -13,6 +13,8 @@ static inline int terminal(char c) {
   return (c == '\0' || c == '\n') ? 1 : 0;
 }
 
+// TODO: real, real messy stuff in here!
+
 void obj_float_line_to_vector(const char *obj_line, float *x) {
   int obj_line_index = 0;
   int vec_element_offset = 0;
@@ -42,37 +44,40 @@ void obj_f_line_to_3_ui_indices(
   }
 }
 
-void obj_f_n_line_to_vec3s(
+void obj_f_triplet_line_to_vec3s(
   const char *obj_line,
-  struct vec3 *v_indices,
-  struct vec3 *vn_indices
+  float *v_indices,
+  float *vn_indices,
+  float *vt_indices
 ) {
-  int obj_line_index = 0;
-  int is_position = 1;
-  int v_xyz_offset = 0;
-  int vn_xyz_offset = 0;
-  char *end_of_int;
-  int temp_index = 0;
-  while (!terminal(obj_line[obj_line_index])) {
-    if (isdigit(obj_line[obj_line_index])) {
-      if (is_position) {
-        temp_index = (int)strtod(
-          &obj_line[obj_line_index],
-          &end_of_int) - 1; // .obj indices start at 1
-        (&v_indices->x)[v_xyz_offset++] = temp_index;
-        is_position = 0;
-        obj_line_index = end_of_int - obj_line;
-      } else {
-        temp_index = (int)strtod(
-          &obj_line[obj_line_index],
-          &end_of_int) - 1; // .obj indices start at 1
-        (&vn_indices->x)[vn_xyz_offset++] = temp_index;
-        is_position = 1;
-        obj_line_index = end_of_int - obj_line;
-      }
-    } else obj_line_index++;
+  
+  char obj_line_copy[200] = {0};
+  strcpy(obj_line_copy, obj_line);
+
+  char index_triplets[3][10] = {0};
+  int index_triplet_index = 0;
+
+  char *token = NULL;
+  char *context = NULL;
+
+  strtok_r(obj_line_copy, " ", &context); // toss 1st substr which is just "f"
+  while ((token = strtok_r(NULL, " ", &context))) {
+    strcpy(index_triplets[index_triplet_index++], token);
+  }
+
+  for (int i = 0; i < 3; i++) {
+
+    context = NULL;
+
+    token = strtok_r(index_triplets[i], "/", &context);
+    v_indices[i] = strtof(token, NULL) - 1; // - 1 cuz .obj indices are 1-indexed
+    token = strtok_r(NULL, "/", &context);
+    vt_indices[i] = strtof(token, NULL) - 1;
+    token = strtok_r(NULL, "/", &context);
+    vn_indices[i] = strtof(token, NULL) - 1;
   }
 }
+
 
 void parse_obj_into_smooth_mesh(
   FILE *obj_file,
@@ -113,7 +118,7 @@ void parse_obj_into_smooth_mesh(
       obj_positions,
       &temp_normal
     );
-    memcpy(
+    memcpy( // TODO: try assigning directly to the struct var here. what happens..
       &vertices[i].position.x,
       &obj_positions[i].x,
       sizeof(struct vec3)
@@ -150,7 +155,8 @@ void parse_obj_into_flat_mesh(
 
   struct vec3 temp_vec3a = {0};
   struct vec3 temp_vec3b = {0};
-  struct vec2 temp_vec2 = {0};
+  struct vec3 temp_vec3c = {0};
+  struct vec3 temp_vec2 = {0};
 
   int obj_v_count = 0;
   int obj_normal_count = 0;
@@ -173,14 +179,19 @@ void parse_obj_into_flat_mesh(
         sizeof(struct vec2)
       );
     } else if (strncmp(obj_line, "vn", 2) == 0) {
-      obj_float_line_to_vector(obj_line, &temp_vec3a.x);
+      obj_float_line_to_vector(obj_line, &temp_vec3b.x);
       memcpy(
         &obj_normals[obj_normal_count++],
-        &temp_vec3a.x,
+        &temp_vec3b.x,
         sizeof(struct vec3)
       );
     } else if (strncmp(obj_line, "f ", 2) == 0) {
-      obj_f_n_line_to_vec3s(obj_line, &temp_vec3a, &temp_vec3b);
+      obj_f_triplet_line_to_vec3s(
+        obj_line,
+        &temp_vec3a.x,
+        &temp_vec3b.x,
+        &temp_vec3c.x
+      );
       for (int face_vert_index = 0; face_vert_index < 3; face_vert_index++) {
         memcpy(
           &vertices[vert_count].position.x,
@@ -192,6 +203,13 @@ void parse_obj_into_flat_mesh(
           &obj_normals[(int)(&temp_vec3b.x)[face_vert_index]],
           sizeof(struct vec3)
         );
+        if (face_vert_index < 3) {
+          memcpy(
+            &vertices[vert_count].uv.x,
+            &obj_uvs[(int)(&temp_vec3c.x)[face_vert_index]],
+            sizeof(struct vec2)
+          );
+        }
         vert_count++;
       }
     }
