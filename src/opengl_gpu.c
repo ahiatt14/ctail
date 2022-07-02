@@ -165,8 +165,8 @@ static void enable_depth_test() {
   glEnable(GL_DEPTH_TEST);
 }
 
-static void clear(const float *color) {
-  glClearColor(color[0], color[1], color[2], 1.0f);
+static void clear(const struct vec3 *c) {
+  glClearColor(c->x, c->y, c->z, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
