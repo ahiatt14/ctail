@@ -3,9 +3,11 @@
 #include "m4x4.h"
 #include "vec3.h"
 
+// TODO: TEST US
+
 void quaternion__conjugate(
-  const struct quaternion *p,
-  struct quaternion *dest
+  struct quaternion const *const p,
+  struct quaternion *const dest
 ) {
   dest->v.x = -p->v.x;
   dest->v.y = -p->v.y;
@@ -14,9 +16,9 @@ void quaternion__conjugate(
 }
 
 void quaternion__create(
-  const struct vec3 *axis,
+  struct vec3 const *const axis,
   float radians,
-  struct quaternion *dest
+  struct quaternion *const dest
 ) {
   dest->w = cos(radians * 0.5f);
   dest->v.x = sin(radians * 0.5f) * axis->x;
@@ -25,11 +27,11 @@ void quaternion__create(
 }
 
 void quaternion__multiply(
-  const struct quaternion *left_p,
-  const struct quaternion *right_p,
-  struct quaternion *dest
+  struct quaternion const *const left_p,
+  struct quaternion const *const right_p,
+  struct quaternion *const dest
 ) {
-
+  // TODO: implement me!
 }
 
 // TODO: think about static caching
@@ -44,8 +46,8 @@ static float wx;
 static float wy;
 static float wz;
 void quaternion__to_m4x4(
-  const struct quaternion *p,
-  struct m4x4 *m
+  struct quaternion const *const p,
+  struct m4x4 *const m
 ) {
   x2 = p->v.x * p->v.x;
   y2 = p->v.y * p->v.y;

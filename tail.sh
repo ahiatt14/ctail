@@ -48,7 +48,6 @@ build() {
   ${targets[${target}]} -c src/math/quaternion.c -o obj/quaternion.o ${includes} ${options}
   ${targets[${target}]} -c src/math/vec3.c -o obj/vec3.o ${includes} ${options}
   ${targets[${target}]} -c src/opengl_gpu.c -o obj/opengl_gpu.o ${includes} ${options}
-  ${targets[${target}]} -c src/debugger.c -o obj/debugger.o ${includes} ${options}
   ${targets[${target}]} -c src/camera.c -o obj/camera.o ${includes} ${options}
   ${targets[${target}]} -c src/glfw_window.c -o obj/glfw_window.o ${includes} ${options}
   ${targets[${target}]} -c src/space.c -o obj/space.o ${includes} ${options}

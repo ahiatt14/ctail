@@ -9,10 +9,10 @@ float deg_to_rad(float d) {
 }
 
 int vec_equals_vec(
-  const float *x0,
-  const float *x1,
+  float const *const x0,
+  float const *const x1,
   unsigned short int element_count,
-  const struct float_tolerance *ft
+  struct float_tolerance const *const ft
 ) {
   for (int i = 0; i < element_count; i++) {
     if (!ft->within_tolerance(

@@ -22,7 +22,7 @@ void m4x4__create(
   float i4, float i5, float i6, float i7,
   float i8, float i9, float i10, float i11,
   float i12, float i13, float i14, float i15,
-  struct m4x4 *m
+  struct m4x4 *const m
 ) {
   fill_m4x4_data(
     i0, i1, i2, i3,
@@ -33,12 +33,10 @@ void m4x4__create(
   );
 }
 
-void m4x4__sub3x3_from00(const struct m4x4 *src, struct m3x3 *dest);
-
 void m4x4_x_m4x4(
-  const struct m4x4 *m0,
-  const struct m4x4 *m1,
-  struct m4x4 *dest
+  struct m4x4 const *const m0,
+  struct m4x4 const *const m1,
+  struct m4x4 *const dest
 ) {
   for (int i = 0; i < 16; i++)
     dest->data[i] =
@@ -70,11 +68,11 @@ static inline void m4x4__transpose_p(float *m) {
   m[11] = temp;
 }
 
-void m4x4__transpose(struct m4x4 *m) {
+void m4x4__transpose(struct m4x4 *const m) {
   m4x4__transpose_p(&(m->data[0]));
 }
 
-void m4x4__identity(struct m4x4 *m) {
+void m4x4__identity(struct m4x4 *const m) {
   fill_m4x4_data(
     1, 0, 0, 0,
     0, 1, 0, 0,
@@ -86,9 +84,9 @@ void m4x4__identity(struct m4x4 *m) {
 
 // TODO: is this used anywhere?
 void m4x4_x_point(
-  const struct m4x4 *m,
-  const struct vec3 *t,
-  struct vec3 *dest
+  struct m4x4 const *const m,
+  struct vec3 const *const t,
+  struct vec3 *const dest
 ) {
   struct vec3 temp;
   temp.x = m->data[0] * t->x + m->data[4] * t->y +
@@ -100,7 +98,7 @@ void m4x4_x_point(
   memcpy(&dest->x, &temp.x, sizeof(struct vec3));
 }
 
-void m4x4__translation(const struct vec3 *t, struct m4x4 *m) {
+void m4x4__translation(struct vec3 const *const t, struct m4x4 *const m) {
   fill_m4x4_data(
     1, 0, 0, t->x,
     0, 1, 0, t->y,
@@ -111,7 +109,7 @@ void m4x4__translation(const struct vec3 *t, struct m4x4 *m) {
 }
 
 // TODO: could update to scale on each axis if we want idk
-void m4x4__scaling(float s, struct m4x4 *m) {
+void m4x4__scaling(float s, struct m4x4 *const m) {
   fill_m4x4_data(
     s, 0, 0, 0,
     0, s, 0, 0,
@@ -121,7 +119,11 @@ void m4x4__scaling(float s, struct m4x4 *m) {
   );
 }
 
-void m4x4__rotation(float rads, const struct vec3 *t, struct m4x4 *m) {
+void m4x4__rotation(
+   float rads,
+  struct vec3 const *const t,
+  struct m4x4 *const m
+) {
 
   double c = cos(rads);
   double s = sin(rads);
@@ -145,10 +147,10 @@ void m4x4__rotation(float rads, const struct vec3 *t, struct m4x4 *m) {
 }
 
 void m4x4__view(
-  const struct vec3 *right,
-  const struct vec3 *up,
-  const struct vec3 *forward,
-  struct m4x4 *m
+  struct vec3 const *const right,
+  struct vec3 const *const up,
+  struct vec3 const *const forward,
+  struct m4x4 *const m
 ) {
   fill_m4x4_data(
     right->x, right->y, right->z, 0,
@@ -160,8 +162,8 @@ void m4x4__view(
 }
 
 void m4x4__inverted_translation(
-  const struct vec3 *t,
-  struct m4x4 *m
+  struct vec3 const *const t,
+  struct m4x4 *const m
 ) {
   fill_m4x4_data(
     1, 0, 0, -t->x,
@@ -173,8 +175,8 @@ void m4x4__inverted_translation(
 }
 
 void m4x4__sub3x3_from00(
-  const struct m4x4 *src,
-  struct m3x3 *dest
+  struct m4x4 const *const src,
+  struct m3x3 *const dest
 ) {
   for (int c = 0; c < 3; c++) for (int r = 0; r < 3; r++)
     dest->data[3 * c + r] = src->data[4 * c + r];

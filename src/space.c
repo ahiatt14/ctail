@@ -19,9 +19,9 @@ static struct m4x4 temp__zxy_rotation;
 static struct m4x4 temp__rotate_and_scale;
 
 void space__create_model(
-  const struct coordinate_space *space,
-  const struct transform *t,
-  struct m4x4 *dest
+  struct coordinate_space const *const space,
+  struct transform const *const t,
+  struct m4x4 *const dest
 ) {
 
   m4x4__identity(dest);
@@ -68,8 +68,8 @@ void space__create_model(
 }
 
 void space__create_normals_model(
-  const struct m4x4 *mesh_model,
-  struct m3x3 *dest
+  struct m4x4 const *const mesh_model,
+  struct m3x3 *const dest
 ) {
   m4x4__sub3x3_from00(mesh_model, dest);
   m3x3__inverse(dest, dest);

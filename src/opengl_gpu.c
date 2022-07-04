@@ -17,7 +17,7 @@ static const int COUNT_OF_VALUES_PER_POSITION = 3;
 static const int COUNT_OF_VALUES_PER_NORMAL = 3;
 static const int COUNT_OF_VALUES_PER_UV = 2;
 
-static void copy_program_to_gpu(struct gpu_program *gpup) {
+static void copy_program_to_gpu(struct gpu_program *const gpup) {
 
   GLuint vert_id = glCreateShader(GL_VERTEX_SHADER);
   gpup->_vert_impl_id = vert_id;
@@ -44,7 +44,7 @@ static void copy_program_to_gpu(struct gpu_program *gpup) {
 
 // TODO: probably just param for # of channels instead 
 // of multiple fns like this
-static void copy_rgb_texture_to_gpu(struct texture *tex) {
+static void copy_rgb_texture_to_gpu(struct texture *const tex) {
   glGenTextures(1, &tex->_impl_id);
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -63,7 +63,7 @@ static void copy_rgb_texture_to_gpu(struct texture *tex) {
   );
 }
 
-static void copy_mono_texture_to_gpu(struct texture *tex) {
+static void copy_mono_texture_to_gpu(struct texture *const tex) {
   glGenTextures(1, &tex->_impl_id);
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -82,7 +82,7 @@ static void copy_mono_texture_to_gpu(struct texture *tex) {
   );
 }
 
-static void copy_mesh_to_gpu(struct drawable_mesh *dm, GLenum usage) {
+static void copy_mesh_to_gpu(struct drawable_mesh *const dm, GLenum usage) {
 
   glGenBuffers(1, &dm->_impl_vbo_id);
   glGenBuffers(1, &dm->_impl_ibo_id);
@@ -142,7 +142,7 @@ static void copy_mesh_to_gpu(struct drawable_mesh *dm, GLenum usage) {
 }
 
 void *temp_buffer_map;
-static void update_gpu_mesh_data(const struct drawable_mesh *dm) {
+static void update_gpu_mesh_data(struct drawable_mesh const *const dm) {
   glBindBuffer(GL_ARRAY_BUFFER, dm->_impl_vbo_id);
   temp_buffer_map = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
   memcpy(
@@ -153,11 +153,11 @@ static void update_gpu_mesh_data(const struct drawable_mesh *dm) {
   glUnmapBuffer(GL_ARRAY_BUFFER);
 }
 
-static void copy_static_mesh_to_gpu(struct drawable_mesh *dm) {
+static void copy_static_mesh_to_gpu(struct drawable_mesh *const dm) {
   copy_mesh_to_gpu(dm, GL_STATIC_DRAW);
 }
 
-static void copy_dynamic_mesh_to_gpu(struct drawable_mesh *dm) {
+static void copy_dynamic_mesh_to_gpu(struct drawable_mesh *const dm) {
   copy_mesh_to_gpu(dm, GL_DYNAMIC_DRAW);
 }
 
@@ -165,7 +165,7 @@ static void enable_depth_test() {
   glEnable(GL_DEPTH_TEST);
 }
 
-static void clear(const struct vec3 *c) {
+static void clear(struct vec3 const *const c) {
   glClearColor(c->x, c->y, c->z, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -174,18 +174,18 @@ static void clear_depth_buffer() {
   glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-static void select_texture(const struct texture *tex) {
+static void select_texture(struct texture const *const tex) {
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
 }
 
-static void select_gpu_program(const struct gpu_program *gpup) {
+static void select_gpu_program(struct gpu_program const *const gpup) {
   glUseProgram(gpup->_impl_id);
 }
 
 static void set_vertex_shader_m3x3(
-  const struct gpu_program *gpup,
-  const char *name,
-  const struct m3x3 *value
+  struct gpu_program const *const gpup,
+  char const *name,
+  struct m3x3 const *const value
 ) {
   glUniformMatrix3fv(
     glGetUniformLocation(gpup->_impl_id, name),
@@ -196,9 +196,9 @@ static void set_vertex_shader_m3x3(
 }
 
 static void set_vertex_shader_m4x4(
-  const struct gpu_program *gpup,
-  const char *name,
-  const struct m4x4 *value
+  struct gpu_program const *const gpup,
+  char const *name,
+  struct m4x4 const *const value
 ) {
   // TODO: can optimize these by caching locations after
   // first retrieval
@@ -211,9 +211,9 @@ static void set_vertex_shader_m4x4(
 }
 
 static void set_fragment_shader_vec3(
-  const struct gpu_program *gpup,
-  const char *name,
-  const struct vec3 *value
+  struct gpu_program const *const gpup,
+  char const *name,
+  struct vec3 const *const value
 ) {
   glUniform3fv(
     glGetUniformLocation(gpup->_impl_id, name),
@@ -223,9 +223,9 @@ static void set_fragment_shader_vec3(
 }
 
 static void set_fragment_shader_float(
-  const struct gpu_program *gpup,
-  const char *name,
-  const float value
+    struct gpu_program const *const gpup,
+    char const *name,
+    float value
 ) {
   glUniform1f(
     glGetUniformLocation(gpup->_impl_id, name),
@@ -233,7 +233,7 @@ static void set_fragment_shader_float(
   );
 }
 
-static void draw_mesh(const struct drawable_mesh *mesh) {
+static void draw_mesh(struct drawable_mesh const *const mesh) {
   glBindVertexArray(mesh->_impl_vao_id);
   glDrawElements(
     GL_TRIANGLES,
@@ -268,7 +268,7 @@ static int get_viewport_height() {
   return initial_viewport_dimensions[3];
 }
 
-void gpu__create_api(struct gpu_api *gpu) {
+void gpu__create_api(struct gpu_api *const gpu) {
   gpu->clear = clear;
   gpu->clear_depth_buffer = clear_depth_buffer;
   gpu->enable_depth_test = enable_depth_test;

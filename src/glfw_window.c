@@ -81,7 +81,7 @@ unsigned short int window__create(
   int window_height,
   const char *name,
   unsigned short int vsync,
-  struct window_api *window
+  struct window_api *const window
 ) {
 
   if (!glfwInit()) return 0;

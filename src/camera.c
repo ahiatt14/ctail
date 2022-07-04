@@ -20,64 +20,67 @@ void camera__init(struct camera *c) {
   m4x4__identity(&c->_perspective);
 }
 
-const struct m4x4* camera__get_lookat(const struct camera *c) {
+const struct m4x4* camera__get_lookat(struct camera const *const c) {
   return &c->_lookat;
 }
 
-const struct m4x4* camera__get_perspective(const struct camera *c) {
+const struct m4x4* camera__get_perspective(struct camera const *const c) {
   return &c->_perspective;
 }
 
-const struct vec3* camera__get_position(struct camera *c) {
+const struct vec3* camera__get_position(struct camera const *const c) {
   return &c->_position;
 }
 
-const struct vec3* camera__get_look_target(struct camera *c) {
+const struct vec3* camera__get_look_target(struct camera const *const c) {
   return &c->_look_target;
 }
 
-void camera__set_position(float x, float y, float z, struct camera *c) {
+void camera__set_position(float x, float y, float z, struct camera *const c) {
   c->_position.x = x;
   c->_position.y = y;
   c->_position.z = z;
   c->_lookat_needs_recalculating = 1;
 }
 
-void camera__set_horizontal_fov_in_deg(float fov, struct camera *c) {
+void camera__set_horizontal_fov_in_deg(float fov, struct camera *const c) {
   c->_horizontal_fov_in_deg = fov;
   c->_perspective_needs_recalculating = 1;
 }
 
-void camera__set_near_clip_distance(float n, struct camera *c) {
+void camera__set_near_clip_distance(float n, struct camera *const c) {
   c->_near_clip_distance = n;
   c->_perspective_needs_recalculating = 1;
 }
 
-void camera__set_far_clip_distance(float f, struct camera *c) {
+void camera__set_far_clip_distance(float f, struct camera *const c) {
   c->_far_clip_distance = f;
   c->_perspective_needs_recalculating = 1;
 }
 
-float camera__get_horizontal_fov_in_deg(const struct camera *c) {
+float camera__get_horizontal_fov_in_deg(struct camera const *const c) {
   return c->_horizontal_fov_in_deg;
 }
 
-void camera__set_look_target(const struct vec3 *t, struct camera *c) {
+void camera__set_look_target(
+  struct vec3 const *const t,
+  struct camera *const c
+) {
   memcpy(&c->_look_target.x, &t->x, sizeof(struct vec3));
   c->_lookat_needs_recalculating = 1;
 }
 
-short int camera__lookat_needs_recalculating(const struct camera *c) {
+short int camera__lookat_needs_recalculating(struct camera const *const c) {
   return c->_lookat_needs_recalculating;
 }
 
-short int camera__perspective_needs_recalculating(const struct camera *c) {
+short int camera__perspective_needs_recalculating(struct camera const *const c) {
   return c->_perspective_needs_recalculating;
 }
 
 const struct m4x4* camera__calculate_perspective(
-  struct viewport *vwprt,
-  struct camera *cam
+  struct viewport *const vwprt,
+  struct camera *const cam
 ) {
 
   r = tan(deg_to_rad(cam->_horizontal_fov_in_deg)/2) * cam->_near_clip_distance;
@@ -111,8 +114,8 @@ const struct m4x4* camera__calculate_perspective(
 }
 
 const struct m4x4* camera__calculate_lookat(
-  const struct vec3 *up,
-  struct camera *cam
+  struct vec3 const *const up,
+  struct camera *const cam
 ) {
 
   vec3_minus_vec3(&cam->_position, &cam->_look_target, &camera_forward);
