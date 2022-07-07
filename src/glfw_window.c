@@ -9,11 +9,16 @@
 
 static GLFWwindow *glfw_window;
 
+// TODO: don't think these typedefs are serving a purpose
+typedef void (*handle_joystick_connected_ptr)(int jid);
+typedef void (*handle_joystick_disconnected_ptr)(int jid);
 typedef void (*handle_window_minimize_ptr)();
 typedef void (*handle_window_restore_ptr)();
 typedef void (*handle_window_focus_ptr)();
 typedef void (*handle_window_unfocus_ptr)();
 typedef void (*handle_window_resize_ptr)(int width, int height);
+handle_joystick_connected_ptr handle_joystick_connected;
+handle_joystick_disconnected_ptr handle_joystick_disconnected;
 handle_window_minimize_ptr handle_window_minimize;
 handle_window_restore_ptr handle_window_restore;
 handle_window_focus_ptr handle_window_focus;
@@ -47,6 +52,14 @@ static void handle_window_focus_change(GLFWwindow *w, int gained_focus) {
 
 static void handle_window_iconification(GLFWwindow *w, int is_minimized) {
   is_minimized ? handle_window_minimize() : handle_window_restore();
+}
+
+static void handle_joystick_connection_event(int jid, int event) {
+  if (event == GLFW_CONNECTED) {
+    handle_joystick_connected(jid);
+  } else if (event == GLFW_DISCONNECTED) {
+    handle_joystick_disconnected(jid);
+  }
 }
 
 static void get_gamepad_input(struct gamepad_input *const input) {
@@ -90,6 +103,16 @@ static void register_listener_for_focus(
 static void register_listener_for_resize(void (*fn)(int width, int height)) {
   handle_window_resize = fn;
   glfwSetFramebufferSizeCallback(glfw_window, handle_framebuffer_resize);
+}
+
+// TODO: clean up this naming
+static void register_listener_for_gamepad_connect_event(
+  void (*handle_gamepad_connect)(int jid),
+  void (*handle_gamepad_disconnect)(int jid)
+) {
+  handle_joystick_connected = handle_gamepad_connect;
+  handle_joystick_disconnected = handle_gamepad_disconnect;
+  glfwSetJoystickCallback(handle_joystick_connection_event);
 }
 
 static double get_seconds_since_creation() {
@@ -140,6 +163,8 @@ unsigned short int window__create(
   window->register_listener_for_minimize = register_listener_for_minimize;
   window->register_listener_for_focus = register_listener_for_focus;
   window->register_listener_for_resize = register_listener_for_resize;
+  window->register_listener_for_gamepad_connect_event =
+    register_listener_for_gamepad_connect_event;
   window->request_buffer_swap = request_buffer_swap;
   window->get_gamepad_input = get_gamepad_input;
 
