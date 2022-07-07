@@ -6,6 +6,9 @@
 
 #include "tail.h"
 
+// TODO: could clean & reduce loc by using compound literals to
+// pass anon structs for a lot of these. project for a lazy day
+
 #define TEST(msg) { printf(msg)
 #define PASSED printf(": PASSED\n"); }
 #define QUIT return 0;
@@ -181,6 +184,27 @@ int main(void) {
     &expected_v3.x,
     &actual_v3.x,
     3,
+    &f_tol
+  ));
+  PASSED
+
+  TEST("vec2__magnitude should calculate the mag of the vec2");
+  f_tol.tolerance = FLT_EPSILON;
+  assert(diff_is_within_tolerance(
+    vec2__magnitude(&(struct vec2){ 0.23f, 1.00f }),
+    1.02610915599f,
+    FLT_EPSILON
+  ));
+  PASSED
+
+  TEST("vec2__normalize should normalize the vec2");
+  f_tol.tolerance = FLT_EPSILON * 100;
+  struct vec2 actual_vec2;
+  vec2__normalize(&(struct vec2){ 0.23f, 1.00f }, &actual_vec2);
+  assert(vec_equals_vec(
+    &actual_vec2.x,
+    &((struct vec2){ 0.224147f, 0.974555f }).x,
+    2,
     &f_tol
   ));
   PASSED
