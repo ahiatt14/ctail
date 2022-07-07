@@ -74,6 +74,13 @@ float vec3__magnitude(struct vec3 const *const t) {
   );
 }
 
+float vec2__magnitude(struct vec2 const *const t) {
+  return sqrt(
+    t->x * t->x +
+    t->y * t->y
+  );
+}
+
 void vec3__normalize(
   struct vec3 const *const t,
   struct vec3 *const normalized
@@ -82,4 +89,13 @@ void vec3__normalize(
   normalized->x = t->x / m;
   normalized->y = t->y / m;
   normalized->z = t->z / m;
+}
+
+void vec2__normalize(
+  struct vec2 const *const t,
+  struct vec2 *const normalized
+) {
+  float m = vec2__magnitude(t);
+  normalized->x = t->x / m;
+  normalized->y = t->y / m;
 }
