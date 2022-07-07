@@ -49,6 +49,26 @@ static void handle_window_iconification(GLFWwindow *w, int is_minimized) {
   is_minimized ? handle_window_minimize() : handle_window_restore();
 }
 
+static void get_gamepad_input(struct gamepad_input *const input) {
+  GLFWgamepadstate state;
+  if (!glfwGetGamepadState(GLFW_JOYSTICK_1, &state)) {
+    *input = (struct gamepad_input){0};
+    return;
+  }
+  input->left_stick_direction = (struct vec2){
+    .x = state.axes[GLFW_GAMEPAD_AXIS_LEFT_X],
+    .y = state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y]
+  };
+  input->start_down = state.buttons[GLFW_GAMEPAD_BUTTON_START];
+  input->select_down = state.buttons[GLFW_GAMEPAD_BUTTON_BACK];
+  input->right_trigger = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER];
+  input->left_trigger = state.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER];
+  input->top_face_down = state.buttons[GLFW_GAMEPAD_BUTTON_Y];
+  input->bottom_face_down = state.buttons[GLFW_GAMEPAD_BUTTON_A];
+  input->right_face_down = state.buttons[GLFW_GAMEPAD_BUTTON_B];
+  input->left_face_down = state.buttons[GLFW_GAMEPAD_BUTTON_X];
+}
+
 static void register_listener_for_minimize(
   void (*handle_minimize)(),
   void (*handle_restore)()
@@ -121,6 +141,7 @@ unsigned short int window__create(
   window->register_listener_for_focus = register_listener_for_focus;
   window->register_listener_for_resize = register_listener_for_resize;
   window->request_buffer_swap = request_buffer_swap;
+  window->get_gamepad_input = get_gamepad_input;
 
   return 1;
 }

@@ -1,7 +1,7 @@
 #include <math.h>
 #include "quaternion.h"
 #include "m4x4.h"
-#include "vec3.h"
+#include "vector.h"
 
 // TODO: TEST US
 

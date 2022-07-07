@@ -5,7 +5,7 @@
 #include "glad.h"
 
 #include "gpu.h"
-#include "vec3.h"
+#include "vector.h"
 #include "m3x3.h"
 #include "m4x4.h"
 

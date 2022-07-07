@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "m4x4.h"
-#include "vec3.h"
+#include "vector.h"
 
 static inline void fill_m4x4_data(
   float i0, float i1, float i2, float i3,

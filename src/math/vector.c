@@ -1,7 +1,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "vec3.h"
+#include "vector.h"
 #include "precision.h"
 
 void vec3_minus_vec3(

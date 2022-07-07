@@ -5,7 +5,7 @@
 #include "viewport.h"
 #include "tail_math.h"
 #include "m4x4.h"
-#include "vec3.h"
+#include "vector.h"
 
 // cache for perspective calculation
 static float r, l, t, b;

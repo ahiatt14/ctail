@@ -46,7 +46,7 @@ build() {
   ${targets[${target}]} -c src/math/m3x3.c -o obj/m3x3.o ${includes} ${options}
   ${targets[${target}]} -c src/math/m4x4.c -o obj/m4x4.o ${includes} ${options}
   ${targets[${target}]} -c src/math/quaternion.c -o obj/quaternion.o ${includes} ${options}
-  ${targets[${target}]} -c src/math/vec3.c -o obj/vec3.o ${includes} ${options}
+  ${targets[${target}]} -c src/math/vector.c -o obj/vector.o ${includes} ${options}
   ${targets[${target}]} -c src/opengl_gpu.c -o obj/opengl_gpu.o ${includes} ${options}
   ${targets[${target}]} -c src/camera.c -o obj/camera.o ${includes} ${options}
   ${targets[${target}]} -c src/glfw_window.c -o obj/glfw_window.o ${includes} ${options}
