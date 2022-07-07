@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 #include "glad.h"
@@ -40,6 +42,10 @@ void window__poll_events() {
 void window__end() {
   glfwDestroyWindow(glfw_window);
   glfwTerminate();
+}
+
+uint8_t gamepad_is_connected() {
+  return glfwJoystickPresent(GLFW_JOYSTICK_1);
 }
 
 static void handle_framebuffer_resize(GLFWwindow *w, int width, int height) {
@@ -106,7 +112,7 @@ static void register_listener_for_resize(void (*fn)(int width, int height)) {
 }
 
 // TODO: clean up this naming
-static void register_listener_for_gamepad_connect_event(
+static void register_listener_for_gamepad_connect(
   void (*handle_gamepad_connect)(int jid),
   void (*handle_gamepad_disconnect)(int jid)
 ) {
@@ -163,10 +169,11 @@ unsigned short int window__create(
   window->register_listener_for_minimize = register_listener_for_minimize;
   window->register_listener_for_focus = register_listener_for_focus;
   window->register_listener_for_resize = register_listener_for_resize;
-  window->register_listener_for_gamepad_connect_event =
-    register_listener_for_gamepad_connect_event;
+  window->register_listener_for_gamepad_connect =
+    register_listener_for_gamepad_connect;
   window->request_buffer_swap = request_buffer_swap;
   window->get_gamepad_input = get_gamepad_input;
+  window->gamepad_is_connected = gamepad_is_connected;
 
   return 1;
 }

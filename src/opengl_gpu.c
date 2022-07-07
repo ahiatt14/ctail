@@ -17,7 +17,7 @@ static const int COUNT_OF_VALUES_PER_POSITION = 3;
 static const int COUNT_OF_VALUES_PER_NORMAL = 3;
 static const int COUNT_OF_VALUES_PER_UV = 2;
 
-static void copy_program_to_gpu(struct gpu_program *const gpup) {
+static void copy_shader_to_gpu(struct shader *const gpup) {
 
   GLuint vert_id = glCreateShader(GL_VERTEX_SHADER);
   gpup->_vert_impl_id = vert_id;
@@ -178,12 +178,12 @@ static void select_texture(struct texture const *const tex) {
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
 }
 
-static void select_gpu_program(struct gpu_program const *const gpup) {
+static void select_shader(struct shader const *const gpup) {
   glUseProgram(gpup->_impl_id);
 }
 
 static void set_vertex_shader_m3x3(
-  struct gpu_program const *const gpup,
+  struct shader const *const gpup,
   char const *name,
   struct m3x3 const *const value
 ) {
@@ -196,7 +196,7 @@ static void set_vertex_shader_m3x3(
 }
 
 static void set_vertex_shader_m4x4(
-  struct gpu_program const *const gpup,
+  struct shader const *const gpup,
   char const *name,
   struct m4x4 const *const value
 ) {
@@ -211,7 +211,7 @@ static void set_vertex_shader_m4x4(
 }
 
 static void set_fragment_shader_vec3(
-  struct gpu_program const *const gpup,
+  struct shader const *const gpup,
   char const *name,
   struct vec3 const *const value
 ) {
@@ -223,7 +223,7 @@ static void set_fragment_shader_vec3(
 }
 
 static void set_fragment_shader_float(
-    struct gpu_program const *const gpup,
+    struct shader const *const gpup,
     char const *name,
     float value
 ) {
@@ -279,8 +279,8 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->update_gpu_mesh_data = update_gpu_mesh_data;
   gpu->copy_rgb_texture_to_gpu = copy_rgb_texture_to_gpu;
   gpu->copy_mono_texture_to_gpu = copy_mono_texture_to_gpu;
-  gpu->copy_program_to_gpu = copy_program_to_gpu;
-  gpu->select_gpu_program = select_gpu_program;
+  gpu->copy_shader_to_gpu = copy_shader_to_gpu;
+  gpu->select_shader = select_shader;
   gpu->select_texture = select_texture;
   gpu->set_viewport = set_viewport;
   gpu->get_viewport_width = get_viewport_width;
