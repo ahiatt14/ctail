@@ -18,7 +18,7 @@ typedef void (*handle_window_minimize_ptr)();
 typedef void (*handle_window_restore_ptr)();
 typedef void (*handle_window_focus_ptr)();
 typedef void (*handle_window_unfocus_ptr)();
-typedef void (*handle_window_resize_ptr)(int width, int height);
+typedef void (*handle_window_resize_ptr)(uint16_t width, uint16_t height);
 handle_joystick_connected_ptr handle_joystick_connected;
 handle_joystick_disconnected_ptr handle_joystick_disconnected;
 handle_window_minimize_ptr handle_window_minimize;
@@ -27,7 +27,7 @@ handle_window_focus_ptr handle_window_focus;
 handle_window_unfocus_ptr handle_window_unfocus;
 handle_window_resize_ptr handle_window_resize;
 
-unsigned short int window__received_closed_event() {
+uint8_t window__received_closed_event() {
   return glfwWindowShouldClose(glfw_window);
 }
 
@@ -106,7 +106,9 @@ static void register_listener_for_focus(
   glfwSetWindowFocusCallback(glfw_window, handle_window_focus_change);
 }
 
-static void register_listener_for_resize(void (*fn)(int width, int height)) {
+static void register_listener_for_resize(
+  void (*fn)(uint16_t width, uint16_t height)
+) {
   handle_window_resize = fn;
   glfwSetFramebufferSizeCallback(glfw_window, handle_framebuffer_resize);
 }
@@ -125,11 +127,11 @@ static double get_seconds_since_creation() {
   return glfwGetTime();
 }
 
-unsigned short int window__create(
-  int window_width,
-  int window_height,
+uint8_t window__create(
+  uint16_t window_width,
+  uint16_t window_height,
   const char *name,
-  unsigned short int vsync,
+  uint8_t vsync,
   struct window_api *const window
 ) {
 

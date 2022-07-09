@@ -9,13 +9,13 @@
 #include "m3x3.h"
 #include "m4x4.h"
 
-static const int POSITION_ATTRIB_INDEX = 0;
-static const int NORMAL_ATTRIB_INDEX = 1;
-static const int UV_ATTRIB_INDEX = 2;
+#define POSITION_ATTRIB_INDEX 0
+#define NORMAL_ATTRIB_INDEX 1
+#define UV_ATTRIB_INDEX 2
 
-static const int COUNT_OF_VALUES_PER_POSITION = 3;
-static const int COUNT_OF_VALUES_PER_NORMAL = 3;
-static const int COUNT_OF_VALUES_PER_UV = 2;
+#define COUNT_OF_VALUES_PER_POSITION 3
+#define COUNT_OF_VALUES_PER_NORMAL 3
+#define COUNT_OF_VALUES_PER_UV 2
 
 static void copy_shader_to_gpu(struct shader *const gpup) {
 
