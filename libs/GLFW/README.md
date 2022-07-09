@@ -123,26 +123,33 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
- - Updated gamepad mappings from upstream
- - Bugfix: Buffers were swapped at creation on single-buffered windows (#1873)
- - Bugfix: Gamepad mapping updates could spam `GLFW_INVALID_VALUE` due to
-   incompatible controllers sharing hardware ID (#1763)
- - Bugfix: Native access functions for context handles did not check that the API matched
- - [Win32] Bugfix: `USE_MSVC_RUNTIME_LIBRARY_DLL` had no effect on CMake 3.15 or
-   later (#1783,#1796)
- - [Win32] Bugfix: Compilation with LLVM for Windows failed (#1807,#1824,#1874)
- - [Cocoa] Bugfix: The MoltenVK layer contents scale was updated only after
-   related events were emitted
- - [Cocoa] Bugfix: Moving the cursor programmatically would freeze it for
-   a fraction of a second (#1962)
- - [Cocoa] Bugfix: `kIOMasterPortDefault` was deprecated in macOS 12.0 (#1980)
- - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
- - [Wayland] Bugfix: Some keys were not repeating in Wayland (#1908)
- - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
- - [Wayland] Bugfix: The `O_CLOEXEC` flag was not defined on FreeBSD
- - [NSGL] Bugfix: Defining `GL_SILENCE_DEPRECATION` externally caused
-   a duplicate definition warning (#1840)
- - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
+ - [Win32] Bugfix: A window created maximized and undecorated would cover the whole
+   monitor (#1806)
+ - [Win32] Bugfix: The default restored window position was lost when creating a maximized
+   window
+ - [Win32] Bugfix: `glfwMaximizeWindow` would make a hidden window visible
+ - [Cocoa] Bugfix: `kUTTypeURL` was deprecated in macOS 12.0 (#2003)
+ - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
+ - [X11] Bugfix: Waiting for events would fail if file descriptor was too large
+   (#2024)
+ - [X11] Bugfix: Joystick events could lead to busy-waiting (#1872)
+ - [X11] Bugfix: `glfwWaitEvents*` did not continue for joystick events
+ - [X11] Bugfix: `glfwPostEmptyEvent` could be ignored due to race condition
+   (#379,#1281,#1285,#2033)
+ - [X11] Bugfix: Dynamic loading on NetBSD failed due to soname differences
+ - [X11] Bugfix: Left shift of int constant relied on undefined behavior (#1951)
+ - [Wayland] Added support for key names via xkbcommon
+ - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
+ - [Wayland] Bugfix: Activating a window would emit two input focus events
+ - [Wayland] Bugfix: Disable key repeat mechanism when window loses input focus
+ - [Wayland] Bugfix: Window hiding and showing did not work (#1492,#1731)
+ - [Wayland] Bugfix: A key being repeated was not released when window lost focus
+ - [Wayland] Bugfix: Showing a hidden window did not emit a window refresh event
+ - [Wayland] Bugfix: Full screen window creation did not ignore `GLFW_VISIBLE`
+ - [Wayland] Bugfix: Some keys were reported as wrong key or `GLFW_KEY_UNKNOWN`
+ - [Wayland] Bugfix: Text input did not repeat along with key repeat
+ - [Wayland] Bugfix: `glfwPostEmptyEvent` sometimes had no effect (#1520,#1521)
+ - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
 
 
 ## Contact
