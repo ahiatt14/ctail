@@ -28,6 +28,16 @@ void vec3__create(float x, float y, float z, struct vec3 *const t) {
   t->x = x; t->y = y; t->z = z;
 }
 
+// TODO: test me!
+float vec2__dot(
+  struct vec2 const *const t0,
+  struct vec2 const *const t1
+) {
+  return
+    t0->x * t1->x +
+    t0->y * t1->y;
+}
+
 float vec3__dot(
   struct vec3 const *const t0,
   struct vec3 const *const t1
