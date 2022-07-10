@@ -165,6 +165,14 @@ static void enable_depth_test() {
   glEnable(GL_DEPTH_TEST);
 }
 
+static void enable_wireframe_mode() {
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+static void disable_wireframe_mode() {
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
 static void clear(struct vec3 const *const c) {
   glClearColor(c->x, c->y, c->z, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -274,6 +282,8 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->enable_depth_test = enable_depth_test;
   gpu->cull_back_faces = cull_back_faces;
   gpu->cull_no_faces = cull_no_faces;
+  gpu->enable_wireframe_mode = enable_wireframe_mode;
+  gpu->disable_wireframe_mode = disable_wireframe_mode;
   gpu->copy_static_mesh_to_gpu = copy_static_mesh_to_gpu;
   gpu->copy_dynamic_mesh_to_gpu = copy_dynamic_mesh_to_gpu;
   gpu->update_gpu_mesh_data = update_gpu_mesh_data;
