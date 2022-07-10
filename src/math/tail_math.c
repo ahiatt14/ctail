@@ -8,6 +8,10 @@ float deg_to_rad(float d) {
   return d * M_PI / 180;
 }
 
+float rad_to_deg(float r) {
+  return r * 180.0f / M_PI;
+}
+
 int vec_equals_vec(
   float const *const x0,
   float const *const x1,
