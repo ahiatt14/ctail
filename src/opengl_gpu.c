@@ -1,6 +1,6 @@
-// #include <stdio.h> // TODO: remove?
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "glad.h"
 
@@ -178,6 +178,16 @@ static void select_texture(struct texture const *const tex) {
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
 }
 
+static void select_textures(
+  struct texture const *const *const textures,
+  uint8_t texture_count
+) {
+  for (int i = 0; i < texture_count; i++) {
+    glActiveTexture(GL_TEXTURE0 + i);
+    glBindTexture(GL_TEXTURE_2D, textures[i]->_impl_id);
+  }
+}
+
 static void select_shader(struct shader const *const gpup) {
   glUseProgram(gpup->_impl_id);
 }
@@ -294,6 +304,7 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->copy_shader_to_gpu = copy_shader_to_gpu;
   gpu->select_shader = select_shader;
   gpu->select_texture = select_texture;
+  gpu->select_textures = select_textures;
   gpu->set_viewport = set_viewport;
   gpu->get_viewport_width = get_viewport_width;
   gpu->get_viewport_height = get_viewport_height;

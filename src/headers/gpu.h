@@ -1,6 +1,8 @@
 #ifndef __FOOL_RENDERER__
 #define __FOOL_RENDERER__
 
+#include <stdint.h>
+
 #include "mesh.h"
 #include "m4x4.h"
 #include "m3x3.h"
@@ -40,6 +42,10 @@ struct gpu_api {
   void (*copy_shader_to_gpu)(struct shader *const gpup);
   void (*select_shader)(struct shader const *const gpup);
   void (*select_texture)(struct texture const *const tex);
+  void (*select_textures)(
+    struct texture const *const *const textures,
+    uint8_t texture_count
+  );
 
   void (*set_viewport)(int x, int y, int w, int h);
   int (*get_viewport_height)();
