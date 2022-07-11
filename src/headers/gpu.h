@@ -29,8 +29,6 @@ struct gpu_api {
   void (*enable_depth_test)();
   void (*cull_back_faces)();
   void (*cull_no_faces)();
-  void (*enable_wireframe_mode)();
-  void (*disable_wireframe_mode)();
 
   void (*copy_dynamic_mesh_to_gpu)(struct drawable_mesh *const dm);
   void (*copy_static_mesh_to_gpu)(struct drawable_mesh *const dm);
@@ -69,6 +67,7 @@ struct gpu_api {
   );
 
   void (*draw_mesh)(struct drawable_mesh const *const dm);
+  void (*draw_wireframe)(struct drawable_mesh const *const dm);
 };
 
 void gpu__create_api(struct gpu_api *const gpu);
