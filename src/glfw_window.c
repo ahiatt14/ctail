@@ -135,6 +135,8 @@ static double get_seconds_since_creation() {
 uint8_t window__create(
   uint16_t window_width,
   uint16_t window_height,
+  uint16_t position_x,
+  uint16_t position_y,
   const char *name,
   uint8_t vsync,
   struct window_api *const window
@@ -162,7 +164,7 @@ uint8_t window__create(
 
   if (!glfw_window) return 0;
 
-  glfwSetWindowPos(glfw_window, 100, 100); // see note A
+  glfwSetWindowPos(glfw_window, position_x, position_y); // see note A
   glfwShowWindow(glfw_window); // see note A
 
   glfwSetWindowRefreshCallback(glfw_window, glfwSwapBuffers);
