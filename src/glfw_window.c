@@ -12,21 +12,13 @@
 
 static GLFWwindow *glfw_window;
 
-// TODO: don't think these typedefs are serving a purpose
-typedef void (*handle_joystick_connected_ptr)(int jid);
-typedef void (*handle_joystick_disconnected_ptr)(int jid);
-typedef void (*handle_window_minimize_ptr)();
-typedef void (*handle_window_restore_ptr)();
-typedef void (*handle_window_focus_ptr)();
-typedef void (*handle_window_unfocus_ptr)();
-typedef void (*handle_framebuffer_resize_ptr)(uint16_t width, uint16_t height);
-handle_joystick_connected_ptr handle_joystick_connected;
-handle_joystick_disconnected_ptr handle_joystick_disconnected;
-handle_window_minimize_ptr handle_window_minimize;
-handle_window_restore_ptr handle_window_restore;
-handle_window_focus_ptr handle_window_focus;
-handle_window_unfocus_ptr handle_window_unfocus;
-handle_framebuffer_resize_ptr handle_framebuffer_resize;
+void (*handle_window_minimize)();
+void (*handle_window_restore)();
+void (*handle_window_focus)();
+void (*handle_window_unfocus)();
+void (*handle_framebuffer_resize)(uint16_t width, uint16_t height);
+void (*handle_joystick_connected)(int jid);
+void (*handle_joystick_disconnected)(int jid);
 
 uint8_t window__received_closed_event() {
   return glfwWindowShouldClose(glfw_window);
