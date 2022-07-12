@@ -6,6 +6,8 @@
 #include "vector.h"
 #include "input.h"
 
+// TODO: should we segregate the gamepad api from the window/platform stuff?
+
 struct window_api {
   
   void (*on_minimize_and_restore)(
@@ -26,7 +28,13 @@ struct window_api {
 
   struct vec2 (*get_window_dimensions)();
   double (*get_seconds_since_creation)();
+
+  uint8_t (*received_closed_event)();
+  void (*end)();
+
+  void (*poll_events)();
   void (*request_buffer_swap)();
+
   uint8_t (*gamepad_is_connected)();
   void (*get_gamepad_input)(struct gamepad_input *const input);
 };
@@ -39,11 +47,5 @@ uint8_t window__create(
   // uint8_t fullscreen, TODO: add support
   struct window_api *const window
 );
-
-// TODO: these could be attached to the struct like the rest,
-// dunno why they aren't?
-uint8_t window__received_closed_event();
-void window__poll_events();
-void window__end();
 
 #endif

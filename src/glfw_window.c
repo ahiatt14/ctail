@@ -20,7 +20,7 @@ void (*handle_framebuffer_resize)(uint16_t width, uint16_t height);
 void (*handle_joystick_connected)(int jid);
 void (*handle_joystick_disconnected)(int jid);
 
-uint8_t window__received_closed_event() {
+uint8_t received_closed_event() {
   return glfwWindowShouldClose(glfw_window);
 }
 
@@ -28,11 +28,11 @@ void request_buffer_swap() {
   glfwSwapBuffers(glfw_window);
 }
 
-void window__poll_events() {
+void poll_events() {
   glfwPollEvents();
 }
 
-void window__end() {
+void end() {
   glfwDestroyWindow(glfw_window);
   glfwTerminate();
 }
@@ -177,11 +177,16 @@ uint8_t window__create(
   window->on_framebuffer_resize = on_framebuffer_resize;
   window->on_gamepad_connect_and_disconnect = on_gamepad_connect_and_disconnect;
 
+  window->get_gamepad_input = get_gamepad_input;
+  window->gamepad_is_connected = gamepad_is_connected;
+
   window->get_window_dimensions = get_window_dimensions;
   window->get_seconds_since_creation = get_seconds_since_creation;
   window->request_buffer_swap = request_buffer_swap;
-  window->gamepad_is_connected = gamepad_is_connected;
-  window->get_gamepad_input = get_gamepad_input;
+  
+  window->poll_events = poll_events;
+  window->received_closed_event = received_closed_event;
+  window->end = end;
 
   return 1;
 }
