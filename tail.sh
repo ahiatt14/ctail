@@ -40,6 +40,7 @@ build() {
   exit 1
   fi
 
+  # can I not collapse all these with a wildcard or something?
   rm -rf obj
   mkdir obj
   ${targets[${target}]} -c src/math/m2x2.c -o obj/m2x2.o ${includes} ${options}
@@ -49,6 +50,7 @@ build() {
   ${targets[${target}]} -c src/math/vector.c -o obj/vector.o ${includes} ${options}
   ${targets[${target}]} -c src/opengl_gpu.c -o obj/opengl_gpu.o ${includes} ${options}
   ${targets[${target}]} -c src/camera.c -o obj/camera.o ${includes} ${options}
+  ${targets[${target}]} -c src/gamepad.c -o obj/gamepad.o ${includes} ${options}
   ${targets[${target}]} -c src/glfw_window.c -o obj/glfw_window.o ${includes} ${options}
   ${targets[${target}]} -c src/space.c -o obj/space.o ${includes} ${options}
   ${targets[${target}]} -c src/precision.c -o obj/precision.o ${includes} ${options}

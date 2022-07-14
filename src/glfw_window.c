@@ -6,40 +6,49 @@
 
 #include "window.h"
 #include "vector.h"
+#include "gamepad.h"
 
-// TODO: add fullscreen/windowed toggling
+static uint8_t GLFW_BUTTON_COUNT = 15;
+
 // TODO: handle monitor connecting/disconnecting
+
+struct window_props {
+  int width_in_screen_units;
+  int height_in_screen_units;
+  int position_x;
+  int position_y;
+};
+
+// CACHE
 
 static GLFWwindow *glfw_window;
 
-void (*handle_window_minimize)();
-void (*handle_window_restore)();
-void (*handle_window_focus)();
-void (*handle_window_unfocus)();
-void (*handle_framebuffer_resize)(uint16_t width, uint16_t height);
-void (*handle_joystick_connected)(int jid);
-void (*handle_joystick_disconnected)(int jid);
+struct window_props win_props;
 
-uint8_t received_closed_event() {
-  return glfwWindowShouldClose(glfw_window);
+static void (*handle_window_minimize)();
+static void (*handle_window_restore)();
+static void (*handle_window_focus)();
+static void (*handle_window_unfocus)();
+static void (*handle_framebuffer_resize)(uint16_t width, uint16_t height);
+static void (*handle_joystick_connected)(int jid);
+static void (*handle_joystick_disconnected)(int jid);
+
+static void cache_window_properties() {
+  glfwGetWindowSize(
+    glfw_window,
+    &win_props.width_in_screen_units,
+    &win_props.height_in_screen_units
+  );
+  glfwGetWindowPos(
+    glfw_window,
+    &win_props.position_x,
+    &win_props.position_y
+  );
 }
 
-void request_buffer_swap() {
-  glfwSwapBuffers(glfw_window);
-}
-
-void poll_events() {
-  glfwPollEvents();
-}
-
-void end() {
-  glfwDestroyWindow(glfw_window);
-  glfwTerminate();
-}
-
-uint8_t gamepad_is_connected() {
-  return glfwJoystickPresent(GLFW_JOYSTICK_1);
-}
+/*
+  EVENTS AND HANDLERS
+*/
 
 static void handle_glfw_framebuffer_resize(
   GLFWwindow *w,
@@ -63,35 +72,6 @@ static void handle_joystick_connection_event(int jid, int event) {
   } else if (event == GLFW_DISCONNECTED) {
     handle_joystick_disconnected(jid);
   }
-}
-
-static struct vec2 get_window_dimensions() {
-  int width, height;
-  glfwGetWindowSize(glfw_window, &width, &height);
-  return (struct vec2){ width, height };
-  // TODO: will this struct return by value or poof?
-  // prolly will have to pass a destination vec2 ptr
-}
-
-static void get_gamepad_input(struct gamepad_input *const input) {
-  GLFWgamepadstate state;
-  if (!glfwGetGamepadState(GLFW_JOYSTICK_1, &state)) {
-    *input = (struct gamepad_input){0};
-    return;
-  }
-  // TODO: include d-pad direction
-  input->left_stick_direction = (struct vec2){
-    .x = state.axes[GLFW_GAMEPAD_AXIS_LEFT_X],
-    .y = state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y]
-  };
-  input->start_down = state.buttons[GLFW_GAMEPAD_BUTTON_START];
-  input->select_down = state.buttons[GLFW_GAMEPAD_BUTTON_BACK];
-  input->right_trigger = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER];
-  input->left_trigger = state.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER];
-  input->top_face_down = state.buttons[GLFW_GAMEPAD_BUTTON_Y];
-  input->bottom_face_down = state.buttons[GLFW_GAMEPAD_BUTTON_A];
-  input->right_face_down = state.buttons[GLFW_GAMEPAD_BUTTON_B];
-  input->left_face_down = state.buttons[GLFW_GAMEPAD_BUTTON_X];
 }
 
 static void on_minimize_and_restore(
@@ -128,17 +108,118 @@ static void on_gamepad_connect_and_disconnect(
   glfwSetJoystickCallback(handle_joystick_connection_event);
 }
 
+/*
+  GETTING AND SETTING WINDOW PROPERTIES
+*/
+
+uint8_t gamepad_is_connected() {
+  return glfwJoystickPresent(GLFW_JOYSTICK_1);
+}
+
+static struct vec2 get_window_dimensions() {
+  int width, height;
+  glfwGetWindowSize(glfw_window, &width, &height);
+  return (struct vec2){ width, height };
+  // TODO: will this struct return by value or poof?
+  // prolly will have to pass a destination vec2 ptr
+}
+
+static struct gamepad_input get_gamepad_input(
+  struct gamepad_input gamepad
+) {
+  GLFWgamepadstate state;
+  if (!glfwGetGamepadState(GLFW_JOYSTICK_1, &state)) {
+    gamepad.buttons = 0;
+    gamepad.previous_buttons = 0;
+    return gamepad;
+  }
+  gamepad.left_stick_direction = (struct vec2){
+    .x = state.axes[GLFW_GAMEPAD_AXIS_LEFT_X],
+    .y = state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y]
+  };
+  gamepad.left_and_right_triggers = (struct vec2){
+    .x = state.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER],
+    .y = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER]
+  };
+  for (int button = 0; button < GLFW_BUTTON_COUNT; button++) {
+    if (state.buttons[button] == GLFW_PRESS) {
+      gamepad.buttons |= 1 << button;
+    } else {
+      gamepad.buttons &= ~(1 << button);
+    }
+  }
+  gamepad.previous_buttons = gamepad.buttons;
+  return gamepad;
+}
+
 static double get_seconds_since_creation() {
   return glfwGetTime();
 }
 
+static void switch_to_fullscreen() {
+  GLFWmonitor *monitor = glfwGetWindowMonitor(glfw_window);
+  if (!monitor) return;
+  cache_window_properties();
+  GLFWvidmode const *video_mode = glfwGetVideoMode(monitor);
+  glfwSetWindowMonitor(
+    glfw_window,
+    monitor,
+    0,
+    0,
+    video_mode->width,
+    video_mode->height,
+    video_mode->refreshRate
+  );
+}
+
+static void switch_to_windowed() {
+  GLFWmonitor *monitor = glfwGetWindowMonitor(glfw_window);
+  if (monitor == NULL) return;
+  glfwSetWindowMonitor(
+    glfw_window,
+    NULL,
+    win_props.position_x,
+    win_props.position_y,
+    win_props.width_in_screen_units,
+    win_props.height_in_screen_units,
+    0
+  );
+}
+
+static uint8_t is_fullscreen() {
+  GLFWmonitor *monitor = glfwGetWindowMonitor(glfw_window);
+  return (monitor == NULL) ? 0 : 1;
+}
+
+/*
+  WINDOW LIFECYCLE AND LOOP
+*/
+
+uint8_t received_closed_event() {
+  return glfwWindowShouldClose(glfw_window);
+}
+
+void request_buffer_swap() {
+  glfwSwapBuffers(glfw_window);
+}
+
+void poll_events() {
+  glfwPollEvents();
+}
+
+void end() {
+  glfwDestroyWindow(glfw_window);
+  glfwTerminate();
+}
+
 uint8_t window__create(
-  uint16_t window_width,
-  uint16_t window_height,
-  uint16_t position_x,
-  uint16_t position_y,
+  uint16_t win_width,
+  uint16_t win_height,
+  uint16_t pos_x,
+  uint16_t pos_y,
   const char *name,
   uint8_t vsync,
+  uint8_t fullscreen,
   struct window_api *const window
 ) {
 
@@ -155,16 +236,16 @@ uint8_t window__create(
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
 
   glfw_window = glfwCreateWindow(
-    window_width,
-    window_height,
+    win_width,
+    win_height,
     name,
-    NULL, // monitor handle. NOTE: forces fullscreen mode
+    NULL, // monitor handle. NOTE: passing a montior forces fullscreen mode
     NULL // context obj sharing
   );
 
   if (!glfw_window) return 0;
 
-  glfwSetWindowPos(glfw_window, position_x, position_y); // see note A
+  glfwSetWindowPos(glfw_window, pos_x, pos_y); // see note A
   glfwShowWindow(glfw_window); // see note A
 
   glfwSetWindowRefreshCallback(glfw_window, glfwSwapBuffers);
@@ -179,14 +260,17 @@ uint8_t window__create(
   window->on_framebuffer_resize = on_framebuffer_resize;
   window->on_gamepad_connect_and_disconnect = on_gamepad_connect_and_disconnect;
 
-  window->get_gamepad_input = get_gamepad_input;
   window->gamepad_is_connected = gamepad_is_connected;
+  window->get_gamepad_input = get_gamepad_input;
 
+  window->is_fullscreen = is_fullscreen;
   window->get_window_dimensions = get_window_dimensions;
   window->get_seconds_since_creation = get_seconds_since_creation;
-  window->request_buffer_swap = request_buffer_swap;
-  
+  window->switch_to_fullscreen = switch_to_fullscreen;
+  window->switch_to_windowed = switch_to_windowed;
+
   window->poll_events = poll_events;
+  window->request_buffer_swap = request_buffer_swap;
   window->received_closed_event = received_closed_event;
   window->end = end;
 

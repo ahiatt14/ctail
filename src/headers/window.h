@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "vector.h"
-#include "input.h"
+#include "gamepad.h"
 
 #define REQUEST_VSYNC_ON 1
 #define REQUEST_VSYNC_OFF 0
@@ -32,30 +32,31 @@ struct window_api {
     void (*handle_gamepad_disconnect)();
   );
 
-  double (*get_seconds_since_creation)();
+  uint8_t (*gamepad_is_connected)();
+  struct gamepad_input (*get_gamepad_input)(
+    struct gamepad_input gamepad
+  );
 
+  uint8_t (*is_fullscreen)();
+  struct vec2 (*get_window_dimensions)();
+  double (*get_seconds_since_creation)();  
   void (*switch_to_fullscreen)();
   void (*switch_to_windowed)();
-  struct vec2 (*get_window_dimensions)();
 
   void (*poll_events)();
   void (*request_buffer_swap)();
-
-  uint8_t (*gamepad_is_connected)();
-  void (*get_gamepad_input)(struct gamepad_input *const input);
-  
   uint8_t (*received_closed_event)();
   void (*end)();
 };
 
 uint8_t window__create(
-  uint16_t window_width,
-  uint16_t window_height,
-  uint16_t position_x,
-  uint16_t position_y,
+  uint16_t win_width,
+  uint16_t win_height,
+  uint16_t pos_x,
+  uint16_t pos_y,
   const char *title,
   uint8_t vsync,
-  // uint8_t fullscreen, TODO: add support
+  uint8_t fullscreen,
   struct window_api *const window
 );
 
