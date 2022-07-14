@@ -127,6 +127,7 @@ static struct vec2 get_window_dimensions() {
 static struct gamepad_input get_gamepad_input(
   struct gamepad_input gamepad
 ) {
+  gamepad.previous_buttons = gamepad.buttons;
   GLFWgamepadstate state;
   if (!glfwGetGamepadState(GLFW_JOYSTICK_1, &state)) {
     gamepad.buttons = 0;
@@ -148,7 +149,6 @@ static struct gamepad_input get_gamepad_input(
       gamepad.buttons &= ~(1 << button);
     }
   }
-  gamepad.previous_buttons = gamepad.buttons;
   return gamepad;
 }
 

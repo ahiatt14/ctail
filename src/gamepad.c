@@ -18,7 +18,7 @@ uint8_t button_was_released(
   uint16_t previous_state
 ) {
   return
-    !button_is_down(button, state) &&
+    button_is_up(button, state) &&
     button_is_down(button, previous_state) ?
     1 : 0;
 }
