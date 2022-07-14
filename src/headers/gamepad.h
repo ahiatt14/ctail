@@ -28,9 +28,9 @@ struct gamepad_input {
   uint16_t previous_buttons;
 };
 
-uint8_t is_down(uint16_t button, uint16_t state);
-uint8_t is_up(uint16_t button, uint16_t state);
-uint8_t was_released(
+uint8_t button_is_down(uint16_t button, uint16_t state);
+uint8_t button_is_up(uint16_t button, uint16_t state);
+uint8_t button_was_released(
   uint16_t button,
   uint16_t state,
   uint16_t previous_state
