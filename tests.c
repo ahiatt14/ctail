@@ -733,7 +733,6 @@ int main(void) {
 
   */
 
-  // TODO: test is failing smdh
   TEST(
     "space__create_model should use a transform to create a compound\n"
     "matrix for rotation around the z axis, scale, and translation"

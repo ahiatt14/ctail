@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdio.h>
 
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
@@ -120,8 +121,6 @@ static struct vec2 get_window_dimensions() {
   int width, height;
   glfwGetWindowSize(glfw_window, &width, &height);
   return (struct vec2){ width, height };
-  // TODO: will this struct return by value or poof?
-  // prolly will have to pass a destination vec2 ptr
 }
 
 static struct gamepad_input get_gamepad_input(
@@ -156,10 +155,14 @@ static double get_seconds_since_creation() {
   return glfwGetTime();
 }
 
+static uint8_t is_fullscreen() {
+  return (glfwGetWindowMonitor(glfw_window) != NULL) ? 1 : 0;
+}
+
 static void switch_to_fullscreen() {
-  GLFWmonitor *monitor = glfwGetWindowMonitor(glfw_window);
-  if (!monitor) return;
+  if (is_fullscreen()) return;
   cache_window_properties();
+  GLFWmonitor *monitor = glfwGetPrimaryMonitor();
   GLFWvidmode const *video_mode = glfwGetVideoMode(monitor);
   glfwSetWindowMonitor(
     glfw_window,
@@ -173,22 +176,18 @@ static void switch_to_fullscreen() {
 }
 
 static void switch_to_windowed() {
-  GLFWmonitor *monitor = glfwGetWindowMonitor(glfw_window);
-  if (monitor == NULL) return;
+  if (!is_fullscreen()) return;
   glfwSetWindowMonitor(
     glfw_window,
     NULL,
+    // TODO: these props won't be set if we start an app in fullscreen,
+    // work for future projects
     win_props.position_x,
     win_props.position_y,
     win_props.width_in_screen_units,
     win_props.height_in_screen_units,
     0
   );
-}
-
-static uint8_t is_fullscreen() {
-  GLFWmonitor *monitor = glfwGetWindowMonitor(glfw_window);
-  return (monitor == NULL) ? 0 : 1;
 }
 
 /*
