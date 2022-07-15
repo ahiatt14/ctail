@@ -160,7 +160,6 @@ static uint8_t is_fullscreen() {
 }
 
 static void switch_to_fullscreen() {
-  if (is_fullscreen()) return;
   cache_window_properties();
   GLFWmonitor *monitor = glfwGetPrimaryMonitor();
   GLFWvidmode const *video_mode = glfwGetVideoMode(monitor);
@@ -176,7 +175,6 @@ static void switch_to_fullscreen() {
 }
 
 static void switch_to_windowed() {
-  if (!is_fullscreen()) return;
   glfwSetWindowMonitor(
     glfw_window,
     NULL,
