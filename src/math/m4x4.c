@@ -83,19 +83,15 @@ void m4x4__identity(struct m4x4 *const m) {
 }
 
 // TODO: is this used anywhere?
-void m4x4_x_point(
+struct vec3 m4x4_x_point(
   struct m4x4 const *const m,
-  struct vec3 const *const t,
-  struct vec3 *const dest
+  struct vec3 t
 ) {
-  struct vec3 temp;
-  temp.x = m->data[0] * t->x + m->data[4] * t->y +
-    m->data[8] * t->z + m->data[12];
-  temp.y = m->data[1] * t->x + m->data[5] * t->y +
-    m->data[9] * t->z + m->data[13];
-  temp.z = m->data[2] * t->x + m->data[6] * t->y +
-    m->data[10] * t->z + m->data[14];
-  memcpy(&dest->x, &temp.x, sizeof(struct vec3));
+  return (struct vec3){
+    m->data[0] * t.x + m->data[4] * t.y + m->data[8] * t.z + m->data[12],
+    m->data[1] * t.x + m->data[5] * t.y + m->data[9] * t.z + m->data[13],
+    m->data[2] * t.x + m->data[6] * t.y + m->data[10] * t.z + m->data[14]
+  };
 }
 
 void m4x4__translation(struct vec3 const *const t, struct m4x4 *const m) {
@@ -121,7 +117,7 @@ void m4x4__scaling(float s, struct m4x4 *const m) {
 
 void m4x4__rotation(
    float rads,
-  struct vec3 const *const t,
+  struct vec3 t,
   struct m4x4 *const m
 ) {
 
@@ -129,33 +125,33 @@ void m4x4__rotation(
   double s = sin(rads);
   double d = 1.0f - c;
 
-  double x = t->x * d;
-  double y = t->y * d;
-  double z = t->z * d;
+  double x = t.x * d;
+  double y = t.y * d;
+  double z = t.z * d;
 
-  double txty = x * t->y;
-  double txtz = x * t->z;
-  double tytz = y * t->z;
+  double txty = x * t.y;
+  double txtz = x * t.z;
+  double tytz = y * t.z;
 
   fill_m4x4_data(
-    c + x * t->x, txty - s * t->z, txtz + s * t->y, 0,
-    txty + s * t->z, c + y * t->y, tytz - s * t->x, 0,
-    txtz - s * t->y, tytz + s * t->x, c + z * t->z, 0,
+    c + x * t.x, txty - s * t.z, txtz + s * t.y, 0,
+    txty + s * t.z, c + y * t.y, tytz - s * t.x, 0,
+    txtz - s * t.y, tytz + s * t.x, c + z * t.z, 0,
     0, 0, 0, 1,
     m->data
   );
 }
 
 void m4x4__view(
-  struct vec3 const *const right,
-  struct vec3 const *const up,
-  struct vec3 const *const forward,
+  struct vec3 right,
+  struct vec3 up,
+  struct vec3 forward,
   struct m4x4 *const m
 ) {
   fill_m4x4_data(
-    right->x, right->y, right->z, 0,
-    up->x, up->y, up->z, 0,
-    forward->x, forward->y, forward->z, 0,
+    right.x, right.y, right.z, 0,
+    up.x, up.y, up.z, 0,
+    forward.x, forward.y, forward.z, 0,
     0, 0, 0, 1,
     m->data
   );

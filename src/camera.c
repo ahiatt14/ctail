@@ -28,12 +28,12 @@ const struct m4x4* camera__get_perspective(struct camera const *const c) {
   return &c->_perspective;
 }
 
-const struct vec3* camera__get_position(struct camera const *const c) {
-  return &c->_position;
+const struct vec3 camera__get_position(struct camera const *const c) {
+  return c->_position;
 }
 
-const struct vec3* camera__get_look_target(struct camera const *const c) {
-  return &c->_look_target;
+const struct vec3 camera__get_look_target(struct camera const *const c) {
+  return c->_look_target;
 }
 
 void camera__set_position(float x, float y, float z, struct camera *const c) {
@@ -63,10 +63,10 @@ float camera__get_horizontal_fov_in_deg(struct camera const *const c) {
 }
 
 void camera__set_look_target(
-  struct vec3 const *const t,
+  struct vec3 t,
   struct camera *const c
 ) {
-  memcpy(&c->_look_target.x, &t->x, sizeof(struct vec3));
+  c->_look_target = t;
   c->_lookat_needs_recalculating = 1;
 }
 
@@ -114,21 +114,21 @@ const struct m4x4* camera__calculate_perspective(
 }
 
 const struct m4x4* camera__calculate_lookat(
-  struct vec3 const *const up,
+  struct vec3 up,
   struct camera *const cam
 ) {
 
-  vec3_minus_vec3(&cam->_position, &cam->_look_target, &camera_forward);
-  vec3__normalize(&camera_forward, &camera_forward);
-  vec3__cross(up, &camera_forward, &camera_right);
-  vec3__normalize(&camera_right, &camera_right);
-  vec3__cross(&camera_forward, &camera_right, &camera_up);
-  vec3__normalize(&camera_up, &camera_up);
+  camera_forward = vec3_minus_vec3(cam->_position, cam->_look_target);
+  camera_forward = vec3__normalize(camera_forward);
+  camera_right = vec3__cross(up, camera_forward);
+  camera_right = vec3__normalize(camera_right);
+  camera_up = vec3__cross(camera_forward, camera_right);
+  camera_up = vec3__normalize(camera_up);
 
   m4x4__view(
-    &camera_right,
-    &camera_up,
-    &camera_forward,
+    camera_right,
+    camera_up,
+    camera_forward,
     &view
   );
   m4x4__inverted_translation(

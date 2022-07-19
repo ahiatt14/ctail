@@ -111,12 +111,11 @@ void parse_obj_into_smooth_mesh(
 
   struct vec3 temp_normal = {0};
   for (int i = 0; i < obj_v_count; i++) {
-    calculate_vertex_normal(
+    temp_normal = calculate_vertex_normal(
       i,
       face_count * 3,
       indices,
-      obj_positions,
-      &temp_normal
+      obj_positions
     );
     memcpy( // TODO: try assigning directly to the struct var here. what happens..
       &vertices[i].position.x,

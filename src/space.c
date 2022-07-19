@@ -31,17 +31,17 @@ void space__create_model(
 
   m4x4__rotation(
     deg_to_rad(t->rotation_in_deg.x),
-    &space->right,
+    space->right,
     &temp__x_rotation
   );
   m4x4__rotation(
     deg_to_rad(t->rotation_in_deg.y),
-    &space->up,
+    space->up,
     &temp__y_rotation 
   );
   m4x4__rotation(
     deg_to_rad(t->rotation_in_deg.z),
-    &space->forward,
+    space->forward,
     &temp__z_rotation 
   );
   m4x4_x_m4x4(

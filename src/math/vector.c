@@ -2,69 +2,95 @@
 #include <math.h>
 
 #include "vector.h"
-#include "precision.h"
 
-void vec3_minus_vec3(
-  struct vec3 const *const t0,
-  struct vec3 const *const t1,
-  struct vec3 *const diff
+float vec2__magnitude(
+  struct vec2 t
 ) {
-  diff->x = t0->x - t1->x;
-  diff->y = t0->y - t1->y;
-  diff->z = t0->z - t1->z;
+  return sqrt(
+    t.x * t.x +
+    t.y * t.y
+  );
 }
 
-void vec3_plus_vec3(
-  struct vec3 const *const t0,
-  struct vec3 const *const t1,
-  struct vec3 *const sum
+struct vec2 vec2__normalize(
+  struct vec2 t
 ) {
-  sum->x = t0->x + t1->x;
-  sum->y = t0->y + t1->y;
-  sum->z = t0->z + t1->z;
-}
-
-void vec3__create(float x, float y, float z, struct vec3 *const t) {
-  t->x = x; t->y = y; t->z = z;
+  float m = vec2__magnitude(t);
+  return (struct vec2){
+    t.x / m,
+    t.y / m
+  };
 }
 
 // TODO: test me!
 float vec2__dot(
-  struct vec2 const *const t0,
-  struct vec2 const *const t1
+  struct vec2 t0,
+  struct vec2 t1
 ) {
   return
-    t0->x * t1->x +
-    t0->y * t1->y;
+    t0.x * t1.x +
+    t0.y * t1.y;
+}
+
+struct vec3 vec3_minus_vec3(
+  struct vec3 t0,
+  struct vec3 t1
+) {
+  return (struct vec3){
+    t0.x - t1.x,
+    t0.y - t1.y,
+    t0.z - t1.z
+  };
+}
+
+struct vec3 vec3_plus_vec3(
+  struct vec3 t0,
+  struct vec3 t1
+) {
+  return (struct vec3){
+    t0.x + t1.x,
+    t0.y + t1.y,
+    t0.z + t1.z
+  };
 }
 
 float vec3__dot(
-  struct vec3 const *const t0,
-  struct vec3 const *const t1
+  struct vec3 t0,
+  struct vec3 t1
 ) {
   return
-    t0->x * t1->x +
-    t0->y * t1->y +
-    t0->z * t1->z;
+    t0.x * t1.x +
+    t0.y * t1.y +
+    t0.z * t1.z;
 }
 
-void vec3__cross(
-  struct vec3 const *const t0,
-  struct vec3 const *const t1,
-  struct vec3 *const cross
+struct vec3 vec3__cross(
+  struct vec3 t0,
+  struct vec3 t1
 ) {
-  struct vec3 temp;
-  temp.x = t0->y * t1->z - t0->z * t1->y;
-  temp.y = t0->z * t1->x - t0->x * t1->z;
-  temp.z = t0->x * t1->y - t0->y * t1->x;
-  memcpy(&cross->x, &temp.x, sizeof(struct vec3));
+  return (struct vec3){
+    t0.y * t1.z - t0.z * t1.y,
+    t0.z * t1.x - t0.x * t1.z,
+    t0.x * t1.y - t0.y * t1.x
+  };
 }
 
-void vec3__mean(
+float vec3__distance(
+  struct vec3 t0,
+  struct vec3 t1
+) {
+  return sqrt(
+    (t0.x - t1.x) * (t0.x - t1.x) +
+    (t0.y - t1.y) * (t0.y - t1.y) +
+    (t0.z - t1.z) * (t0.z - t1.z)
+  );
+}
+
+struct vec3 vec3__mean(
   struct vec3 const *const vec3s,
-  int count,
-  struct vec3 *const avg
+  int count
 ) {
+  struct vec3 avg = {0};
   for (int component = 0; component < 3; component++) {
     float temp_mean = 0;
     for (int i = 0; i < count; i++) {
@@ -72,40 +98,28 @@ void vec3__mean(
       float v = (&current_vec3->x)[component];
       temp_mean += v;
     }
-    (&avg->x)[component] = temp_mean / count;
+    (&avg.x)[component] = temp_mean / count;
   }
+  return avg; // TODO: will this work?
 }
 
-float vec3__magnitude(struct vec3 const *const t) {
+float vec3__magnitude(
+  struct vec3 t
+) {
   return sqrt(
-    t->x * t->x +
-    t->y * t->y +
-    t->z * t->z
+    t.x * t.x +
+    t.y * t.y +
+    t.z * t.z
   );
 }
 
-float vec2__magnitude(struct vec2 const *const t) {
-  return sqrt(
-    t->x * t->x +
-    t->y * t->y
-  );
-}
-
-void vec3__normalize(
-  struct vec3 const *const t,
-  struct vec3 *const normalized
+struct vec3 vec3__normalize(
+  struct vec3 t
 ) {
   float m = vec3__magnitude(t);
-  normalized->x = t->x / m;
-  normalized->y = t->y / m;
-  normalized->z = t->z / m;
-}
-
-void vec2__normalize(
-  struct vec2 const *const t,
-  struct vec2 *const normalized
-) {
-  float m = vec2__magnitude(t);
-  normalized->x = t->x / m;
-  normalized->y = t->y / m;
+  return (struct vec3){
+    t.x / m,
+    t.y / m,
+    t.z / m
+  };
 }

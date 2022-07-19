@@ -196,15 +196,12 @@ int main() {
     { 0, 0, 1 },
     { 0, 1, 0 }
   };
-  struct vec3 actual = {0};
-  struct vec3 expected = {0};
-  calculate_face_normal(positions, &actual);
-  vec3__create(
+  struct vec3 actual = calculate_face_normal(positions);
+  struct vec3 expected = {
     -0.577350269f,
     0.577350269f,
-    0.577350269f,
-    &expected
-  );
+    0.577350269f
+  };
   assert(vec_equals_vec(
     &actual.x,
     &expected.x,
@@ -220,8 +217,7 @@ int main() {
     { 0, 0, -1 },
     { 0, 1, 0 }
   };
-  struct vec3 actual = {0};
-  calculate_face_normal(positions, &actual);
+  struct vec3 actual = calculate_face_normal(positions);  
   struct vec3 expected = { 1, 0, 0 };
   assert(vec_equals_vec(
     &actual.x,
@@ -236,13 +232,11 @@ int main() {
     "normalized normal for the given vert index"
   );
   f_tol.tolerance = FLT_EPSILON;
-  struct vec3 actual = {0};
-  calculate_vertex_normal(
+  struct vec3 actual = calculate_vertex_normal(
     0,
     36,
     cube_indices,
-    cube_vertex_positions,
-    &actual
+    cube_vertex_positions
   );
   struct vec3 expected = {
     0.577350269f,
@@ -259,13 +253,11 @@ int main() {
 
   TEST("calculate_vertex_normal run #2");
   f_tol.tolerance = FLT_EPSILON;
-  struct vec3 actual = {0};
-  calculate_vertex_normal(
+  struct vec3 actual = calculate_vertex_normal(
     4,
     18,
     triangular_pyramid_indices,
-    triangular_pyramid_positions,
-    &actual
+    triangular_pyramid_positions
   );
   struct vec3 expected = { 0, 1, 0 };
   assert(vec_equals_vec(
