@@ -100,7 +100,7 @@ struct vec3 vec3__mean(
     }
     (&avg.x)[component] = temp_mean / count;
   }
-  return avg; // TODO: will this work?
+  return avg;
 }
 
 float vec3__magnitude(
@@ -122,4 +122,17 @@ struct vec3 vec3__normalize(
     t.y / m,
     t.z / m
   };
+}
+
+struct vec3 vec3__negate(
+  struct vec3 t
+) {
+  return (struct vec3){ -t.x, -t.y, -t.z };
+}
+
+struct vec3 scalar_x_vec3(
+  float s,
+  struct vec3 t
+) {
+  return (struct vec3){ s * t.x, s * t.y, s * t.z };
 }
