@@ -31,3 +31,7 @@ int vec_equals_vec(
 int iclamp(int v, int min, int max) {
   return fmin(max, fmax(v, min));
 }
+
+float fclamp(float v, float min, float max) {
+  return fmin(max, fmax(v, min));
+}

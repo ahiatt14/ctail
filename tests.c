@@ -62,6 +62,22 @@ int main(void) {
   TEST("iclamp should return 1 when clamping 2 between 0 and 1");
   assert(iclamp(2, 0, 1) == 1);
   PASSED
+  
+  TEST("fclamp should return 1 when clamping 1.43 between 0 and 1");
+  assert(diff_is_within_tolerance(
+    fclamp(1.43f, 0, 1),
+    1,
+    FLT_EPSILON
+  ));
+  PASSED
+
+  TEST("fclamp should return 0.77 when clamping 0.77 between 0.5f and 29");
+  assert(diff_is_within_tolerance(
+    fclamp(0.77f, 0.5f, 29),
+    0.77f,
+    FLT_EPSILON
+  ));
+  PASSED
 
   /*
 
