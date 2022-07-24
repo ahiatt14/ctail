@@ -123,32 +123,29 @@ static struct vec2 get_window_dimensions() {
   return (struct vec2){ width, height };
 }
 
-static struct gamepad_input get_gamepad_input(
-  struct gamepad_input gamepad
-) {
-  gamepad.previous_buttons = gamepad.buttons;
+static void get_gamepad_input(struct gamepad_input *const gamepad) {
+  gamepad->previous_buttons = gamepad->buttons;
   GLFWgamepadstate state;
   if (!glfwGetGamepadState(GLFW_JOYSTICK_1, &state)) {
-    gamepad.buttons = 0;
-    gamepad.previous_buttons = 0;
-    return gamepad;
+    gamepad->buttons = 0;
+    gamepad->previous_buttons = 0;
+    return;
   }
-  gamepad.left_stick_direction = (struct vec2){
+  gamepad->left_stick_direction = (struct vec2){
     .x = state.axes[GLFW_GAMEPAD_AXIS_LEFT_X],
     .y = state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y]
   };
-  gamepad.left_and_right_triggers = (struct vec2){
+  gamepad->left_and_right_triggers = (struct vec2){
     .x = state.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER],
     .y = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER]
   };
   for (int button = 0; button < GLFW_BUTTON_COUNT; button++) {
     if (state.buttons[button] == GLFW_PRESS) {
-      gamepad.buttons |= 1 << button;
+      gamepad->buttons |= 1 << button;
     } else {
-      gamepad.buttons &= ~(1 << button);
+      gamepad->buttons &= ~(1 << button);
     }
   }
-  return gamepad;
 }
 
 static double get_seconds_since_creation() {
@@ -170,7 +167,7 @@ static void switch_to_fullscreen() {
     0,
     video_mode->width,
     video_mode->height,
-    video_mode->refreshRate
+    video_mode->refreshRate // TODO: doesn't appear to work???
   );
 }
 
