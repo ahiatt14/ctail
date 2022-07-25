@@ -179,11 +179,18 @@ static void select_texture(struct texture const *const tex) {
 }
 
 static void select_textures(
-  struct texture const *const *const textures,
-  uint8_t texture_count
+  struct shader const *const shad,
+  uint8_t texture_count,
+  char const *const *const uniform_names,
+  struct texture const *const *const textures
 ) {
   for (int i = 0; i < texture_count; i++) {
     glActiveTexture(GL_TEXTURE0 + i);
+    // TODO: inefficient to get uniform locations before every draw call
+    glUniform1i(
+      glGetUniformLocation(shad->_impl_id, uniform_names[i]),
+      i
+    );
     glBindTexture(GL_TEXTURE_2D, textures[i]->_impl_id);
   }
 }
@@ -220,15 +227,27 @@ static void set_vertex_shader_m4x4(
   );
 }
 
+static void set_fragment_shader_vec2(
+  struct shader const *const gpup,
+  char const *name,
+  struct vec2 value
+) {
+  glUniform2fv(
+    glGetUniformLocation(gpup->_impl_id, name),
+    1,
+    &value.x
+  );
+}
+
 static void set_fragment_shader_vec3(
   struct shader const *const gpup,
   char const *name,
-  struct vec3 const *const value
+  struct vec3 value
 ) {
   glUniform3fv(
     glGetUniformLocation(gpup->_impl_id, name),
     1,
-    &value->x
+    &value.x
   );
 }
 
@@ -310,6 +329,7 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->get_viewport_height = get_viewport_height;
   gpu->set_vertex_shader_m3x3 = set_vertex_shader_m3x3;
   gpu->set_vertex_shader_m4x4 = set_vertex_shader_m4x4;
+  gpu->set_fragment_shader_vec2 = set_fragment_shader_vec2;
   gpu->set_fragment_shader_vec3 = set_fragment_shader_vec3;
   gpu->set_fragment_shader_float = set_fragment_shader_float;
   gpu->draw_mesh = draw_mesh;
