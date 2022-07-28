@@ -64,7 +64,8 @@ int main(int argc, char *argv[]) {
   GLint success = 0;
   glGetShaderiv((GLuint)id, GL_COMPILE_STATUS, &success);
   if (success != GL_FALSE) {
-    printf("%s compiled successfully\n", filename);
+    // TODO: add verbose option for logging successful runs?
+    // printf("%s compiled successfully\n", filename);
     return 0;
   }
   GLsizei max_log_size = 0;
