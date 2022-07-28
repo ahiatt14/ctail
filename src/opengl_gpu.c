@@ -175,6 +175,7 @@ static void clear_depth_buffer() {
 }
 
 static void select_texture(struct texture const *const tex) {
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
 }
 
