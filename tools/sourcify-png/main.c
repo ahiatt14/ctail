@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
   int height = 0;
   int channel_count = 0;
 
+  stbi_set_flip_vertically_on_load(1);
   unsigned char *data = stbi_load(
     argv[1],
     &width,
