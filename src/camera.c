@@ -36,10 +36,8 @@ const struct vec3 camera__get_look_target(struct camera const *const c) {
   return c->_look_target;
 }
 
-void camera__set_position(float x, float y, float z, struct camera *const c) {
-  c->_position.x = x;
-  c->_position.y = y;
-  c->_position.z = z;
+void camera__set_position(struct vec3 position, struct camera *const c) {
+  c->_position = position;
   c->_lookat_needs_recalculating = 1;
 }
 

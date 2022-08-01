@@ -644,7 +644,7 @@ int main(void) {
   struct vec3 world_up = { 0.0f, 1.0f, 0.0f };
   struct camera cam;
   camera__init(&cam);
-  camera__set_position(0.0f, 0.25f, 0.5f, &cam);
+  camera__set_position((struct vec3){ 0.0f, 0.25f, 0.5f }, &cam);
   camera__set_look_target(target, &cam);
   camera__calculate_lookat(world_up, &cam);
   m4x4__create(
@@ -664,7 +664,7 @@ int main(void) {
   TEST("moving the camera should set view_needs_recalculating to true");
   struct camera cam;
   camera__init(&cam);
-  camera__set_position(0.0f, 1.0f, 1.2f, &cam);
+  camera__set_position((struct vec3){ 0.0f, 1.0f, 1.2f }, &cam);
   assert(camera__lookat_needs_recalculating(&cam));
   PASSED
 
@@ -681,7 +681,7 @@ int main(void) {
   camera__init(&cam);
   struct vec3 target = { 0.0f, 0.5f, -1.0f };
   struct vec3 world_up = { 0.0f, 1.0f, 0.0f };
-  camera__set_position(0.0f, 0.25f, 0.5f, &cam);
+  camera__set_position((struct vec3){ 0.0f, 0.25f, 0.5f }, &cam);
   camera__set_look_target(target, &cam);
   camera__calculate_lookat(world_up, &cam);
   assert(!camera__lookat_needs_recalculating(&cam));

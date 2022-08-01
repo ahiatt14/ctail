@@ -19,7 +19,7 @@ usage() {
     build-glfw          compile glfw into local static library
     build               compile tail src into obj
     static              compile tail into static lib
-    slim         create dir for lib and header to easily copy into game
+    slim                create dir for lib and header to easily copy into game
     template            bootstrap a new game project at output path
     test                build tail, run tests, print results to console
     testlog             build tail, run tests, print results to file
