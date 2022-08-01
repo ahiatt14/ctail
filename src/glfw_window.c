@@ -214,6 +214,7 @@ uint8_t window__create(
   const char *name,
   uint8_t vsync,
   uint8_t fullscreen,
+  uint8_t request_MSAA,
   struct window_api *const window
 ) {
 
@@ -228,6 +229,8 @@ uint8_t window__create(
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // see note A
   glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
+
+  if (request_MSAA) glfwWindowHint(GLFW_SAMPLES, 4);
 
   glfw_window = glfwCreateWindow(
     win_width,

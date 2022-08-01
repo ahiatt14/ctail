@@ -165,6 +165,14 @@ static void enable_depth_test() {
   glEnable(GL_DEPTH_TEST);
 }
 
+static void enable_MSAA() {
+  glEnable(GL_MULTISAMPLE);
+}
+
+static void disable_MSAA() {
+  glDisable(GL_MULTISAMPLE);
+}
+
 static void clear(struct vec3 const *const c) {
   glClearColor(c->x, c->y, c->z, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -314,6 +322,8 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->clear = clear;
   gpu->clear_depth_buffer = clear_depth_buffer;
   gpu->enable_depth_test = enable_depth_test;
+  gpu->enable_MSAA = enable_MSAA;
+  gpu->disable_MSAA = disable_MSAA;
   gpu->cull_back_faces = cull_back_faces;
   gpu->cull_no_faces = cull_no_faces;
   gpu->copy_static_mesh_to_gpu = copy_static_mesh_to_gpu;
