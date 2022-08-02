@@ -640,13 +640,10 @@ int main(void) {
 
   TEST("camera__calculate_lookat should create a lookat matrix");
   f_tol.tolerance = FLT_EPSILON;
-  struct vec3 target = { 0.0f, 0.5f, -1.0f };
-  struct vec3 world_up = { 0.0f, 1.0f, 0.0f };
   struct camera cam;
-  camera__init(&cam);
-  camera__set_position((struct vec3){ 0.0f, 0.25f, 0.5f }, &cam);
-  camera__set_look_target(target, &cam);
-  camera__calculate_lookat(world_up, &cam);
+  cam.position = (struct vec3){ 0.0f, 0.25f, 0.5f };
+  cam.look_target = (struct vec3){ 0.0f, 0.5f, -1.0f };
+  camera__calculate_lookat((struct vec3){ 0.0f, 1.0f, 0.0f }, &cam);
   m4x4__create(
     1, 0, 0, 0,
     0, 0.98639392853f, 0.16439899802f, -0.3287979960f,
@@ -656,42 +653,9 @@ int main(void) {
   );
   assert(m4x4_equals_m4x4(
     &expected_m4,
-    camera__get_lookat(&cam),
+    &cam.lookat,
     &f_tol
   ));
-  PASSED
-
-  TEST("moving the camera should set view_needs_recalculating to true");
-  struct camera cam;
-  camera__init(&cam);
-  camera__set_position((struct vec3){ 0.0f, 1.0f, 1.2f }, &cam);
-  assert(camera__lookat_needs_recalculating(&cam));
-  PASSED
-
-  TEST("changing the camera look target should set view_needs_recalculating to true");
-  struct camera cam;
-  camera__init(&cam);
-  struct vec3 target = { 0.3f, 0.0f, 3.0f };
-  camera__set_look_target(target, &cam);
-  assert(camera__lookat_needs_recalculating(&cam));
-  PASSED
-
-  TEST("calculating the camera view should set view_needs_recalculating to false");
-  struct camera cam;
-  camera__init(&cam);
-  struct vec3 target = { 0.0f, 0.5f, -1.0f };
-  struct vec3 world_up = { 0.0f, 1.0f, 0.0f };
-  camera__set_position((struct vec3){ 0.0f, 0.25f, 0.5f }, &cam);
-  camera__set_look_target(target, &cam);
-  camera__calculate_lookat(world_up, &cam);
-  assert(!camera__lookat_needs_recalculating(&cam));
-  PASSED
-
-  TEST("setting horiz fov should set perspective_needs_recalculating to true");
-  struct camera cam;
-  camera__init(&cam);
-  camera__set_horizontal_fov_in_deg(45, &cam);
-  assert(camera__perspective_needs_recalculating(&cam));
   PASSED
 
   TEST(
@@ -700,10 +664,9 @@ int main(void) {
   );
   f_tol.tolerance = FLT_EPSILON * 1000;
   struct camera cam;
-  camera__init(&cam);
-  camera__set_horizontal_fov_in_deg(75, &cam);
-  camera__set_near_clip_distance(0.1f, &cam);
-  camera__set_far_clip_distance(10.0f, &cam);
+  cam.horizontal_fov_in_deg = 75;
+  cam.near_clip_distance = 0.1f;
+  cam.far_clip_distance = 10;
   struct viewport vwprt;
   viewport__set_width(1920, &vwprt);
   viewport__set_height(1080, &vwprt);
@@ -717,26 +680,9 @@ int main(void) {
   );
   assert(m4x4_equals_m4x4(
     &expected_m4,
-    camera__get_perspective(&cam),
+    &cam.perspective,
     &f_tol
   ));
-  PASSED
-
-  TEST(
-    "camera__calculate_perspective should set perspective_needs_recalculating\n"
-    "to false on the camera and viewport"
-  );
-  struct camera cam;
-  camera__init(&cam);
-  camera__set_horizontal_fov_in_deg(75, &cam);
-  camera__set_near_clip_distance(0.1f, &cam);
-  camera__set_far_clip_distance(10.0f, &cam);
-  struct viewport vwprt;
-  viewport__set_width(1920, &vwprt);
-  viewport__set_height(1080, &vwprt);
-  camera__calculate_perspective(&vwprt, &cam);
-  assert(!camera__perspective_needs_recalculating(&cam));
-  assert(!viewport__perspective_needs_recalculating(&vwprt));
   PASSED
 
   /*
