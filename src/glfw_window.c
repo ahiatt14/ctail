@@ -124,21 +124,24 @@ static struct vec2 get_window_dimensions() {
 }
 
 static void get_gamepad_input(struct gamepad_input *const gamepad) {
+
   gamepad->previous_buttons = gamepad->buttons;
-  GLFWgamepadstate state;
+
+  static GLFWgamepadstate state;
   if (!glfwGetGamepadState(GLFW_JOYSTICK_1, &state)) {
     gamepad->buttons = 0;
     gamepad->previous_buttons = 0;
     return;
   }
+
   gamepad->left_stick_direction = (struct vec2){
     .x = state.axes[GLFW_GAMEPAD_AXIS_LEFT_X],
     .y = state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y]
   };
-  gamepad->left_and_right_triggers = (struct vec2){
-    .x = state.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER],
-    .y = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER]
-  };
+
+  gamepad->left_trigger = state.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER];
+  gamepad->right_trigger = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER];
+  
   for (int button = 0; button < GLFW_BUTTON_COUNT; button++) {
     if (state.buttons[button] == GLFW_PRESS) {
       gamepad->buttons |= 1 << button;
