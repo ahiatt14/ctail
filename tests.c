@@ -680,7 +680,7 @@ int main(void) {
   );
   assert(m4x4_equals_m4x4(
     &expected_m4,
-    &cam.perspective,
+    &cam.projection,
     &f_tol
   ));
   PASSED

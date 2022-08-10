@@ -35,10 +35,10 @@ const struct m4x4* camera__calculate_perspective(
     0, m5, m9, 0,
     0, 0, m10, m14,
     0, 0, -1, 0,
-    &cam->perspective
+    &cam->projection
   );
 
-  return &cam->perspective;
+  return &cam->projection;
 }
 
 const struct m4x4* camera__calculate_lookat(
