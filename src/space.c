@@ -68,10 +68,10 @@ void space__create_model(
 }
 
 void space__create_normals_model(
-  struct m4x4 const *const mesh_model,
+  struct m4x4 const *const model,
   struct m3x3 *const dest
 ) {
-  m4x4__sub3x3_from00(mesh_model, dest);
+  m4x4__sub3x3_from00(model, dest);
   m3x3__inverse(dest, dest);
   m3x3__transpose(dest, dest);
 }

@@ -48,8 +48,10 @@ int main(int argc, char *argv[]) {
     id = glCreateShader(GL_FRAGMENT_SHADER);
   } else if (strcmp(argv[2], "vert") == 0) {
     id = glCreateShader(GL_VERTEX_SHADER); 
+  } else if (strcmp(argv[2], "geo") == 0) {
+    id = glCreateShader(GL_GEOMETRY_SHADER);
   } else {
-    printf("Second argument must by \"frag\" or \"vert\".\n");
+    printf("Second argument must by \"frag\", \"geo\", or \"vert\".\n");
     return 1;
   }
 
@@ -76,7 +78,7 @@ int main(int argc, char *argv[]) {
   printf("%s compilation failed: %s\n", filename, log);
   free(log);
 
-  return 0;
+  return 1;
 }
 
 void filename_from_path(

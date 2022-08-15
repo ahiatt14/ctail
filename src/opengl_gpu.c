@@ -42,8 +42,28 @@ static void copy_shader_to_gpu(struct shader *const gpup) {
   glDeleteShader(frag_id);
 }
 
-// TODO: probably just param for # of channels instead 
-// of multiple fns like this
+static void copy_geo_stage_to_gpu(
+  const char *geo_shader_src,
+  struct shader *const gpup
+) {
+    gpup->_geo_impl_id = glCreateShader(GL_GEOMETRY_SHADER);
+    glShaderSource(gpup->_geo_impl_id, 1, &(gpup->geo_shader_src), NULL);
+    glCompileShader(gpup->_geo_impl_id);
+
+    glAttachShader(gpup->_impl_id, gpup->_geo_impl_id);
+    glAttachShader(gpup->_impl_id, gpup->_frag_impl_id);
+    glAttachShader(gpup->_impl_id, gpup->_vert_impl_id);
+    glLinkProgram(gpup->_impl_id);
+
+    glDetachShader(gpup->_impl_id, gpup->_geo_impl_id);
+    glDetachShader(gpup->_impl_id, gpup->_frag_impl_id);
+    glDetachShader(gpup->_impl_id, gpup->_vert_impl_id);
+
+    glDeleteShader(gpup->_geo_impl_id);
+    glDeleteShader(gpup->_frag_impl_id);
+    glDeleteShader(gpup->_vert_impl_id);
+}
+
 static void copy_rgb_texture_to_gpu(struct texture *const tex) {
   glGenTextures(1, &tex->_impl_id);
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
@@ -58,25 +78,6 @@ static void copy_rgb_texture_to_gpu(struct texture *const tex) {
     tex->height,
     0, // "should always be 0 (legacy stuff)",
     GL_RGB,
-    GL_UNSIGNED_BYTE,
-    tex->data
-  );
-}
-
-static void copy_mono_texture_to_gpu(struct texture *const tex) {
-  glGenTextures(1, &tex->_impl_id);
-  glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexImage2D(
-    GL_TEXTURE_2D,
-    0,
-    GL_RED,
-    tex->width,
-    tex->height,
-    0, // "should always be 0 (legacy stuff)",
-    GL_RED,
     GL_UNSIGNED_BYTE,
     tex->data
   );
@@ -330,8 +331,8 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->copy_dynamic_mesh_to_gpu = copy_dynamic_mesh_to_gpu;
   gpu->update_gpu_mesh_data = update_gpu_mesh_data;
   gpu->copy_rgb_texture_to_gpu = copy_rgb_texture_to_gpu;
-  gpu->copy_mono_texture_to_gpu = copy_mono_texture_to_gpu;
   gpu->copy_shader_to_gpu = copy_shader_to_gpu;
+  gpu->copy_geo_stage_to_gpu = copy_geo_stage_to_gpu;
   gpu->select_shader = select_shader;
   gpu->select_texture = select_texture;
   gpu->select_textures = select_textures;
