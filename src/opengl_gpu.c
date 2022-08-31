@@ -86,7 +86,7 @@ static void copy_texture_to_gpu(struct texture *const tex) {
   glTexImage2D(
     GL_TEXTURE_2D,
     0,
-    GL_RGB,
+    channel_count_to_gl_tex_format(tex->channels_count),
     tex->width,
     tex->height,
     0, // "should always be 0 (legacy stuff)",
