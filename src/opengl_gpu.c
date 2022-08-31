@@ -68,7 +68,16 @@ static void copy_shader_to_gpu(
     glDeleteShader(gpup->_geo_impl_id);
 }
 
-static void copy_rgb_texture_to_gpu(struct texture *const tex) {
+static int channel_count_to_gl_tex_format(int channel_count) {
+  switch (channel_count) {
+    case 3:
+      return GL_RGB;
+    case 4:
+      return GL_RGBA;
+  }
+  return GL_RGB;
+}
+static void copy_texture_to_gpu(struct texture *const tex) {
   glGenTextures(1, &tex->_impl_id);
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -81,7 +90,7 @@ static void copy_rgb_texture_to_gpu(struct texture *const tex) {
     tex->width,
     tex->height,
     0, // "should always be 0 (legacy stuff)",
-    GL_RGB,
+    channel_count_to_gl_tex_format(tex->channels_count),
     GL_UNSIGNED_BYTE,
     tex->data
   );
@@ -334,7 +343,7 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->copy_static_mesh_to_gpu = copy_static_mesh_to_gpu;
   gpu->copy_dynamic_mesh_to_gpu = copy_dynamic_mesh_to_gpu;
   gpu->update_gpu_mesh_data = update_gpu_mesh_data;
-  gpu->copy_rgb_texture_to_gpu = copy_rgb_texture_to_gpu;
+  gpu->copy_texture_to_gpu = copy_texture_to_gpu;
   gpu->copy_shader_to_gpu = copy_shader_to_gpu;
   gpu->select_shader = select_shader;
   gpu->select_texture = select_texture;
