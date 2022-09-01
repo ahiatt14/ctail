@@ -31,6 +31,8 @@ struct gpu_api {
   void (*clear)(struct vec3 const *const color);
   void (*clear_depth_buffer)();
   void (*enable_depth_test)();
+  void (*enable_blending)();
+  void (*set_default_blending)();
   void (*disable_MSAA)();
   void (*enable_MSAA)();
 

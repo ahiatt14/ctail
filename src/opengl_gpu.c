@@ -179,6 +179,14 @@ static void enable_depth_test() {
   glEnable(GL_DEPTH_TEST);
 }
 
+static void enable_blending() {
+  glEnable(GL_BLEND);
+}
+
+static void set_default_blending() {
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
 static void enable_MSAA() {
   glEnable(GL_MULTISAMPLE);
 }
@@ -336,6 +344,8 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->clear = clear;
   gpu->clear_depth_buffer = clear_depth_buffer;
   gpu->enable_depth_test = enable_depth_test;
+  gpu->enable_blending = enable_blending;
+  gpu->set_default_blending = set_default_blending;
   gpu->enable_MSAA = enable_MSAA;
   gpu->disable_MSAA = disable_MSAA;
   gpu->cull_back_faces = cull_back_faces;
