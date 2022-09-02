@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  char filename[MAX_FILENAME_LENGTH] = {'\0'};
+  char filename[MAX_FILENAME_LENGTH] = {0};
   filename_from_path(filename, argv[1], MAX_FILENAME_LENGTH);
   
   if (strcmp(argv[2], "flat") == 0) {
@@ -81,31 +81,29 @@ int main(int argc, char *argv[]) {
     );
   }
 
-  // TODO: could abstract this file opening stuff
-  char header_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
-  strcat(header_filepath, argv[3]);
-  strcat(header_filepath, filename);
-  strcat(header_filepath, "_mesh");
-  strcat(header_filepath, ".h");
-  FILE *header_file = fopen(header_filepath, "w");
-  // TODO: I much prefer putting input validation at the top
+  char base_output_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
+  strcat(base_output_filepath, argv[3]);
+  strcat(base_output_filepath, filename);
+
+  char header_output_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
+  strcat(header_output_filepath, base_output_filepath);
+  strcat(header_output_filepath, "_mesh.h");
+
+  char src_output_filepath[200] = {0};
+  strcpy(src_output_filepath, base_output_filepath);
+  strcat(src_output_filepath, "_mesh.c");
+
+  FILE *header_file = fopen(header_output_filepath, "w");
   if (!header_file) {
-    printf("Could not open %s for writing", header_filepath);
+    printf("Could not open %s for writing", header_output_filepath);
     return 1;
   }
   write_header_file(filename, header_file);
   fclose(header_file);
 
-  // TODO: could abstract this file opening stuff
-  char src_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
-  strcat(src_filepath, argv[4]);
-  strcat(src_filepath, filename);
-  strcat(src_filepath, "_mesh");
-  strcat(src_filepath, ".c");
-  FILE *src_file = fopen(src_filepath, "w");
-  // TODO: I much prefer putting input validation at the top
+  FILE *src_file = fopen(src_output_filepath, "w");
   if (!src_file) {
-    printf("Could not open %s for writing", src_filepath);
+    printf("Could not open %s for writing", src_output_filepath);
     return 1;
   }
   write_src_file(

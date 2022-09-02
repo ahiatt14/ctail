@@ -12,8 +12,8 @@ void filename_from_path(
 
 int main(int argc, char *argv[]) {
 
-  if (argc != 5) {
-    printf("Sourcify-png requires 4 argument.\n");
+  if (argc != 4) {
+    printf("Sourcify-png requires 3 argument.\n");
     return 1;
   }
 
@@ -47,18 +47,26 @@ int main(int argc, char *argv[]) {
   }
 
   char png_filename[100] = {0};
-  filename_from_path(
-    png_filename,
-    argv[1],
-    200 // TODO: edge case of very long path here, should validate
-  );
+  filename_from_path(png_filename, argv[1], 200);
+
+  char base_output_filepath[200] = {0};
+  strcat(base_output_filepath, argv[3]);
+  strcat(base_output_filepath, png_filename);
+
+  char src_output_filepath[200] = {0};
+  strcpy(src_output_filepath, base_output_filepath);
+  strcat(src_output_filepath, "_texture.c");
+
+  char header_output_filepath[200] = {0};
+  strcpy(header_output_filepath, base_output_filepath);
+  strcat(header_output_filepath, "_texture.h");
 
   // HEADER FILE
-  FILE *header_file = fopen(argv[3], "w");
+  FILE *header_file = fopen(header_output_filepath, "w");
   if (header_file == NULL) {
     printf(
       "Sourcify-png could not open header file %s for writing.\n",
-      argv[3]
+      header_output_filepath
     );
     return 1;
   }
@@ -74,9 +82,13 @@ int main(int argc, char *argv[]) {
 
   // SRC FILE
   int buffer_length = width * height * desired_channels;
-  FILE *src_file = fopen(argv[4], "w");
+  FILE *src_file = fopen(src_output_filepath, "w");
   if (src_file == NULL) {
-    printf("Sourcify-png could not open src file %s for writing.\n", argv[4]);
+    printf(
+      "Sourcify-png could not open src file %s%s for writing.\n",
+      src_output_filepath,
+      png_filename
+    );
     return 1;
   }
   fprintf(src_file, "#include \"tail.h\"\n");
