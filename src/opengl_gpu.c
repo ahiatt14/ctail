@@ -78,11 +78,16 @@ static int channel_count_to_gl_tex_format(int channel_count) {
   return GL_RGB;
 }
 static void copy_texture_to_gpu(struct texture *const tex) {
+
   glGenTextures(1, &tex->_impl_id);
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
   glTexImage2D(
     GL_TEXTURE_2D,
     0,
@@ -94,6 +99,8 @@ static void copy_texture_to_gpu(struct texture *const tex) {
     GL_UNSIGNED_BYTE,
     tex->data
   );
+
+  glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 static void copy_mesh_to_gpu(struct drawable_mesh *const dm, GLenum usage) {
