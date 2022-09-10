@@ -161,6 +161,7 @@ void write_src_file(
   fprintf(file, "#include \"%s_mesh.h\"\n", filename);
   fprintf(file, "struct drawable_mesh %s_mesh = {\n", filename);
   fprintf(file, ".vertices_size = %u,\n", sizeof(struct vertex) * vertex_count);
+  fprintf(file, ".vertices_length = %u,\n", vertex_count);
   fprintf(file, ".indices_size = %u,\n", sizeof(unsigned int) * index_count);
   fprintf(file, ".indices_length = %i,\n", index_count);
   fprintf(file, ".indices = (unsigned int[]){\n");
