@@ -34,18 +34,18 @@ static void copy_shader_to_gpu(
   
   compile_src(
     GL_FRAGMENT_SHADER,
-    gpup->frag_shader_src,
+    gpup->frag_src,
     &gpup->_frag_impl_id
   );
   compile_src(
     GL_VERTEX_SHADER,
-    gpup->vert_shader_src,
+    gpup->vert_src,
     &gpup->_vert_impl_id
   );
-  if (gpup->geo_shader_src != NULL)
+  if (gpup->geo_src != NULL)
     compile_src(
       GL_GEOMETRY_SHADER,
-      gpup->geo_shader_src,
+      gpup->geo_src,
       &gpup->_geo_impl_id
     );
 
@@ -53,18 +53,18 @@ static void copy_shader_to_gpu(
   gpup->_impl_id = prog_id;
   glAttachShader(prog_id, gpup->_frag_impl_id);
   glAttachShader(prog_id, gpup->_vert_impl_id);
-  if (gpup->geo_shader_src != NULL)
+  if (gpup->geo_src != NULL)
     glAttachShader(prog_id, gpup->_geo_impl_id);
   glLinkProgram(prog_id);
 
   glDetachShader(prog_id, gpup->_frag_impl_id);
   glDetachShader(prog_id, gpup->_vert_impl_id);
-  if (gpup->geo_shader_src != NULL)
+  if (gpup->geo_src != NULL)
     glDetachShader(prog_id, gpup->_geo_impl_id);
 
   glDeleteShader(gpup->_frag_impl_id);
   glDeleteShader(gpup->_vert_impl_id);
-  if (gpup->geo_shader_src != NULL)
+  if (gpup->geo_src != NULL)
     glDeleteShader(gpup->_geo_impl_id);
 }
 
@@ -91,11 +91,11 @@ static void copy_texture_to_gpu(struct texture *const tex) {
   glTexImage2D(
     GL_TEXTURE_2D,
     0,
-    channel_count_to_gl_tex_format(tex->channels_count),
+    channel_count_to_gl_tex_format(tex->channel_count),
     tex->width,
     tex->height,
     0, // "should always be 0 (legacy stuff)",
-    channel_count_to_gl_tex_format(tex->channels_count),
+    channel_count_to_gl_tex_format(tex->channel_count),
     GL_UNSIGNED_BYTE,
     tex->data
   );
@@ -237,7 +237,7 @@ static void select_shader(struct shader const *const gpup) {
   glUseProgram(gpup->_impl_id);
 }
 
-static void set_vertex_shader_m3x3(
+static void set_vert_m3x3(
   struct shader const *const gpup,
   char const *name,
   struct m3x3 const *const value
@@ -250,7 +250,7 @@ static void set_vertex_shader_m3x3(
   );
 }
 
-static void set_vertex_shader_m4x4(
+static void set_vert_m4x4(
   struct shader const *const gpup,
   char const *name,
   struct m4x4 const *const value
@@ -265,7 +265,7 @@ static void set_vertex_shader_m4x4(
   );
 }
 
-static void set_fragment_shader_vec2(
+static void set_frag_vec2(
   struct shader const *const gpup,
   char const *name,
   struct vec2 value
@@ -277,7 +277,7 @@ static void set_fragment_shader_vec2(
   );
 }
 
-static void set_fragment_shader_vec3(
+static void set_frag_vec3(
   struct shader const *const gpup,
   char const *name,
   struct vec3 value
@@ -289,7 +289,7 @@ static void set_fragment_shader_vec3(
   );
 }
 
-static void set_fragment_shader_float(
+static void set_frag_float(
     struct shader const *const gpup,
     char const *name,
     float value
@@ -368,11 +368,11 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->set_viewport = set_viewport;
   gpu->get_viewport_width = get_viewport_width;
   gpu->get_viewport_height = get_viewport_height;
-  gpu->set_vertex_shader_m3x3 = set_vertex_shader_m3x3;
-  gpu->set_vertex_shader_m4x4 = set_vertex_shader_m4x4;
-  gpu->set_fragment_shader_vec2 = set_fragment_shader_vec2;
-  gpu->set_fragment_shader_vec3 = set_fragment_shader_vec3;
-  gpu->set_fragment_shader_float = set_fragment_shader_float;
+  gpu->set_vert_m3x3 = set_vert_m3x3;
+  gpu->set_vert_m4x4 = set_vert_m4x4;
+  gpu->set_frag_vec2 = set_frag_vec2;
+  gpu->set_frag_vec3 = set_frag_vec3;
+  gpu->set_frag_float = set_frag_float;
   gpu->draw_mesh = draw_mesh;
   gpu->draw_wireframe = draw_wireframe;
 }

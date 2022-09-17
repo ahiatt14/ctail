@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
   fprintf(src_file, "struct texture %s_texture = {\n", png_filename);
   fprintf(src_file, ".width = %i,\n", width);
   fprintf(src_file, ".height = %i,\n", height);
-  fprintf(src_file, ".channels_count = %i,\n", desired_channels);
+  fprintf(src_file, ".channel_count = %i,\n", desired_channels);
   fprintf(src_file, ".data = (unsigned char[]){\n");
   for (int i = 0; i < buffer_length; i++) {
     fprintf(src_file, "%i,", data[i]);
