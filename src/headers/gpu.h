@@ -63,27 +63,27 @@ struct gpu_api {
   int (*get_viewport_height)();
   int (*get_viewport_width)();
 
-  void (*set_vert_m3x3)(
+  void (*set_shader_m3x3)(
     struct shader const *const gpup,
     char const *name,
     struct m3x3 const *const value
   );
-  void (*set_vert_m4x4)(
+  void (*set_shader_m4x4)(
     struct shader const *const gpup,
     char const *name,
     struct m4x4 const *const value
   );
-  void (*set_frag_vec2)(
+  void (*set_shader_vec2)(
     struct shader const *const gpup,
     char const *name,
     struct vec2 value
   );  
-  void (*set_frag_vec3)(
+  void (*set_shader_vec3)(
     struct shader const *const gpup,
     char const *name,
     struct vec3 value
   );
-  void (*set_frag_float)(
+  void (*set_shader_float)(
     struct shader const *const gpup,
     char const *name,
     float value

@@ -237,7 +237,7 @@ static void select_shader(struct shader const *const gpup) {
   glUseProgram(gpup->_impl_id);
 }
 
-static void set_vert_m3x3(
+static void set_shader_m3x3(
   struct shader const *const gpup,
   char const *name,
   struct m3x3 const *const value
@@ -250,7 +250,7 @@ static void set_vert_m3x3(
   );
 }
 
-static void set_vert_m4x4(
+static void set_shader_m4x4(
   struct shader const *const gpup,
   char const *name,
   struct m4x4 const *const value
@@ -265,7 +265,7 @@ static void set_vert_m4x4(
   );
 }
 
-static void set_frag_vec2(
+static void set_shader_vec2(
   struct shader const *const gpup,
   char const *name,
   struct vec2 value
@@ -277,7 +277,7 @@ static void set_frag_vec2(
   );
 }
 
-static void set_frag_vec3(
+static void set_shader_vec3(
   struct shader const *const gpup,
   char const *name,
   struct vec3 value
@@ -289,7 +289,7 @@ static void set_frag_vec3(
   );
 }
 
-static void set_frag_float(
+static void set_shader_float(
     struct shader const *const gpup,
     char const *name,
     float value
@@ -368,11 +368,11 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->set_viewport = set_viewport;
   gpu->get_viewport_width = get_viewport_width;
   gpu->get_viewport_height = get_viewport_height;
-  gpu->set_vert_m3x3 = set_vert_m3x3;
-  gpu->set_vert_m4x4 = set_vert_m4x4;
-  gpu->set_frag_vec2 = set_frag_vec2;
-  gpu->set_frag_vec3 = set_frag_vec3;
-  gpu->set_frag_float = set_frag_float;
+  gpu->set_shader_m3x3 = set_shader_m3x3;
+  gpu->set_shader_m4x4 = set_shader_m4x4;
+  gpu->set_shader_vec2 = set_shader_vec2;
+  gpu->set_shader_vec3 = set_shader_vec3;
+  gpu->set_shader_float = set_shader_float;
   gpu->draw_mesh = draw_mesh;
   gpu->draw_wireframe = draw_wireframe;
 }
