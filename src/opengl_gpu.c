@@ -162,9 +162,9 @@ static void copy_mesh_to_gpu(struct drawable_mesh *const dm, GLenum usage) {
   );
 }
 
-void *temp_buffer_map;
 static void update_gpu_mesh_data(struct drawable_mesh const *const dm) {
   glBindBuffer(GL_ARRAY_BUFFER, dm->_impl_vbo_id);
+  static void *temp_buffer_map;
   temp_buffer_map = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
   memcpy(
     temp_buffer_map,
