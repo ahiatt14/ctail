@@ -62,7 +62,7 @@ const struct m4x4* camera__calculate_lookat(
     &view
   );
   m4x4__inverted_translation(
-    &cam->position,
+    cam->position,
     &offset
   );
 

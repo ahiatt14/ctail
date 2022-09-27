@@ -82,7 +82,6 @@ void m4x4__identity(struct m4x4 *const m) {
   );
 }
 
-// TODO: is this used anywhere?
 struct vec3 m4x4_x_point(
   struct m4x4 const *const m,
   struct vec3 t
@@ -94,18 +93,24 @@ struct vec3 m4x4_x_point(
   };
 }
 
-void m4x4__translation(struct vec3 const *const t, struct m4x4 *const m) {
+void m4x4__translation(
+  struct vec3 t,
+  struct m4x4 *const m
+) {
   fill_m4x4_data(
-    1, 0, 0, t->x,
-    0, 1, 0, t->y,
-    0, 0, 1, t->z,
+    1, 0, 0, t.x,
+    0, 1, 0, t.y,
+    0, 0, 1, t.z,
     0, 0, 0, 1,
     m->data
   );
 }
 
 // TODO: could update to scale on each axis if we want idk
-void m4x4__scaling(float s, struct m4x4 *const m) {
+void m4x4__scaling(
+  float s,
+  struct m4x4 *const m
+) {
   fill_m4x4_data(
     s, 0, 0, 0,
     0, s, 0, 0,
@@ -158,13 +163,13 @@ void m4x4__view(
 }
 
 void m4x4__inverted_translation(
-  struct vec3 const *const t,
+  struct vec3 t,
   struct m4x4 *const m
 ) {
   fill_m4x4_data(
-    1, 0, 0, -t->x,
-    0, 1, 0, -t->y,
-    0, 0, 1, -t->z,
+    1, 0, 0, -t.x,
+    0, 1, 0, -t.y,
+    0, 0, 1, -t.z,
     0, 0, 0, 1,
     m->data
   );
@@ -177,21 +182,3 @@ void m4x4__sub3x3_from00(
   for (int c = 0; c < 3; c++) for (int r = 0; r < 3; r++)
     dest->data[3 * c + r] = src->data[4 * c + r];
 }
-
-// void m4x4_ortho_projection(
-//   float n,
-//   float f,
-//   float l,
-//   float r,
-//   float b,
-//   float t,
-//   m4x4 *m
-// ) {
-//   fill_m4x4_data(
-//     2/(r-l), 0, 0, -(r+l)/(r-l),
-//     0, 2/(t-b), 0, -(t+b)/(t-b),
-//     0, 0, -2/(f-n), -(f+n)/(f-n),
-//     0, 0, 0, 1,
-//     m->data
-//   );
-// }

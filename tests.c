@@ -444,7 +444,7 @@ int main(void) {
   TEST("m4x4__translation should create a translation matrix");
   f_tol.tolerance = FLT_EPSILON;
   struct vec3 t = { 2.355f, 30, 1 };
-  m4x4__translation(&t, &actual_m4);
+  m4x4__translation(t, &actual_m4);
   m4x4__create(
     1, 0, 0, 2.355f,
     0, 1, 0, 30,

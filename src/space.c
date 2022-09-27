@@ -26,7 +26,7 @@ void space__create_model(
 
   m4x4__identity(dest);
   
-  m4x4__translation(&t->position, &temp__translation);
+  m4x4__translation(t->position, &temp__translation);
   m4x4__scaling(t->scale, &temp__scale);
 
   m4x4__rotation(
