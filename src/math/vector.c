@@ -22,7 +22,6 @@ struct vec2 vec2__normalize(
   };
 }
 
-// TODO: test me!
 float vec2__dot(
   struct vec2 t0,
   struct vec2 t1
@@ -30,6 +29,16 @@ float vec2__dot(
   return
     t0.x * t1.x +
     t0.y * t1.y;
+}
+
+float vec2__fewest_rads_btw_vec2s(
+  struct vec2 t0,
+  struct vec2 t1
+) {
+  return acos(
+    vec2__dot(t0, t1) /
+    (vec2__magnitude(t0) * vec2__magnitude(t1))
+  );
 }
 
 struct vec3 vec3_minus_vec3(

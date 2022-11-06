@@ -11,7 +11,6 @@
 
 #define TEST(msg) { printf(msg)
 #define PASSED printf(": PASSED\n"); }
-#define QUIT return 0;
 
 int m2x2_equals_m2x2(
   const struct m2x2 *m0,
@@ -132,6 +131,70 @@ int main(void) {
     39.7f,
     FLT_EPSILON
   ));
+  PASSED
+
+  TEST("vec2__dot should calcualte the dot btw 2 vec2");
+  struct vec2 a = { 1, 0 };
+  struct vec2 b = { 1, 0 };
+  float dot = vec2__dot(a, b);
+  assert(diff_is_within_tolerance(
+    dot,
+    1.0f,
+    FLT_EPSILON
+  ));
+  PASSED
+
+  const float NORM_1_1_V2 = 0.7071067811865475f;
+
+  TEST("vec2__dot run #2");
+  struct vec2 a = { 1, 0 };
+  struct vec2 b = { NORM_1_1_V2, NORM_1_1_V2 };
+  float dot = vec2__dot(a, b);
+  assert(diff_is_within_tolerance(
+    dot,
+    NORM_1_1_V2,
+    FLT_EPSILON
+  ));
+  PASSED
+
+  TEST("vec2__dot run #3");
+  struct vec2 a = { NORM_1_1_V2, NORM_1_1_V2 };
+  struct vec2 b = { -NORM_1_1_V2, -NORM_1_1_V2 };
+  float dot = vec2__dot(a, b);
+  assert(diff_is_within_tolerance(
+    dot,
+    -1.0f,
+    FLT_EPSILON
+  ));
+  PASSED
+
+  TEST("vec2__fewest_rads_btw_vec2s should calculate the angle btw 2 vec2s");
+  struct vec2 a = { 1, 0 };
+  struct vec2 b = { 0, 1 };
+  assert(diff_is_within_tolerance(
+    rad_to_deg(vec2__fewest_rads_btw_vec2s(a, b)),
+    90.0f,
+    FLT_EPSILON
+  ));
+  PASSED
+
+  TEST("vec2__fewest_rads_btw_vec2s run #2");
+  struct vec2 a = { 0, 1 };
+  struct vec2 b = { NORM_1_1_V2, -NORM_1_1_V2 };
+  assert(diff_is_within_tolerance(
+    rad_to_deg(vec2__fewest_rads_btw_vec2s(a, b)),
+    135.0f,
+    FLT_EPSILON
+  ));
+  PASSED
+
+  TEST("vec2__fewest_rads_btw_vec2s run #3");
+  struct vec2 a = { NORM_1_1_V2, NORM_1_1_V2 };
+  struct vec2 b = { -NORM_1_1_V2, -NORM_1_1_V2 };
+  float dot = vec2__dot(a, b);
+  float deg = rad_to_deg(vec2__fewest_rads_btw_vec2s(a, b));
+  printf("\n\n%.3f\n\n", deg);
+  
   PASSED
 
   TEST("vec3__cross should calculate the cross product");
