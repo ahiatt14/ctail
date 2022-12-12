@@ -1,17 +1,19 @@
 #include "tail.h"
 
-#define VSYNC_ON 1
-
 struct window_api window;
 struct gpu_api gpu;
 
 int main() {
 
   if (!window__create(
-    800,
-    800,
+    400,
+    400,
+    100,
+    100
     "test",
-    VSYNC_ON,
+    REQUEST_VSYNC_ON,
+    REQUEST_WINDOWED,
+    REQUEST_MSAA_OFF,
     &window
   )) return 1;
 

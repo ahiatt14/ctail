@@ -6,6 +6,7 @@ test_report.txt
 tests.exe
 static/
 slim/
+gdi32obj/
 
 tools/sourcify-obj/obj_files/
 tools/sourcify-obj/output/

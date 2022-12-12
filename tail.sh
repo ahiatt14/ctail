@@ -11,7 +11,7 @@ targets[gcc]=gcc
 
 usage() {
   echo "
-    usage: tail [-t|-o] <command>
+    usage: tail [-t|-o|-s] <command>
 
     Commands
     clean               delete tail build artifacts
@@ -27,6 +27,7 @@ usage() {
     Options
     -t                  compile target, e.g. win32, gcc
     -o                  output directory for new project
+    -s                  template name
   "
 }
 clean() {
@@ -101,16 +102,16 @@ template() {
     exit 1
   fi
 
-  mkdir -p "$output_path/src" && \
+  if [ ! -d "templates/$template_name" ]; then
+    echo "Specificied template does not exist."
+    exit 1
+  fi
+
+  mkdir -p "$output_path"
   mkdir -p "$output_path/libs/tail/tools" && \
   cp -R slim/tail "$output_path/libs/" && \
   cp -R slim/tail/tools "$output_path/libs/tail/tools/" && \
-  cp template_src/main.c "$output_path/src/main.c"
-
-  # TODO: add case for gcc
-  if [ $target == "win32" ]; then
-    cp template_src/win32-build.sh "$output_path/build.sh"
-  fi
+  cp -RTv "templates/${template_name}" "${output_path}/"
 }
 run_and_log_tests() {
   ./tests.exe &> test_report.txt
@@ -149,10 +150,11 @@ build_tools() {
   cd ../..
 }
 
-while getopts ":t:o:" option; do
+while getopts ":t:o:s:" option; do
   case "$option" in
     "t") target=$OPTARG;;
     "o") output_path=$OPTARG;;
+    "s") template_name=$OPTARG;;
     ":")
       echo "    A value must be provided for the -$OPTARG option"
       usage
