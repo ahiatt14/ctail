@@ -107,11 +107,10 @@ template() {
     exit 1
   fi
 
-  mkdir -p "$output_path"
-  mkdir -p "$output_path/libs/tail/tools" && \
-  cp -R slim/tail "$output_path/libs/" && \
-  cp -R slim/tail/tools "$output_path/libs/tail/tools/" && \
-  cp -RTv "templates/${template_name}" "${output_path}/"
+  mkdir -p "$output_path" && \
+  mkdir -p "$output_path/libs/tail" && \
+  cp -RT "templates/${template_name}" "${output_path}" && \
+  cp -RT slim/tail "$output_path/libs/tail"
 }
 run_and_log_tests() {
   ./tests.exe &> test_report.txt
@@ -173,8 +172,10 @@ elif [ "$ARG1" == "static" ]; then
 elif [ "$ARG1" == "slim" ]; then
   clean && build && static && build_tools && slim
 elif [ "$ARG1" == "template" ]; then
-  clean && build && static && build_tools && slim && template
-  clean
+  if [ ! -d "slim" ]; then
+    clean && build && static && build_tools && slim
+  fi
+  template
 elif [ "$ARG1" == "test" ]; then
   clean && build && static && build_tests && ./tests.exe
   rm -f tests.exe tests.o
