@@ -49,6 +49,29 @@ const struct coordinate_space DEFAULT_WORLDSPACE = {
 int main(void) {
 
   /*
+  
+    GAMEPAD
+  
+  */
+
+  TEST("button_is_down should return 1 when the selected button is down");
+  struct gamepad_input gamepad = {0};
+  gamepad.buttons |= 1 << BUTTON_Y;
+  assert(button_is_down(BUTTON_Y, &gamepad) == 1);
+  PASSED
+
+  TEST("button_is_up should return 0 when the selected button is up");
+  struct gamepad_input gamepad = {0};
+  assert(button_is_up(BUTTON_Y, &gamepad) == 1);
+  PASSED
+
+  TEST("button_was_released should return 1 when the selected button is up but was down");
+  struct gamepad_input gamepad = {0};
+  gamepad.previous_buttons |= 1 << BUTTON_Y;
+  assert(button_was_released(BUTTON_Y, &gamepad) == 1);
+  PASSED
+
+  /*
 
     MATH
 
@@ -193,8 +216,6 @@ int main(void) {
   struct vec2 b = { -NORM_1_1_V2, -NORM_1_1_V2 };
   float dot = vec2__dot(a, b);
   float deg = rad_to_deg(vec2__fewest_rads_btw_vec2s(a, b));
-  printf("\n\n%.3f\n\n", deg);
-  
   PASSED
 
   TEST("vec3__cross should calculate the cross product");
