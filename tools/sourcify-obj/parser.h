@@ -16,6 +16,9 @@ void obj_f_triplet_line_to_vec3s(
   float *vn_indices,
   float *vt_indices
 );
+uint8_t obj_shading_is_flat(
+  FILE *obj_file
+);
 void parse_obj_into_smooth_mesh(
   FILE *obj_file,
   struct vertex *vertices,

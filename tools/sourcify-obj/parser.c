@@ -78,6 +78,21 @@ void obj_f_triplet_line_to_vec3s(
   }
 }
 
+uint8_t obj_shading_is_flat(
+  FILE *obj_file
+) {
+
+  char obj_line[OBJ_LINE_MAX_LENGTH] = {0};
+
+  while (fgets(obj_line, OBJ_LINE_MAX_LENGTH, obj_file) != NULL) {
+    if (
+      strncmp(obj_line, "s ", 2) == 0 &&
+      strncmp(&obj_line[2], "0", 1) == 0
+    ) return 1;
+  }
+
+  return 0;
+}
 
 void parse_obj_into_smooth_mesh(
   FILE *obj_file,

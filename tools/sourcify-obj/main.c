@@ -42,17 +42,6 @@ int main(int argc, char *argv[]) {
   int vertex_count = 0;
   int index_count = 0;
 
-  if (
-    strcmp(argv[2], "smooth") != 0 &&
-    strcmp(argv[2], "flat") != 0
-  ) {
-    printf(
-      "2nd arg must be \"smooth\" or \"flat\"\n"
-      "\"%s\" was provided\n", argv[2]
-    );
-    return 1;
-  }
-
   obj_file = fopen(argv[1], "r");
   if (obj_file == NULL) {
     printf("obj file not found.\n");
@@ -62,7 +51,12 @@ int main(int argc, char *argv[]) {
   char filename[MAX_FILENAME_LENGTH] = {0};
   filename_from_path(filename, argv[1], MAX_FILENAME_LENGTH);
   
-  if (strcmp(argv[2], "flat") == 0) {
+  uint8_t flat_shading = obj_shading_is_flat(obj_file);
+  fclose(obj_file);
+  obj_file = fopen(argv[1], "r");
+
+  // TODO: I think there's a lot of cleanup possible in these fns
+  if (flat_shading) {
     parse_obj_into_flat_mesh(
       obj_file,
       vertices,
@@ -70,8 +64,7 @@ int main(int argc, char *argv[]) {
       &vertex_count,
       &index_count
     );
-  }
-  if (strcmp(argv[2], "smooth") == 0) {
+  } else {
     parse_obj_into_smooth_mesh(
       obj_file,
       vertices,
@@ -82,7 +75,7 @@ int main(int argc, char *argv[]) {
   }
 
   char base_output_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
-  strcat(base_output_filepath, argv[3]);
+  strcat(base_output_filepath, argv[2]);
   strcat(base_output_filepath, filename);
 
   char header_output_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};

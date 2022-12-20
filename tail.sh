@@ -31,7 +31,6 @@ usage() {
   "
 }
 clean() {
-  # TODO: probably needs updating
   rm -rf bin obj static slim test_report.txt
 }
 build() {
@@ -58,7 +57,6 @@ build() {
   ${targets[${target}]} -c src/math/tail_math.c -o obj/tail_math.o ${includes} ${options}
   ${targets[${target}]} -c src/viewport.c -o obj/viewport.o ${includes} ${options}
 }
-# TODO: below, extracting gdi32 not gonna hold up for multiple targets as is
 static() {
   rm -rf static
   mkdir static

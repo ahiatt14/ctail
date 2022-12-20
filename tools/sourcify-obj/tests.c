@@ -268,6 +268,16 @@ int main() {
   ));
   PASSED
 
+  TEST("obj_shading_is_flat should return 0 if the obj file s line value is 1");
+  FILE *obj_file = fopen("test_data/quad.obj", "r");
+  assert(obj_shading_is_flat(obj_file) == 0);
+  PASSED
+
+  TEST("obj_shading_is_flat should return 1 if the obj file s line value is 0");
+  FILE *obj_file = fopen("test_data/flat_pyramid.obj", "r");
+  assert(obj_shading_is_flat(obj_file) == 1);
+  PASSED
+
   TEST(
     "parse_obj_into_smooth_mesh should process a smooth formatted quad obj\n"
     "file into vertex and index arrays"
@@ -277,7 +287,6 @@ int main() {
   unsigned int actual_indices[4] = {0};
   int actual_vertex_count = 0;
   int actual_index_count = 0;
-  // TODO: will my normal generation work with a quad? :O
   FILE *obj_file = fopen("test_data/quad.obj", "r");
   parse_obj_into_smooth_mesh(
     obj_file,

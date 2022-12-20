@@ -17,7 +17,7 @@ clean() {
 }
 
 build_assets() {
-  ./${tools}sourcify-obj.exe assets/cube.obj flat $artifact_dir
+  ./${tools}sourcify-obj.exe assets/cube.obj $artifact_dir
   ./${tools}sourcify-glsl.exe assets/cube_frag.glsl $artifact_dir
   ./${tools}sourcify-glsl.exe assets/cube_vert.glsl $artifact_dir
   ./${tools}sourcify-png.exe assets/fur.png 3 $artifact_dir
