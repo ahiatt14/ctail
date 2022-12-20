@@ -3,8 +3,6 @@
 #include "m4x4.h"
 #include "vector.h"
 
-// TODO: TEST US
-
 void quaternion__conjugate(
   struct quaternion const *const p,
   struct quaternion *const dest
@@ -31,11 +29,8 @@ void quaternion__multiply(
   struct quaternion const *const right_p,
   struct quaternion *const dest
 ) {
-  // TODO: implement me!
 }
 
-// TODO: think about static caching
-// inject temp memory as param? hmmm
 static float x2;
 static float y2;
 static float z2;

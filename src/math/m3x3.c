@@ -93,9 +93,6 @@ static void float_x_m3x3(float s, const struct m3x3 *src, struct m3x3 *dest) {
 }
 
 void m3x3__inverse(struct m3x3 const *const src, struct m3x3 *const dest) {
-  // TODO: it's possible for the determinant to be 0
-  // and therefore to divide by 0! add a check
-  // and/or learn about when that happens and if it ever would
   struct m3x3 minors = {0};
   struct m3x3 cofactors = {0};
   struct m3x3 transposed = {0};

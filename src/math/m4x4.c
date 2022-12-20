@@ -106,7 +106,6 @@ void m4x4__translation(
   );
 }
 
-// TODO: could update to scale on each axis if we want idk
 void m4x4__scaling(
   float s,
   struct m4x4 *const m

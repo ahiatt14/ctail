@@ -132,9 +132,6 @@ static void copy_mesh_to_gpu(struct drawable_mesh *const dm, GLenum usage) {
     (GLvoid*)offsetof(struct vertex, position)
   );
 
-  // TODO: per khronos best practices doc,
-  // can optimize normals by packing each
-  // normalized into a 32-bit int
   glVertexAttribPointer(
     NORMAL_ATTRIB_INDEX,
     COUNT_OF_VALUES_PER_NORMAL,
@@ -224,7 +221,6 @@ static void select_textures(
 ) {
   for (int i = 0; i < texture_count; i++) {
     glActiveTexture(GL_TEXTURE0 + i);
-    // TODO: inefficient to get uniform locations before every draw call
     glUniform1i(
       glGetUniformLocation(shad->_impl_id, uniform_names[i]),
       i
@@ -255,8 +251,6 @@ static void set_shader_m4x4(
   char const *name,
   struct m4x4 const *const value
 ) {
-  // TODO: can optimize these by caching locations after
-  // first retrieval
   glUniformMatrix4fv(
     glGetUniformLocation(gpup->_impl_id, name),
     1,

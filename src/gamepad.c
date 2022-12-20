@@ -2,8 +2,6 @@
 
 #include "gamepad.h"
 
-// TODO: test us!
-// TODO: hide the button code type with typedef?
 uint8_t button_is_down(uint16_t button, uint16_t state) {
   return (state >> button) & 1;
 }

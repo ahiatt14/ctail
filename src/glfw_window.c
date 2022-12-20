@@ -11,8 +11,6 @@
 
 static uint8_t GLFW_BUTTON_COUNT = 15;
 
-// TODO: handle monitor connecting/disconnecting
-
 struct window_props {
   int width_in_screen_units;
   int height_in_screen_units;
@@ -170,7 +168,7 @@ static void switch_to_fullscreen() {
     0,
     video_mode->width,
     video_mode->height,
-    video_mode->refreshRate // TODO: doesn't appear to work???
+    video_mode->refreshRate
   );
 }
 
@@ -178,8 +176,6 @@ static void switch_to_windowed() {
   glfwSetWindowMonitor(
     glfw_window,
     NULL,
-    // TODO: these props won't be set if we start an app in fullscreen,
-    // work for future projects
     win_props.position_x,
     win_props.position_y,
     win_props.width_in_screen_units,

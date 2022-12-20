@@ -6,7 +6,6 @@
 #include "m4x4.h"
 #include "m3x3.h"
 
-// TODO: more efficient caching? we'll be performing create_model a lot
 static struct m4x4 temp__scale;
 static struct m4x4 temp__translation;
 
