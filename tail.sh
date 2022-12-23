@@ -170,10 +170,7 @@ elif [ "$ARG1" == "static" ]; then
 elif [ "$ARG1" == "slim" ]; then
   clean && build && static && build_tools && slim
 elif [ "$ARG1" == "template" ]; then
-  if [ ! -d "slim" ]; then
-    clean && build && static && build_tools && slim
-  fi
-  template
+  clean && build && static && build_tools && slim && template
 elif [ "$ARG1" == "test" ]; then
   clean && build && static && build_tests && ./tests.exe
   rm -f tests.exe tests.o

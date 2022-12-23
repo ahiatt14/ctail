@@ -200,6 +200,10 @@ void poll_events() {
   glfwPollEvents();
 }
 
+void wait_on_events() {
+  glfwWaitEvents();
+}
+
 void end() {
   glfwDestroyWindow(glfw_window);
   glfwTerminate();
@@ -266,6 +270,7 @@ uint8_t window__create(
   window->switch_to_windowed = switch_to_windowed;
 
   window->poll_events = poll_events;
+  window->wait_on_events = wait_on_events;
   window->request_buffer_swap = request_buffer_swap;
   window->received_closed_event = received_closed_event;
   window->end = end;
