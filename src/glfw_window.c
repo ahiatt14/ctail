@@ -16,13 +16,14 @@ struct window_props {
   int height_in_screen_units;
   int position_x;
   int position_y;
+  uint8_t vsync_requested;
 };
 
 // CACHE
 
 static GLFWwindow *glfw_window;
 
-struct window_props win_props;
+static struct window_props win_props;
 
 static void (*handle_window_minimize)();
 static void (*handle_window_restore)();
@@ -157,6 +158,16 @@ static uint8_t is_fullscreen() {
   return (glfwGetWindowMonitor(glfw_window) != NULL) ? 1 : 0;
 }
 
+static void enable_vsync() {
+  win_props.vsync_requested = REQUEST_VSYNC_ON;
+  glfwSwapInterval(win_props.vsync_requested);
+}
+
+static void disable_vsync() {
+  win_props.vsync_requested = REQUEST_VSYNC_OFF;
+  glfwSwapInterval(win_props.vsync_requested);
+}
+
 static void switch_to_fullscreen() {
   cache_window_properties();
   GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -170,6 +181,7 @@ static void switch_to_fullscreen() {
     video_mode->height,
     video_mode->refreshRate
   );
+  glfwSwapInterval(win_props.vsync_requested);
 }
 
 static void switch_to_windowed() {
@@ -182,6 +194,7 @@ static void switch_to_windowed() {
     win_props.height_in_screen_units,
     0
   );
+  glfwSwapInterval(win_props.vsync_requested);
 }
 
 /*
@@ -215,7 +228,7 @@ uint8_t window__create(
   uint16_t pos_x,
   uint16_t pos_y,
   const char *name,
-  uint8_t vsync,
+  uint8_t vsync_requested,
   uint8_t fullscreen,
   uint8_t request_MSAA,
   struct window_api *const window
@@ -232,6 +245,8 @@ uint8_t window__create(
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // see note A
   glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
+
+  win_props.vsync_requested = vsync_requested;
 
   if (request_MSAA) glfwWindowHint(GLFW_SAMPLES, 4);
 
@@ -253,7 +268,7 @@ uint8_t window__create(
   glfwMakeContextCurrent(glfw_window);
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return 0;
 
-  glfwSwapInterval(vsync);
+  glfwSwapInterval(win_props.vsync_requested);
 
   window->on_minimize_and_restore = on_minimize_and_restore;
   window->on_focus_and_unfocus = on_focus_and_unfocus;
@@ -268,6 +283,8 @@ uint8_t window__create(
   window->get_seconds_since_creation = get_seconds_since_creation;
   window->switch_to_fullscreen = switch_to_fullscreen;
   window->switch_to_windowed = switch_to_windowed;
+  window->enable_vsync = enable_vsync;
+  window->disable_vsync = disable_vsync;
 
   window->poll_events = poll_events;
   window->wait_on_events = wait_on_events;

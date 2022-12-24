@@ -41,6 +41,8 @@ struct window_api {
   double (*get_seconds_since_creation)();  
   void (*switch_to_fullscreen)();
   void (*switch_to_windowed)();
+  void (*enable_vsync)();
+  void (*disable_vsync)();
 
   void (*poll_events)();
   void (*wait_on_events)();
