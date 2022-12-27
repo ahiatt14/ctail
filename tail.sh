@@ -31,7 +31,7 @@ usage() {
   "
 }
 clean() {
-  rm -rf bin obj static slim test_report.txt
+  rm -rf bin obj gdi32obj static slim test_report.txt
 }
 build() {
 

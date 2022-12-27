@@ -28,15 +28,10 @@ struct camera cam;
 
 int main() {
 
-  if (!window__create(
-    400,
-    400,
-    100,
-    100,
+  if (!window__create_fullscreen_game(
     "Self-Contained Win32 Game!",
     REQUEST_VSYNC_ON,
-    REQUEST_WINDOWED,
-    REQUEST_MSAA_ON,
+    MSAA_SAMPLES_8,
     &window
   )) return 1;
 

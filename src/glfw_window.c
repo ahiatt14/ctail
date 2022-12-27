@@ -9,21 +9,23 @@
 #include "vector.h"
 #include "gamepad.h"
 
+/*
+  CONSTANTS
+*/
+
 static uint8_t GLFW_BUTTON_COUNT = 15;
 
-struct window_props {
-  int width_in_screen_units;
-  int height_in_screen_units;
-  int position_x;
-  int position_y;
-  uint8_t vsync_requested;
-};
-
-// CACHE
+/*
+  LOCALS
+*/
 
 static GLFWwindow *glfw_window;
 
-static struct window_props win_props;
+static uint8_t vsync_requested;
+
+/*
+  EVENTS AND HANDLERS
+*/
 
 static void (*handle_window_minimize)();
 static void (*handle_window_restore)();
@@ -33,29 +35,12 @@ static void (*handle_framebuffer_resize)(uint16_t width, uint16_t height);
 static void (*handle_joystick_connected)(int jid);
 static void (*handle_joystick_disconnected)(int jid);
 
-static void cache_window_properties() {
-  glfwGetWindowSize(
-    glfw_window,
-    &win_props.width_in_screen_units,
-    &win_props.height_in_screen_units
-  );
-  glfwGetWindowPos(
-    glfw_window,
-    &win_props.position_x,
-    &win_props.position_y
-  );
-}
-
-/*
-  EVENTS AND HANDLERS
-*/
-
 static void handle_glfw_framebuffer_resize(
   GLFWwindow *w,
-  int width,
-  int height
+  int width_in_pixels,
+  int height_in_pixels
 ) {
-  handle_framebuffer_resize(width, height);
+  handle_framebuffer_resize(width_in_pixels, height_in_pixels);
 }
 
 static void handle_window_focus_change(GLFWwindow *w, int gained_focus) {
@@ -93,7 +78,7 @@ static void on_focus_and_unfocus(
 }
 
 static void on_framebuffer_resize(
-  void (*fn)(uint16_t width, uint16_t height)
+  void (*fn)(uint16_t width_in_pixels, uint16_t height_in_pixels)
 ) {
   handle_framebuffer_resize = fn;
   glfwSetFramebufferSizeCallback(glfw_window, handle_glfw_framebuffer_resize);
@@ -116,7 +101,7 @@ uint8_t gamepad_is_connected() {
   return glfwJoystickPresent(GLFW_JOYSTICK_1);
 }
 
-static struct vec2 get_window_dimensions() {
+static struct vec2 get_window_dim_in_screen_units() {
   int width, height;
   glfwGetWindowSize(glfw_window, &width, &height);
   return (struct vec2){ width, height };
@@ -159,17 +144,16 @@ static uint8_t is_fullscreen() {
 }
 
 static void enable_vsync() {
-  win_props.vsync_requested = REQUEST_VSYNC_ON;
-  glfwSwapInterval(win_props.vsync_requested);
+  vsync_requested = REQUEST_VSYNC_ON;
+  glfwSwapInterval(vsync_requested);
 }
 
 static void disable_vsync() {
-  win_props.vsync_requested = REQUEST_VSYNC_OFF;
-  glfwSwapInterval(win_props.vsync_requested);
+  vsync_requested = REQUEST_VSYNC_OFF;
+  glfwSwapInterval(vsync_requested);
 }
 
 static void switch_to_fullscreen() {
-  cache_window_properties();
   GLFWmonitor *monitor = glfwGetPrimaryMonitor();
   GLFWvidmode const *video_mode = glfwGetVideoMode(monitor);
   glfwSetWindowMonitor(
@@ -181,20 +165,25 @@ static void switch_to_fullscreen() {
     video_mode->height,
     video_mode->refreshRate
   );
-  glfwSwapInterval(win_props.vsync_requested);
+  glfwSwapInterval(vsync_requested);
 }
 
-static void switch_to_windowed() {
+static void switch_to_windowed(
+  uint16_t position_x,
+  uint16_t position_y,
+  uint16_t width_in_screen_units,
+  uint16_t height_in_screen_units
+) {
   glfwSetWindowMonitor(
     glfw_window,
     NULL,
-    win_props.position_x,
-    win_props.position_y,
-    win_props.width_in_screen_units,
-    win_props.height_in_screen_units,
+    position_x,
+    position_y,
+    width_in_screen_units,
+    height_in_screen_units,
     0
   );
-  glfwSwapInterval(win_props.vsync_requested);
+  glfwSwapInterval(vsync_requested);
 }
 
 /*
@@ -222,54 +211,27 @@ void end() {
   glfwTerminate();
 }
 
-uint8_t window__create(
-  uint16_t win_width,
-  uint16_t win_height,
-  uint16_t pos_x,
-  uint16_t pos_y,
-  const char *name,
-  uint8_t vsync_requested,
-  uint8_t fullscreen,
-  uint8_t request_MSAA,
-  struct window_api *const window
-) {
+/*
+  WINDOW CREATION
+*/
 
-  if (!glfwInit()) return 0;
-
-  // GLFW GL CONTEXT HINTS
+static void set_openGL_version_hints() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+}
 
-  // GLFW WINDOW HINTS
-  glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // see note A
-  glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
-  glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
-
-  win_props.vsync_requested = vsync_requested;
-
-  if (request_MSAA) glfwWindowHint(GLFW_SAMPLES, 4);
-
-  glfw_window = glfwCreateWindow(
-    win_width,
-    win_height,
-    name,
-    NULL, // monitor handle. NOTE: passing a montior forces fullscreen mode
-    NULL // context obj sharing
-  );
-
-  if (!glfw_window) return 0;
-
-  glfwSetWindowPos(glfw_window, pos_x, pos_y); // see note A
-  glfwShowWindow(glfw_window); // see note A
-
-  glfwSetWindowRefreshCallback(glfw_window, glfwSwapBuffers);
-
+static uint8_t connect_openGL(
+  struct GLFWwindow *const glfw_window
+) {
   glfwMakeContextCurrent(glfw_window);
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return 0;
+  return 1;
+}
 
-  glfwSwapInterval(win_props.vsync_requested);
-
+static void create_PC_window_api(
+  struct window_api *const window
+) {
   window->on_minimize_and_restore = on_minimize_and_restore;
   window->on_focus_and_unfocus = on_focus_and_unfocus;
   window->on_framebuffer_resize = on_framebuffer_resize;
@@ -279,7 +241,7 @@ uint8_t window__create(
   window->get_gamepad_input = get_gamepad_input;
 
   window->is_fullscreen = is_fullscreen;
-  window->get_window_dimensions = get_window_dimensions;
+  window->get_window_dim_in_screen_units = get_window_dim_in_screen_units;
   window->get_seconds_since_creation = get_seconds_since_creation;
   window->switch_to_fullscreen = switch_to_fullscreen;
   window->switch_to_windowed = switch_to_windowed;
@@ -291,6 +253,79 @@ uint8_t window__create(
   window->request_buffer_swap = request_buffer_swap;
   window->received_closed_event = received_closed_event;
   window->end = end;
+}
+
+uint8_t window__create_fullscreen_game(
+  const char *name,
+  uint8_t request_vsync,
+  uint8_t MSAA_samples,
+  struct window_api *const window
+) {
+
+  if (!glfwInit()) return 0;
+
+  set_openGL_version_hints();
+  if (MSAA_samples > 0) glfwWindowHint(GLFW_SAMPLES, MSAA_samples);
+
+  GLFWmonitor *primary_monitor = glfwGetPrimaryMonitor();
+  GLFWvidmode const *video_mode = glfwGetVideoMode(primary_monitor);
+
+  glfw_window = glfwCreateWindow(
+    video_mode->width,
+    video_mode->height,
+    name,
+    primary_monitor,
+    NULL
+  );
+
+  if (!glfw_window) return 0;
+
+  vsync_requested = request_vsync;
+  glfwSwapInterval(vsync_requested);
+  glfwSetWindowRefreshCallback(glfw_window, glfwSwapBuffers);
+
+  if (!connect_openGL(glfw_window)) return 0;
+  create_PC_window_api(window);
+
+  return 1;
+}
+
+uint8_t window__create_windowed_game(
+  uint16_t win_width_in_screen_coord,
+  uint16_t win_height_in_screen_coord,
+  uint16_t position_x,
+  uint16_t position_y,
+  const char *name,
+  uint8_t request_vsync,
+  uint8_t MSAA_samples,
+  struct window_api *const window
+) {
+
+  if (!glfwInit()) return 0;
+
+  set_openGL_version_hints();
+  if (MSAA_samples > 0) glfwWindowHint(GLFW_SAMPLES, MSAA_samples);
+  glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // see note A
+
+  glfw_window = glfwCreateWindow(
+    win_width_in_screen_coord,
+    win_height_in_screen_coord,
+    name,
+    NULL,
+    NULL
+  );
+
+  if (!glfw_window) return 0;
+
+  vsync_requested = request_vsync;
+  glfwSwapInterval(vsync_requested);
+
+  glfwSetWindowPos(glfw_window, position_x, position_y); // see note A
+  glfwShowWindow(glfw_window); // see note A
+  glfwSetWindowRefreshCallback(glfw_window, glfwSwapBuffers);
+
+  if (!connect_openGL(glfw_window)) return 0;
+  create_PC_window_api(window);
 
   return 1;
 }
