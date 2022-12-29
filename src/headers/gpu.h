@@ -16,6 +16,13 @@ struct texture {
   int channel_count;
 };
 
+struct point_buffer {
+  unsigned int _impl_vbo_id;
+  unsigned int _impl_vao_id;
+  unsigned int points_length;
+  struct vec3 *points;
+};
+
 struct shader {
   unsigned int _frag_impl_id;
   unsigned int _vert_impl_id;
@@ -46,6 +53,9 @@ struct gpu_api {
   );
   void (*copy_static_mesh_to_gpu)(
     struct drawable_mesh *const dm
+  );
+  void (*copy_points_to_gpu)(
+    struct point_buffer *const pb
   );
   void (*update_gpu_mesh_data)(
     struct drawable_mesh const *const dm
@@ -115,6 +125,9 @@ struct gpu_api {
   );
   void (*draw_wireframe)(
     struct drawable_mesh const *const dm
+  );
+  void (*draw_points)(
+    struct point_buffer const *const pb
   );
 };
 

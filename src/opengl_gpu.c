@@ -103,7 +103,37 @@ static void copy_texture_to_gpu(struct texture *const tex) {
   glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-static void copy_mesh_to_gpu(struct drawable_mesh *const dm, GLenum usage) {
+static void copy_points_to_gpu(
+  struct point_buffer *const pb
+) {
+  glGenBuffers(1, &pb->_impl_vbo_id);
+  glGenVertexArrays(1, &pb->_impl_vao_id);
+
+  glBindVertexArray(pb->_impl_vao_id);
+
+  glBindBuffer(GL_ARRAY_BUFFER, pb->_impl_vbo_id);
+  glBufferData(
+    GL_ARRAY_BUFFER,
+    sizeof(struct vec3) * pb->points_length,
+    &(pb->points->x),
+    GL_STATIC_DRAW
+  );
+
+  glEnableVertexAttribArray(POSITION_ATTRIB_INDEX);
+  glVertexAttribPointer(
+    POSITION_ATTRIB_INDEX,
+    COUNT_OF_VALUES_PER_POSITION,
+    GL_FLOAT,
+    GL_FALSE,
+    sizeof(struct vec3),
+    (GLvoid*)offsetof(struct vec3, x)
+  );
+}
+
+static void copy_mesh_to_gpu(
+  struct drawable_mesh *const dm,
+  GLenum usage
+) {
 
   glGenBuffers(1, &dm->_impl_vbo_id);
   glGenBuffers(1, &dm->_impl_ibo_id);
@@ -316,6 +346,15 @@ static void draw_wireframe(struct drawable_mesh const *const mesh) {
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+static void draw_points(struct point_buffer const *const pb) {
+  glBindVertexArray(pb->_impl_vao_id);
+  glDrawArrays(
+    GL_POINTS,
+    0,
+    pb->points_length
+  );
+}
+
 static void cull_back_faces() {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
@@ -342,6 +381,9 @@ static int get_viewport_height() {
 }
 
 void gpu__create_api(struct gpu_api *const gpu) {
+
+  glEnable(GL_PROGRAM_POINT_SIZE);
+
   gpu->clear = clear;
   gpu->clear_depth_buffer = clear_depth_buffer;
   gpu->enable_depth_test = enable_depth_test;
@@ -353,6 +395,7 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->cull_no_faces = cull_no_faces;
   gpu->copy_static_mesh_to_gpu = copy_static_mesh_to_gpu;
   gpu->copy_dynamic_mesh_to_gpu = copy_dynamic_mesh_to_gpu;
+  gpu->copy_points_to_gpu = copy_points_to_gpu;
   gpu->update_gpu_mesh_data = update_gpu_mesh_data;
   gpu->copy_texture_to_gpu = copy_texture_to_gpu;
   gpu->copy_shader_to_gpu = copy_shader_to_gpu;
@@ -369,4 +412,5 @@ void gpu__create_api(struct gpu_api *const gpu) {
   gpu->set_shader_float = set_shader_float;
   gpu->draw_mesh = draw_mesh;
   gpu->draw_wireframe = draw_wireframe;
+  gpu->draw_points = draw_points;
 }
