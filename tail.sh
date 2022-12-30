@@ -2,12 +2,14 @@
 
 target="win32"
 wsl_abs_path_to_root="/mnt/d/c/tail/"
-options="-O2 -Wall"
-includes="-Isrc/headers -Ilibs/GLAD/include -Ilibs/GLFW/include -Iinclude"
+declare -a options=("-O2" "-Wall")
+declare -a includes=("-Isrc/headers" "-Ilibs/GLAD/include" "-Ilibs/GLFW/include" "-Iinclude")
 
 declare -A targets
 targets[win32]=i686-w64-mingw32-gcc
 targets[gcc]=gcc
+
+declare -a src_directories=("src/" "src/math/")
 
 usage() {
   echo "
@@ -31,34 +33,24 @@ usage() {
   "
 }
 clean() {
-  rm -rf bin obj gdi32obj static slim test_report.txt
+  rm -rf bin obj gdi32obj static slim test_report.txt tests.o tests.exe
 }
-build() {
+compile_src() {
 
   if [[ "$target" != "win32" && "$target" != "gcc" ]]; then
   echo "Invalid compilation target."
   exit 1
   fi
 
-  # can I not collapse all these with a wildcard or something?
-  rm -rf obj
   mkdir obj
-  ${targets[${target}]} -c src/math/m2x2.c -o obj/m2x2.o ${includes} ${options}
-  ${targets[${target}]} -c src/math/m3x3.c -o obj/m3x3.o ${includes} ${options}
-  ${targets[${target}]} -c src/math/m4x4.c -o obj/m4x4.o ${includes} ${options}
-  ${targets[${target}]} -c src/math/quaternion.c -o obj/quaternion.o ${includes} ${options}
-  ${targets[${target}]} -c src/math/vector.c -o obj/vector.o ${includes} ${options}
-  ${targets[${target}]} -c src/opengl_gpu.c -o obj/opengl_gpu.o ${includes} ${options}
-  ${targets[${target}]} -c src/camera.c -o obj/camera.o ${includes} ${options}
-  ${targets[${target}]} -c src/gamepad.c -o obj/gamepad.o ${includes} ${options}
-  ${targets[${target}]} -c src/glfw_window.c -o obj/glfw_window.o ${includes} ${options}
-  ${targets[${target}]} -c src/space.c -o obj/space.o ${includes} ${options}
-  ${targets[${target}]} -c src/precision.c -o obj/precision.o ${includes} ${options}
-  ${targets[${target}]} -c src/math/tail_math.c -o obj/tail_math.o ${includes} ${options}
-  ${targets[${target}]} -c src/viewport.c -o obj/viewport.o ${includes} ${options}
+  for src_dir in ${src_directories[@]}; do
+    for filepath in ${src_dir}*.c; do
+      src_file=$(basename $filepath .c)
+      ${targets[${target}]} -c $src_dir$src_file.c -o obj/$src_file.o ${includes[@]} ${options[@]}
+    done
+  done
 }
 static() {
-  rm -rf static
   mkdir static
   mkdir gdi32obj
   ar x --output gdi32obj /usr/i686-w64-mingw32/lib/libgdi32.a \
@@ -72,7 +64,6 @@ static() {
   rm -rf gdi32obj
 }
 slim() {
-  rm -rf slim
   mkdir slim
   mkdir slim/tail
   mkdir slim/tail/static
@@ -162,20 +153,20 @@ done
 ARG1=${@:$OPTIND:1}
 
 if [ "$ARG1" == "build" ]; then
-  clean && build
+  clean && compile_src
 elif [ "$ARG1" == "clean" ]; then
   clean
 elif [ "$ARG1" == "static" ]; then
-  clean && build && static
+  clean && compile_src && static
 elif [ "$ARG1" == "slim" ]; then
-  clean && build && static && build_tools && slim
+  clean && compile_src && static && build_tools && slim
 elif [ "$ARG1" == "template" ]; then
-  clean && build && static && build_tools && slim && template
+  clean && compile_src && static && build_tools && slim && template
 elif [ "$ARG1" == "test" ]; then
-  clean && build && static && build_tests && ./tests.exe
+  clean && compile_src && static && build_tests && ./tests.exe
   rm -f tests.exe tests.o
 elif [ "$ARG1" == "testlog" ]; then
-  clean && build && static && build_tests && run_and_log_tests
+  clean && compile_src && static && build_tests && run_and_log_tests
   rm -f tests.exe tests.o
 elif [ "$ARG1" == "build-glfw" ]; then
   build_glfw
