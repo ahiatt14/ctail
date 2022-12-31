@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "tail.h"
+#include "vector.h"
+
 #include "normals.h"
 #include "parser.h"
 

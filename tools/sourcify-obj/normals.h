@@ -1,7 +1,7 @@
 #ifndef __TAIL_PARSER_NORMALS__
 #define __TAIL_PARSER_NORMALS__
 
-#include "tail.h"
+#include "vector.h"
 
 struct vec3 calculate_face_normal(
   struct vec3 const *const ccw_triangle_positions

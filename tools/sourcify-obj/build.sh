@@ -2,10 +2,10 @@ if [ "$1" == "build" ]
 then
   rm -rf bin && \
   mkdir bin && \
-  i686-w64-mingw32-gcc main.c parser.c normals.c \
+  i686-w64-mingw32-gcc ../../src/math/tail_math.c ../../src/math/vector.c \
+  ../../src/precision.c main.c parser.c normals.c \
   -o bin/sourcify-obj.exe \
-  ../../static/tail.a \
-  -I../../include \
+  -I../../src/headers \
   -Wall
 elif [ "$1" == "test" ]
 then

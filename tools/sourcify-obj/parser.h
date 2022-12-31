@@ -2,8 +2,10 @@
 #define __TAIL_OBJ_PARSER__
 
 #include <stdlib.h>
+#include <stdint.h>
 
-#include "tail.h"
+#include "mesh.h"
+#include "vector.h"
 
 void obj_float_line_to_vector(const char *obj_line, float *x);
 void obj_f_line_to_3_ui_indices(

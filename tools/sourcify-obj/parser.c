@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "tail.h"
 #include "parser.h"
 #include "normals.h"
+
+#include "mesh.h"
+#include "vector.h"
 
 #define OBJ_LINE_MAX_LENGTH 100
 

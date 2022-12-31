@@ -19,6 +19,7 @@ usage() {
     clean               delete tail build artifacts
     build-glad          compile glad opengl loader into obj
     build-glfw          compile glfw into local static library
+    build-tools         create tool executables
     build               compile tail src into obj
     static              compile tail into static lib
     slim                create dir for lib and header to easily copy into game
@@ -154,6 +155,8 @@ ARG1=${@:$OPTIND:1}
 
 if [ "$ARG1" == "build" ]; then
   clean && compile_src
+elif [ "$ARG1" == "build-tools" ]; then
+  clean && build_tools
 elif [ "$ARG1" == "clean" ]; then
   clean
 elif [ "$ARG1" == "static" ]; then

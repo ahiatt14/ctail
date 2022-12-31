@@ -2,8 +2,11 @@
 #include <float.h>
 #include <math.h>
 
-#include "tail.h"
 #include "normals.h"
+
+#include "tail_math.h"
+#include "precision.h"
+#include "vector.h"
 
 struct vec3 calculate_face_normal(
   struct vec3 const *const ccw_triangle_positions
