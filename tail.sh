@@ -2,14 +2,15 @@
 
 target="win32"
 wsl_abs_path_to_root="/mnt/d/c/tail/"
+artifact_dir="src/temp_assets_src/"
 declare -a options=("-O2" "-Wall")
-declare -a includes=("-Isrc/headers" "-Ilibs/GLAD/include" "-Ilibs/GLFW/include" "-Iinclude")
+declare -a includes=("-Isrc/headers" "-Ilibs/GLAD/include" "-Ilibs/GLFW/include" "-Iinclude -I$artifact_dir")
 
 declare -A targets
 targets[win32]=i686-w64-mingw32-gcc
 targets[gcc]=gcc
 
-declare -a src_directories=("src/" "src/math/")
+declare -a src_directories=("src/" "src/math/" $artifact_dir)
 
 usage() {
   echo "
@@ -34,7 +35,17 @@ usage() {
   "
 }
 clean() {
-  rm -rf bin obj gdi32obj static slim test_report.txt tests.o tests.exe
+  rm -rf bin obj gdi32obj static slim test_report.txt tests.o tests.exe $artifact_dir
+}
+build_assets() {
+  rm -rf $artifact_dir
+  mkdir $artifact_dir
+  ./tools/validate-glsl/bin/validate-glsl.exe assets/glsl/space_gizmo_frag.glsl frag &&
+  ./tools/validate-glsl/bin/validate-glsl.exe assets/glsl/space_gizmo_vert.glsl vert &&
+  ./tools/validate-glsl/bin/validate-glsl.exe assets/glsl/space_gizmo_geo.glsl geo &&
+  ./tools/sourcify-glsl/bin/sourcify-glsl.exe assets/glsl/space_gizmo_frag.glsl $artifact_dir &&
+  ./tools/sourcify-glsl/bin/sourcify-glsl.exe assets/glsl/space_gizmo_geo.glsl $artifact_dir &&
+  ./tools/sourcify-glsl/bin/sourcify-glsl.exe assets/glsl/space_gizmo_vert.glsl $artifact_dir
 }
 compile_src() {
 
@@ -124,7 +135,7 @@ build_glad() {
 }
 build_tests() {
   rm -rf tests.o && \
-  ${targets[${target}]} -c tests.c -o tests.o -Itest_data ${options} ${includes} && \
+  ${targets[${target}]} -c tests.c -o tests.o -Itest_data ${options[@]} ${includes[@]} && \
   ${targets[${target}]} -o tests.exe \
   tests.o \
   static/tail.a
@@ -154,22 +165,53 @@ done
 ARG1=${@:$OPTIND:1}
 
 if [ "$ARG1" == "build" ]; then
-  clean && compile_src
+  clean && \
+  build_tools && \
+  build_assets && \
+  compile_src
 elif [ "$ARG1" == "build-tools" ]; then
-  clean && build_tools
+  clean && \
+  build_tools
 elif [ "$ARG1" == "clean" ]; then
   clean
 elif [ "$ARG1" == "static" ]; then
-  clean && compile_src && static
+  clean && \
+  build_tools && \
+  build_assets && \
+  compile_src && \
+  static
 elif [ "$ARG1" == "slim" ]; then
-  clean && compile_src && static && build_tools && slim
+  clean && \
+  build_tools && \
+  build_assets && \
+  compile_src && \
+  static && \
+  slim
 elif [ "$ARG1" == "template" ]; then
-  clean && compile_src && static && build_tools && slim && template
+  clean && \
+  build_tools && \
+  build_assets && \
+  compile_src && \
+  static && \
+  slim && \
+  template
 elif [ "$ARG1" == "test" ]; then
-  clean && compile_src && static && build_tests && ./tests.exe
+  clean && \
+  build_tools && \
+  build_assets && \
+  compile_src && \
+  static && \
+  build_tests && \
+  ./tests.exe
   rm -f tests.exe tests.o
 elif [ "$ARG1" == "testlog" ]; then
-  clean && compile_src && static && build_tests && run_and_log_tests
+  clean && \
+  build_tools && \
+  build_assets && \
+  compile_src && \
+  static && \
+  build_tests && \
+  run_and_log_tests
   rm -f tests.exe tests.o
 elif [ "$ARG1" == "build-glfw" ]; then
   build_glfw

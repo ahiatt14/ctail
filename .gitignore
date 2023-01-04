@@ -2,6 +2,7 @@ obj/
 libs/GLAD/obj
 libs/GLFW/obj
 libs/GLFW/build
+src/temp_assets_src/
 test_report.txt
 tests.exe
 static/
