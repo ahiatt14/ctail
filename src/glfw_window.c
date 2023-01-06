@@ -107,6 +107,12 @@ static struct vec2 get_window_dim_in_screen_units() {
   return (struct vec2){ width, height };
 }
 
+static struct vec2 get_framebuffer_size() {
+  int width, height;
+  glfwGetFramebufferSize(glfw_window, &width, &height);
+  return (struct vec2){ width, height };
+}
+
 static void get_gamepad_input(struct gamepad_input *const gamepad) {
 
   gamepad->previous_buttons = gamepad->buttons;
@@ -242,6 +248,7 @@ static void create_PC_window_api(
 
   window->is_fullscreen = is_fullscreen;
   window->get_window_dim_in_screen_units = get_window_dim_in_screen_units;
+  window->get_framebuffer_size = get_framebuffer_size;
   window->get_seconds_since_creation = get_seconds_since_creation;
   window->switch_to_fullscreen = switch_to_fullscreen;
   window->switch_to_windowed = switch_to_windowed;
