@@ -305,6 +305,26 @@ int main(void) {
   ));
   PASSED
 
+  TEST("vec2__dist_from_point_to_line should correctly calclate the distance");
+  struct vec2 test_position = { 4.0f, 2.3f };
+  struct vec2 p0 = { -2, 2 };
+  struct vec2 p1 = { 0, 0 };
+  float expected = 4.45477f;
+  float actual = vec2__dist_from_point_to_line(
+    p0,
+    p1,
+    test_position
+  );
+  printf("\n\nFLT_EPSILON %.8f", FLT_EPSILON * 100);
+  printf("\nexpected %.8f", expected);
+  printf("\nactual %.8f\n\n", actual);
+  assert(diff_is_within_tolerance(
+    actual,
+    expected,
+    FLT_EPSILON * 100
+  ));
+  PASSED
+
   /*
 
     MATRICES (remember, column-first buffers!)

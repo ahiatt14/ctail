@@ -3,6 +3,16 @@
 
 #include "vector.h"
 
+struct vec2 vec2_minus_vec2(
+  struct vec2 t0,
+  struct vec2 t1
+) {
+  return (struct vec2){
+    t0.x - t1.x,
+    t0.y - t1.y
+  };
+}
+
 float vec2__magnitude(
   struct vec2 t
 ) {
@@ -39,6 +49,17 @@ float vec2__fewest_rads_btw_vec2s(
     vec2__dot(t0, t1) /
     (vec2__magnitude(t0) * vec2__magnitude(t1))
   );
+}
+
+float vec2__dist_from_point_to_line(
+  struct vec2 p0,
+  struct vec2 p1,
+  struct vec2 test_position
+) {
+  struct vec2 line = vec2_minus_vec2(p1, p0);
+  struct vec2 perpendicular = { line.y, -line.x };
+  struct vec2 hypotenuse = vec2_minus_vec2(p0, test_position);
+  return fabs(vec2__dot(vec2__normalize(perpendicular), hypotenuse));
 }
 
 struct vec3 vec3_minus_vec3(

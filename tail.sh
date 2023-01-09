@@ -196,20 +196,10 @@ elif [ "$ARG1" == "template" ]; then
   slim && \
   template
 elif [ "$ARG1" == "test" ]; then
-  clean && \
-  build_tools && \
-  build_assets && \
-  compile_src && \
-  static && \
   build_tests && \
   ./tests.exe
   rm -f tests.exe tests.o
 elif [ "$ARG1" == "testlog" ]; then
-  clean && \
-  build_tools && \
-  build_assets && \
-  compile_src && \
-  static && \
   build_tests && \
   run_and_log_tests
   rm -f tests.exe tests.o
