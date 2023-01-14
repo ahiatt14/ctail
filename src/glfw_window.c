@@ -172,6 +172,7 @@ static void switch_to_fullscreen() {
     video_mode->refreshRate
   );
   glfwSwapInterval(vsync_requested);
+  glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 }
 
 static void switch_to_windowed(
@@ -190,6 +191,7 @@ static void switch_to_windowed(
     0
   );
   glfwSwapInterval(vsync_requested);
+  glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 /*
@@ -290,6 +292,8 @@ uint8_t window__create_fullscreen_game(
   vsync_requested = request_vsync;
   glfwSwapInterval(vsync_requested);
   glfwSetWindowRefreshCallback(glfw_window, glfwSwapBuffers);
+
+  glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
   if (!connect_openGL(glfw_window)) return 0;
   create_PC_window_api(window);
