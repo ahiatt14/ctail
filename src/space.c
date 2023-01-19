@@ -6,15 +6,21 @@
 #include "m4x4.h"
 #include "m3x3.h"
 
-struct vec3 space__ccw_rotate(
+struct vec3 space__ccw_angle_rotate(
   struct vec3 axis,
   float radians,
   struct vec3 point
 ) {
-
   static struct quaternion q;
   q = quaternion__create(axis, radians);
 
+  return space__ccw_quat_rotate(q, point);
+}
+
+struct vec3 space__ccw_quat_rotate(
+  struct quaternion q,
+  struct vec3 point
+) {
   static float b2;
   b2 = q.v.x * q.v.x + q.v.y * q.v.y + q.v.z * q.v.z;
   

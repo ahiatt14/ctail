@@ -3,16 +3,6 @@
 #include "m4x4.h"
 #include "vector.h"
 
-// void quaternion__conjugate(
-//   struct quaternion const *const p,
-//   struct quaternion *const dest
-// ) {
-//   dest.v.x = -p.v.x;
-//   dest.v.y = -p.v.y;
-//   dest.v.z = -p.v.z;
-//   dest.w = p.w;
-// }
-
 struct quaternion quaternion__create(
   struct vec3 axis,
   float radians
@@ -27,11 +17,19 @@ struct quaternion quaternion__create(
   };
 }
 
-// struct quaternion quaternion__multiply(
-//   struct quaternion left_p,
-//   struct quaternion right_p
-// ) {
-// }
+struct quaternion quaternion__multiply(
+  struct quaternion lp,
+  struct quaternion rp
+) {
+  return (struct quaternion){
+    (struct vec3){
+      lp.w * rp.v.x + lp.v.x * rp.w + lp.v.y * rp.v.z - lp.v.z * rp.v.y,
+      lp.w * rp.v.y - lp.v.x * rp.v.z + lp.v.y * rp.w + lp.v.z * rp.v.x,
+      lp.w * rp.v.z + lp.v.x * rp.v.y - lp.v.y * rp.v.x + lp.v.z * rp.w
+    },
+    lp.w * rp.w - lp.v.x * rp.v.x - lp.v.y * rp.v.y - lp.v.z * rp.v.z
+  };
+}
 
 void quaternion__to_m4x4(
   struct quaternion p,

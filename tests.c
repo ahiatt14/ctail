@@ -789,17 +789,40 @@ int main(void) {
   */
 
   TEST(
-    "space__ccw_rotate should rotate the provided point n rads around the\n"
+    "space__ccw_angle_rotate should rotate the provided point n rads around the\n"
     "provided rotation axis"
   ); 
   f_tol.tolerance = FLT_EPSILON;
   struct vec3 t = { 1, 0, 0 };
   struct vec3 expected = { 0, 0, -1 };
-  struct vec3 rotated = space__ccw_rotate(
+  struct vec3 rotated = space__ccw_angle_rotate(
     (struct vec3){ 0, 1, 0 },
-    deg_to_rad(90),
+    M_PI * 0.5f,
     t
   );
+  assert(vec_equals_vec(
+    &rotated.x,
+    &expected.x,
+    3,
+    &f_tol
+  ));
+  PASSED
+
+  TEST("space__ccw_quat_rotate run #2");
+  f_tol.tolerance = FLT_EPSILON * 10;
+  struct vec3 t = { 1, 0, 0 };
+  struct quaternion q0, q1, q2;
+  q0 = quaternion__create(
+    (struct vec3){ 0, 1, 0 },
+    M_PI * 0.25f
+  );
+  q1 = quaternion__create(
+    (struct vec3){ 0, 1, 0 },
+    M_PI * 0.25f
+  );
+  q2 = quaternion__multiply(q0, q1);
+  struct vec3 rotated = space__ccw_quat_rotate(q2, t);
+  struct vec3 expected = { 0, 0, -1 };
   assert(vec_equals_vec(
     &rotated.x,
     &expected.x,
