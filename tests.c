@@ -211,13 +211,6 @@ int main(void) {
   ));
   PASSED
 
-  TEST("vec2__fewest_rads_btw_vec2s run #3");
-  struct vec2 a = { NORM_1_1_V2, NORM_1_1_V2 };
-  struct vec2 b = { -NORM_1_1_V2, -NORM_1_1_V2 };
-  float dot = vec2__dot(a, b);
-  float deg = rad_to_deg(vec2__fewest_rads_btw_vec2s(a, b));
-  PASSED
-
   TEST("vec3__cross should calculate the cross product");
   f_tol.tolerance = FLT_EPSILON;
   struct vec3 a = { 5, 2.1f, 2.2f };
@@ -796,13 +789,36 @@ int main(void) {
   */
 
   TEST(
+    "space__ccw_rotate should rotate the provided point n rads around the\n"
+    "provided rotation axis"
+  ); 
+  f_tol.tolerance = FLT_EPSILON;
+  struct vec3 t = { 1, 0, 0 };
+  struct vec3 expected = { 0, 0, -1 };
+  struct vec3 rotated = space__ccw_rotate(
+    (struct vec3){ 0, 1, 0 },
+    deg_to_rad(90),
+    t
+  );
+  assert(vec_equals_vec(
+    &rotated.x,
+    &expected.x,
+    3,
+    &f_tol
+  ));
+  PASSED
+
+  TEST(
     "space__create_model should use a transform to create a compound\n"
     "matrix for rotation around the z axis, scale, and translation"
   );
-  f_tol.tolerance = FLT_EPSILON * 1000;
+  f_tol.tolerance = FLT_EPSILON * 10;
   struct transform t = {
     .position = { 0.3f, -2.0f, -2.0f },
-    .rotation_in_deg = { 0, 0, 45 },
+    ._rotation = quaternion__create(
+      (struct vec3){ 0, 0, 1 },
+      deg_to_rad(45)
+    ),
     .scale = 1.3f
   };
   space__create_model(
