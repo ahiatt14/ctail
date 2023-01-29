@@ -13,15 +13,15 @@
 #define PASSED printf(": PASSED\n"); }
 #define QUIT return 0;
 
-struct float_tolerance f_tol = {
+struct FloatTolerance f_tol = {
   .within_tolerance = diff_is_within_tolerance,
   .tolerance = FLT_EPSILON
 };
 
 unsigned int vert_equals_vert(
-  const struct vertex *v0,
-  const struct vertex *v1,
-  const struct float_tolerance *f_tol
+  const struct Vertex *v0,
+  const struct Vertex *v1,
+  const struct FloatTolerance *f_tol
 ) {
   if (!vec_equals_vec(&v0->position.x, &v1->position.x, 3, f_tol)) return 0;
   if (!vec_equals_vec(&v0->normal.x, &v1->normal.x, 3, f_tol)) return 0;
@@ -33,7 +33,7 @@ void print_vec3(const struct vec3 v) {
   printf("{%.8f, %.8f, %.8f}\n", v.x, v.y, v.z);
 }
 
-void print_vert(const struct vertex v) {
+void print_vert(const struct Vertex v) {
   printf(
     "{{%.8f,%.8f,%.8f},"
     "{%.8f,%.8f,%.8f},"
@@ -283,7 +283,7 @@ int main() {
     "file into vertex and index arrays"
   );
   f_tol.tolerance = FLT_EPSILON;
-  struct vertex actual_vertices[4] = {0};
+  struct Vertex actual_vertices[4] = {0};
   unsigned int actual_indices[4] = {0};
   int actual_vertex_count = 0;
   int actual_index_count = 0;
@@ -296,7 +296,7 @@ int main() {
     &actual_index_count
   );
   fclose(obj_file);
-  struct vertex expected_vertices[4] = {
+  struct Vertex expected_vertices[4] = {
     {{ -1, 0, 1 }, { 0, 1, 0 }, { 0, 0 }},
     {{ 1, 0, 1 }, { 0, 1, 0 }, { 1, 0 }},
     {{ -1, 0, -1 }, { 0, 1, 0 }, { 0, 1 }},
@@ -320,7 +320,7 @@ int main() {
     "file into vertex and idnex arrays"
   );
   f_tol.tolerance = FLT_EPSILON;
-  struct vertex actual_vertices[18] = {0};
+  struct Vertex actual_vertices[18] = {0};
   unsigned int actual_indices[18] = {0};
   int actual_vertex_count = 0;
   int actual_index_count = 0;
@@ -333,7 +333,7 @@ int main() {
     &actual_index_count
   );
   fclose(obj_file);
-  struct vertex expected_vertices[18] = {
+  struct Vertex expected_vertices[18] = {
     {{ -0.5f, 0, -0.5f }, { -0.0000f, 0.7071f, -0.7071f }, { 0.250000f, 0.490000f }}, // 1
     {{ 0, 0.5f, 0 },{ -0.0000f, 0.7071f, -0.7071f },{ 0.250000f, 0.250000f }},
     {{ 0.5f, 0, -0.5f },{ -0.0000f, 0.7071f, -0.7071f },{ 0.490000f, 0.250000f }},

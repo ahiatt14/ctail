@@ -8,15 +8,15 @@
 #include "space_gizmo_geo.h"
 #include "space_gizmo_frag.h"
 
-static struct shader space_gizmo_shader;
+static struct Shader space_gizmo_shader;
 
-static struct point_buffer space_gizmo_point = {
-  .points = (struct vec3[1]){{ 0, 0, 0 }},
+static struct PointBuffer space_gizmo_point = {
+  .points = (struct Vec3[1]){{ 0, 0, 0 }},
   .points_length = 1
 };
 
 void debugging__copy_gizmo_assets_to_gpu(
-  struct gpu_api const *const gpu
+  struct GPU const *const gpu
 ) {
   gpu->copy_points_to_gpu(&space_gizmo_point);
 
@@ -27,12 +27,12 @@ void debugging__copy_gizmo_assets_to_gpu(
 }
 
 void debugging__draw_space_gizmo(
-  struct gpu_api const *const gpu,
-  struct camera const *const cam,
-  struct coordinate_space const *const space,
-  struct vec3 position
+  struct GPU const *const gpu,
+  struct Camera const *const cam,
+  struct CoordinateSpace const *const space,
+  struct Vec3 position
 ) {
-  static struct m4x4 translation;
+  static struct M4x4 translation;
 
   gpu->select_shader(&space_gizmo_shader);
   m4x4__translation(position, &translation);

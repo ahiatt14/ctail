@@ -5,26 +5,26 @@
 #include "cube_frag.h"
 #include "cube_vert.h"
 
-const struct vec3 ORIGIN = {0, 0, 0};
-const struct coordinate_space WORLDSPACE = {
+const struct Vec3 ORIGIN = {0, 0, 0};
+const struct CoordinateSpace WORLDSPACE = {
   { 0, 1, 0 },
   { 1, 0, 0 },
   { 0, 0, -1 }
 };
 
-const struct vec3 COLOR_WHITE = { 1, 1, 1 };
-const struct vec3 COLOR_AQUA_BLUE = { 0.4f, 0.56f, 0.63f };
+const struct Vec3 COLOR_WHITE = { 1, 1, 1 };
+const struct Vec3 COLOR_AQUA_BLUE = { 0.4f, 0.56f, 0.63f };
 
-struct window_api window;
-struct gpu_api gpu;
-struct gamepad_input gamepad;
+struct Window window;
+struct GPU gpu;
+struct Gamepad gamepad;
 
-struct transform cube_transform = { .scale = 1 };
-struct m4x4 cube_local_to_world;
-struct shader cube_shader;
+struct Transform cube_transform = { .scale = 1 };
+struct M4x4 cube_local_to_world;
+struct Shader cube_shader;
 
-struct viewport vwprt;
-struct camera cam;
+struct Viewport vwprt;
+struct Camera cam;
 
 int main() {
 
@@ -41,7 +41,7 @@ int main() {
   viewport__set_width(gpu.get_viewport_width(), &vwprt);
   viewport__set_height(gpu.get_viewport_height(), &vwprt);
 
-  cam.position = (struct vec3){ 0, 0, -5 };
+  cam.position = (struct Vec3){ 0, 0, -5 };
   cam.look_target = ORIGIN;
   cam.horizontal_fov_in_deg = 80;
   cam.near_clip_distance = 0.1f;
@@ -56,14 +56,17 @@ int main() {
   cube_shader.vert_src = cube_vert_src;
   gpu.copy_shader_to_gpu(&cube_shader);
 
+  cube_transform._rotation = quaternion__create(
+    WORLDSPACE.up,
+    0
+  );
+
   while (!window.received_closed_event()) {
     window.poll_events();
 
     // UPDATE
     window.get_gamepad_input(&gamepad);
 
-    cube_transform.rotation_in_deg.y += 0.6f;
-    cube_transform.rotation_in_deg.x += 0.4f;
     space__create_model(
       &WORLDSPACE,
       &cube_transform,

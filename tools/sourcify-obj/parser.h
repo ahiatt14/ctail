@@ -23,14 +23,14 @@ uint8_t obj_shading_is_flat(
 );
 void parse_obj_into_smooth_mesh(
   FILE *obj_file,
-  struct vertex *vertices,
+  struct Vertex *vertices,
   unsigned int *indices,
   int *vert_count_out,
   int *index_count_out
 );
 void parse_obj_into_flat_mesh(
   FILE *obj_file,
-  struct vertex *vertices,
+  struct Vertex *vertices,
   unsigned int *indices,
   int *vert_count_out,
   int *index_count_out

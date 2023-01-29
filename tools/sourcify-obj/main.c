@@ -14,9 +14,9 @@
 
 #define MAX_OUTPUT_PATH_CHAR_COUNT 200
 
-void fprint_vert(FILE *file, const struct vertex *v);
-void fprint_vec3(FILE *file, const struct vec3 *t);
-void fprint_vec2(FILE *file, const struct vec2 *t);
+void fprint_vert(FILE *file, const struct Vertex *v);
+void fprint_vec3(FILE *file, const struct Vec3 *t);
+void fprint_vec2(FILE *file, const struct Vec2 *t);
 void filename_from_path(
   char *filename_out,
   char *filepath,
@@ -28,7 +28,7 @@ void write_header_file(
 );
 void write_src_file(
   const char *filename,
-  struct vertex *vertices,
+  struct Vertex *vertices,
   unsigned int *indices,
   int vertex_count,
   int index_count,
@@ -38,7 +38,7 @@ void write_src_file(
 int main(int argc, char *argv[]) {
 
   FILE *obj_file = NULL;
-  struct vertex vertices[MAX_VERTICES] = {0};
+  struct Vertex vertices[MAX_VERTICES] = {0};
   unsigned int indices[MAX_INDICES] = {0};
   int vertex_count = 0;
   int index_count = 0;
@@ -114,15 +114,15 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-void fprint_vec3(FILE *file, const struct vec3 *t) {
+void fprint_vec3(FILE *file, const struct Vec3 *t) {
   fprintf(file, "{ %.6ff, %.6ff, %.6ff }", t->x, t->y, t->z);
 }
 
-void fprint_vec2(FILE *file, const struct vec2 *t) {
+void fprint_vec2(FILE *file, const struct Vec2 *t) {
   fprintf(file, "{ %.6ff, %.6ff }", t->x, t->y);
 }
 
-void fprint_vert(FILE *file, const struct vertex *v) {
+void fprint_vert(FILE *file, const struct Vertex *v) {
   fprintf(file, "{");
   fprint_vec3(file, &v->position);
   fprintf(file, ",");
@@ -139,13 +139,13 @@ void write_header_file(
   fprintf(file, "#ifndef __TAIL_%s_MESH__\n", filename);
   fprintf(file, "#define __TAIL_%s_MESH__\n", filename);
   fprintf(file, "#include \"tail.h\"\n");
-  fprintf(file, "extern struct drawable_mesh %s_mesh;\n", filename);
+  fprintf(file, "extern struct DrawableMesh %s_mesh;\n", filename);
   fprintf(file, "#endif");
 }
 
 void write_src_file(
   const char *filename,
-  struct vertex *vertices,
+  struct Vertex *vertices,
   unsigned int *indices,
   int vertex_count,
   int index_count,
@@ -153,8 +153,8 @@ void write_src_file(
 ) {
   fprintf(file, "#include \"tail.h\"\n");
   fprintf(file, "#include \"%s_mesh.h\"\n", filename);
-  fprintf(file, "struct drawable_mesh %s_mesh = {\n", filename);
-  fprintf(file, ".vertices_size = %u,\n", sizeof(struct vertex) * vertex_count);
+  fprintf(file, "struct DrawableMesh %s_mesh = {\n", filename);
+  fprintf(file, ".vertices_size = %u,\n", sizeof(struct Vertex) * vertex_count);
   fprintf(file, ".vertices_length = %u,\n", vertex_count);
   fprintf(file, ".indices_size = %u,\n", sizeof(unsigned int) * index_count);
   fprintf(file, ".indices_length = %i,\n", index_count);
@@ -163,7 +163,7 @@ void write_src_file(
     fprintf(file, "%i, %i, %i,\n", indices[i], indices[i+1], indices[i+2]);
   }
   fprintf(file, "},\n");
-  fprintf(file, ".vertices = (struct vertex[]){\n");
+  fprintf(file, ".vertices = (struct Vertex[]){\n");
   for (int i = 0; i < vertex_count; i++){
     fprint_vert(file, &vertices[i]);
     if (i < vertex_count - 1) fprintf(file, ",");

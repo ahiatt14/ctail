@@ -6,25 +6,25 @@
 #include "m4x4.h"
 #include "m3x3.h"
 
-struct vec3 space__ccw_angle_rotate(
-  struct vec3 axis,
+struct Vec3 space__ccw_angle_rotate(
+  struct Vec3 axis,
   float radians,
-  struct vec3 point
+  struct Vec3 point
 ) {
-  static struct quaternion q;
+  static struct Quaternion q;
   q = quaternion__create(axis, radians);
 
   return space__ccw_quat_rotate(q, point);
 }
 
-struct vec3 space__ccw_quat_rotate(
-  struct quaternion q,
-  struct vec3 point
+struct Vec3 space__ccw_quat_rotate(
+  struct Quaternion q,
+  struct Vec3 point
 ) {
   static float b2;
   b2 = q.v.x * q.v.x + q.v.y * q.v.y + q.v.z * q.v.z;
   
-  static struct vec3 pw, bv, cb;
+  static struct Vec3 pw, bv, cb;
   pw = scalar_x_vec3(q.w * q.w - b2, point);
   bv = scalar_x_vec3(vec3__dot(q.v, point) * 2.0f, q.v);
   cb = scalar_x_vec3(q.w * 2.0f, vec3__cross(q.v, point));
@@ -33,12 +33,12 @@ struct vec3 space__ccw_quat_rotate(
 }
 
 void space__create_model(
-  struct coordinate_space const *const space,
-  struct transform const *const t,
-  struct m4x4 *const dest
+  struct CoordinateSpace const *const space,
+  struct Transform const *const t,
+  struct M4x4 *const dest
 ) {
 
-  static struct m4x4 scale, translation, rotation, rotate_and_scale;
+  static struct M4x4 scale, translation, rotation, rotate_and_scale;
 
   m4x4__identity(dest);
   
@@ -51,8 +51,8 @@ void space__create_model(
 }
 
 void space__create_normals_model(
-  struct m4x4 const *const model,
-  struct m3x3 *const dest
+  struct M4x4 const *const model,
+  struct M3x3 *const dest
 ) {
   m4x4__sub3x3_from00(model, dest);
   m3x3__inverse(dest, dest);

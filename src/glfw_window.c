@@ -101,19 +101,19 @@ uint8_t gamepad_is_connected() {
   return glfwJoystickPresent(GLFW_JOYSTICK_1);
 }
 
-static struct vec2 get_window_dim_in_screen_units() {
+static struct Vec2 get_window_dim_in_screen_units() {
   int width, height;
   glfwGetWindowSize(glfw_window, &width, &height);
-  return (struct vec2){ width, height };
+  return (struct Vec2){ width, height };
 }
 
-static struct vec2 get_framebuffer_size() {
+static struct Vec2 get_framebuffer_size() {
   int width, height;
   glfwGetFramebufferSize(glfw_window, &width, &height);
-  return (struct vec2){ width, height };
+  return (struct Vec2){ width, height };
 }
 
-static void get_gamepad_input(struct gamepad_input *const gamepad) {
+static void get_gamepad_input(struct Gamepad *const gamepad) {
 
   gamepad->previous_buttons = gamepad->buttons;
 
@@ -124,7 +124,7 @@ static void get_gamepad_input(struct gamepad_input *const gamepad) {
     return;
   }
 
-  gamepad->left_stick_direction = (struct vec2){
+  gamepad->left_stick_direction = (struct Vec2){
     .x = state.axes[GLFW_GAMEPAD_AXIS_LEFT_X],
     .y = state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y]
   };
@@ -238,7 +238,7 @@ static uint8_t connect_openGL(
 }
 
 static void create_PC_window_api(
-  struct window_api *const window
+  struct Window *const window
 ) {
   window->on_minimize_and_restore = on_minimize_and_restore;
   window->on_focus_and_unfocus = on_focus_and_unfocus;
@@ -268,7 +268,7 @@ uint8_t window__create_fullscreen_game(
   const char *name,
   uint8_t request_vsync,
   uint8_t MSAA_samples,
-  struct window_api *const window
+  struct Window *const window
 ) {
 
   if (!glfwInit()) return 0;
@@ -309,7 +309,7 @@ uint8_t window__create_windowed_game(
   const char *name,
   uint8_t request_vsync,
   uint8_t MSAA_samples,
-  struct window_api *const window
+  struct Window *const window
 ) {
 
   if (!glfwInit()) return 0;
