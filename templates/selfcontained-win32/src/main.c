@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "tail.h"
 
 #include "cube_mesh.h"
@@ -56,16 +58,26 @@ int main() {
   cube_shader.vert_src = cube_vert_src;
   gpu.copy_shader_to_gpu(&cube_shader);
 
-  cube_transform._rotation = quaternion__create(
+  cube_transform.rotation = quaternion__create(
     WORLDSPACE.up,
     0
   );
+
+  struct Vec3 cube_rotation_axis = (struct Vec3){ -0.707f, 0, 0.707f };
 
   while (!window.received_closed_event()) {
     window.poll_events();
 
     // UPDATE
     window.get_gamepad_input(&gamepad);
+
+    cube_transform.rotation = quaternion__multiply(
+      cube_transform.rotation,
+      quaternion__create(
+        cube_rotation_axis,
+        M_PI * 0.0167f
+      )
+    );
 
     space__create_model(
       &WORLDSPACE,

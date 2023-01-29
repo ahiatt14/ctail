@@ -44,7 +44,7 @@ void space__create_model(
   
   m4x4__translation(t->position, &translation);
   m4x4__scaling(t->scale, &scale);  
-  quaternion__to_m4x4(t->_rotation, &rotation);
+  quaternion__to_m4x4(t->rotation, &rotation);
 
   m4x4_x_m4x4(&rotation, &scale, &rotate_and_scale);
   m4x4_x_m4x4(&translation, &rotate_and_scale, dest);

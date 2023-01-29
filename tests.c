@@ -838,7 +838,7 @@ int main(void) {
   f_tol.tolerance = FLT_EPSILON * 10;
   struct Transform t = {
     .position = { 0.3f, -2.0f, -2.0f },
-    ._rotation = quaternion__create(
+    .rotation = quaternion__create(
       (struct Vec3){ 0, 0, 1 },
       deg_to_rad(45)
     ),

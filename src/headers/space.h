@@ -13,7 +13,7 @@ struct CoordinateSpace {
 
 struct Transform {
   struct Vec3 position;
-  struct Quaternion _rotation;
+  struct Quaternion rotation;
   float scale;
 };
 
