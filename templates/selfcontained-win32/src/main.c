@@ -52,10 +52,10 @@ int main() {
   camera__calculate_lookat(WORLDSPACE.up, &cam);
   camera__calculate_perspective(&vwprt, &cam);
 
-  gpu.copy_static_mesh_to_gpu(&cube_mesh);
-  gpu.copy_texture_to_gpu(&fur_texture);
-  cube_shader.frag_src = cube_frag_src;
-  cube_shader.vert_src = cube_vert_src;
+  gpu.copy_static_mesh_to_gpu(&CUBE_MESH);
+  gpu.copy_texture_to_gpu(&FUR_TEXTURE);
+  cube_shader.frag_src = CUBE_FRAG_SRC;
+  cube_shader.vert_src = CUBE_VERT_SRC;
   gpu.copy_shader_to_gpu(&cube_shader);
 
   cube_transform.rotation = quaternion__create(
@@ -89,12 +89,12 @@ int main() {
     gpu.clear(&COLOR_WHITE);
 
     gpu.select_shader(&cube_shader);
-    gpu.select_texture(&fur_texture);
+    gpu.select_texture(&FUR_TEXTURE);
     gpu.set_shader_m4x4(&cube_shader, "model", &cube_local_to_world);
     gpu.set_shader_m4x4(&cube_shader, "view", &cam.lookat);
     gpu.set_shader_m4x4(&cube_shader, "projection", &cam.projection);
 
-    gpu.draw_mesh(&cube_mesh);
+    gpu.draw_mesh(&CUBE_MESH);
     
     window.request_buffer_swap();
   }

@@ -20,9 +20,9 @@ void debugging__copy_gizmo_assets_to_gpu(
 ) {
   gpu->copy_points_to_gpu(&space_gizmo_point);
 
-  space_gizmo_shader.vert_src = space_gizmo_vert_src;
-  space_gizmo_shader.geo_src = space_gizmo_geo_src;
-  space_gizmo_shader.frag_src = space_gizmo_frag_src;
+  space_gizmo_shader.vert_src = SPACE_GIZMO_VERT_SRC;
+  space_gizmo_shader.geo_src = SPACE_GIZMO_GEO_SRC;
+  space_gizmo_shader.frag_src = SPACE_GIZMO_FRAG_SRC;
   gpu->copy_shader_to_gpu(&space_gizmo_shader);
 }
 

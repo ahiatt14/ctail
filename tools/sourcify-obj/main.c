@@ -28,11 +28,15 @@ void write_header_file(
 );
 void write_src_file(
   const char *filename,
+  const char *src_var_name,
   struct Vertex *vertices,
   unsigned int *indices,
   int vertex_count,
   int index_count,
   FILE *file
+);
+void str_to_upper(
+  char *str
 );
 
 int main(int argc, char *argv[]) {
@@ -87,12 +91,17 @@ int main(int argc, char *argv[]) {
   strcpy(src_output_filepath, base_output_filepath);
   strcat(src_output_filepath, "_mesh.c");
 
+  char src_var_name[200];
+  strcpy(src_var_name, filename);
+  str_to_upper(src_var_name);
+  strcat(src_var_name, "_MESH");
+
   FILE *header_file = fopen(header_output_filepath, "w");
   if (!header_file) {
     printf("Could not open %s for writing", header_output_filepath);
     return 1;
   }
-  write_header_file(filename, header_file);
+  write_header_file(src_var_name, header_file);
   fclose(header_file);
 
   FILE *src_file = fopen(src_output_filepath, "w");
@@ -102,6 +111,7 @@ int main(int argc, char *argv[]) {
   }
   write_src_file(
     filename,
+    src_var_name,
     vertices,
     indices,
     vertex_count,
@@ -133,18 +143,19 @@ void fprint_vert(FILE *file, const struct Vertex *v) {
 }
 
 void write_header_file(
-  const char *filename,
+  const char *src_var_name,
   FILE *file
 ) {
-  fprintf(file, "#ifndef __TAIL_%s_MESH__\n", filename);
-  fprintf(file, "#define __TAIL_%s_MESH__\n", filename);
+  fprintf(file, "#ifndef __TAIL_%s__\n", src_var_name);
+  fprintf(file, "#define __TAIL_%s__\n", src_var_name);
   fprintf(file, "#include \"tail.h\"\n");
-  fprintf(file, "extern struct DrawableMesh %s_mesh;\n", filename);
+  fprintf(file, "extern struct DrawableMesh %s;\n", src_var_name);
   fprintf(file, "#endif");
 }
 
 void write_src_file(
   const char *filename,
+  const char *src_var_name,
   struct Vertex *vertices,
   unsigned int *indices,
   int vertex_count,
@@ -153,7 +164,7 @@ void write_src_file(
 ) {
   fprintf(file, "#include \"tail.h\"\n");
   fprintf(file, "#include \"%s_mesh.h\"\n", filename);
-  fprintf(file, "struct DrawableMesh %s_mesh = {\n", filename);
+  fprintf(file, "struct DrawableMesh %s = {\n", src_var_name);
   fprintf(file, ".vertices_size = %u,\n", sizeof(struct Vertex) * vertex_count);
   fprintf(file, ".vertices_length = %u,\n", vertex_count);
   fprintf(file, ".indices_size = %u,\n", sizeof(unsigned int) * index_count);
@@ -181,4 +192,14 @@ void filename_from_path(
   if (last_slash == NULL) last_slash = filepath - 1;
   char *last_dot = strrchr(filepath, '.');
   strncpy(filename_out, last_slash, last_dot - ++last_slash);
+}
+
+void str_to_upper(
+  char* str
+) {
+  int i = 0;
+  while (str[i]) {
+    str[i] = toupper(str[i]);
+    i++;
+  }
 }

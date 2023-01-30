@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 
 #define MAX_SRC_CHAR_COUNT 10000
@@ -12,6 +13,10 @@ void filename_from_path(
   size_t max_length
 );
 
+void str_to_upper(
+  char *str
+);
+
 int main(int argc, char *argv[]) {
 
   FILE *glsl_file = fopen(argv[1], "r");
@@ -21,8 +26,8 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  char filename[100] = {0};
-  filename_from_path(filename, argv[1], 100);
+  char filename[MAX_SRC_LINE_LENGTH] = {0};
+  filename_from_path(filename, argv[1], MAX_SRC_LINE_LENGTH);
 
   char base_output_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
   strcat(base_output_filepath, argv[2]);
@@ -36,6 +41,11 @@ int main(int argc, char *argv[]) {
   strcpy(header_output_filepath, base_output_filepath);
   strcat(header_output_filepath, ".h");
 
+  char src_var_name[MAX_SRC_LINE_LENGTH];
+  strcpy(src_var_name, filename);
+  str_to_upper(src_var_name);
+  strcat(src_var_name, "_SRC");
+
   // HEADER
 
   FILE *header_file = fopen(header_output_filepath, "w");
@@ -45,13 +55,13 @@ int main(int argc, char *argv[]) {
   }
   fprintf(
     header_file,
-    "#ifndef __TAIL_%s_SRC__\n"
-    "#define __TAIL_%s_SRC__\n"
-    "extern const char *%s_src;\n"
+    "#ifndef __TAIL_%s__\n"
+    "#define __TAIL_%s__\n"
+    "extern const char *%s;\n"
     "#endif",
-    filename,
-    filename,
-    filename
+    src_var_name,
+    src_var_name,
+    src_var_name
   );
   fclose(header_file);
 
@@ -63,9 +73,10 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  char line[MAX_SRC_LINE_LENGTH] = {0};
   fprintf(src_file, "#include \"%s.h\"\n", filename);
-  fprintf(src_file, "const char *%s_src = ", filename);
+  fprintf(src_file, "const char *%s = ", src_var_name);
+
+  char line[MAX_SRC_LINE_LENGTH] = {0};
   while(fgets(line, MAX_SRC_LINE_LENGTH, glsl_file)) {
     char temp_line[MAX_SRC_LINE_LENGTH] = {0};
     strncpy(temp_line, line, strlen(line) - 1);
@@ -87,4 +98,14 @@ void filename_from_path(
   if (last_slash == NULL) last_slash = filepath - 1;
   char *last_dot = strrchr(filepath, '.');
   strncpy(filename_out, last_slash, last_dot - ++last_slash);
+}
+
+void str_to_upper(
+  char* str
+) {
+  int i = 0;
+  while (str[i]) {
+    str[i] = toupper(str[i]);
+    i++;
+  }
 }
