@@ -9,7 +9,7 @@
 #include "parser.h"
 
 #define MAX_VERTICES 5000
-#define MAX_INDICES 15000
+#define MAX_INDICES 30000
 #define MAX_FILENAME_LENGTH 100
 
 #define MAX_OUTPUT_PATH_CHAR_COUNT 200
