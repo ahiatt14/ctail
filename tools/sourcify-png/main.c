@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
   char src_var_name[200];
   strcpy(src_var_name, png_filename);
   str_to_upper(src_var_name);
-  strcat(src_var_name, "_TEXTURE");
+  strcat(src_var_name, "_TAIL_TEXTURE");
 
   // HEADER FILE
   FILE *header_file = fopen(header_output_filepath, "w");
@@ -107,6 +107,7 @@ int main(int argc, char *argv[]) {
   fprintf(src_file, ".width = %i,\n", width);
   fprintf(src_file, ".height = %i,\n", height);
   fprintf(src_file, ".channel_count = %i,\n", desired_channels);
+  fprintf(src_file, ".name = \"%s\",\n", png_filename);
   fprintf(src_file, ".data = (unsigned char[]){\n");
   for (int i = 0; i < buffer_length; i++) {
     fprintf(src_file, "%i,", data[i]);

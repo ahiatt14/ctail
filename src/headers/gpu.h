@@ -11,6 +11,7 @@
 struct Texture {
   unsigned int _impl_id;
   unsigned char *data;
+  const char *name;
   int width;
   int height;
   int channel_count;
@@ -81,7 +82,6 @@ struct GPU {
   void (*select_textures)(
     struct Shader const *const shad,
     uint8_t texture_count,
-    char const *const *const uniform_names,
     struct Texture const *const *const textures
   );
 

@@ -246,13 +246,12 @@ static void select_texture(struct Texture const *const tex) {
 static void select_textures(
   struct Shader const *const shad,
   uint8_t texture_count,
-  char const *const *const uniform_names,
   struct Texture const *const *const textures
 ) {
   for (int i = 0; i < texture_count; i++) {
     glActiveTexture(GL_TEXTURE0 + i);
     glUniform1i(
-      glGetUniformLocation(shad->_impl_id, uniform_names[i]),
+      glGetUniformLocation(shad->_impl_id, textures[i]->name),
       i
     );
     glBindTexture(GL_TEXTURE_2D, textures[i]->_impl_id);
