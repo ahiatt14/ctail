@@ -77,7 +77,21 @@ static int channel_count_to_gl_tex_format(int channel_count) {
   }
   return GL_RGB;
 }
-static void copy_texture_to_gpu(struct Texture *const tex) {
+
+static int texture_filter_to_gl_tex_filter(uint8_t filter) {
+  switch (filter) {
+    case FILTER__NEAREST:
+      return GL_NEAREST;
+    case FILTER__LINEAR:
+      return GL_LINEAR;
+  }
+  return FILTER__NEAREST;
+}
+
+static void copy_texture_to_gpu(
+  uint8_t filter,
+  struct Texture *const tex
+) {
 
   glGenTextures(1, &tex->_impl_id);
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
@@ -85,8 +99,16 @@ static void copy_texture_to_gpu(struct Texture *const tex) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(
+    GL_TEXTURE_2D,
+    GL_TEXTURE_MIN_FILTER,
+    GL_LINEAR_MIPMAP_LINEAR
+  );
+  glTexParameteri(
+    GL_TEXTURE_2D,
+    GL_TEXTURE_MAG_FILTER,
+    texture_filter_to_gl_tex_filter(filter)
+  );
 
   glTexImage2D(
     GL_TEXTURE_2D,
