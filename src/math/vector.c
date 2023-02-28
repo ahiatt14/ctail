@@ -166,3 +166,10 @@ struct Vec3 scalar_x_vec3(
 ) {
   return (struct Vec3){ s * t.x, s * t.y, s * t.z };
 }
+
+struct Vec2 scalar_x_vec2(
+  float s,
+  struct Vec2 t
+) {
+  return (struct Vec2){ s * t.x, s * t.y };
+}
