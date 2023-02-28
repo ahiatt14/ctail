@@ -3,12 +3,12 @@
 #include "m4x4.h"
 #include "vector.h"
 
-struct Quaternion quaternion__create(
-  struct Vec3 axis,
+Quaternion quaternion__create(
+  Vec3 axis,
   float radians
 ) {
-  return (struct Quaternion){
-    .v = (struct Vec3){
+  return (Quaternion){
+    .v = (Vec3){
       .x = sin(radians * 0.5f) * axis.x,
       .y = sin(radians * 0.5f) * axis.y,
       .z = sin(radians * 0.5f) * axis.z
@@ -17,12 +17,12 @@ struct Quaternion quaternion__create(
   };
 }
 
-struct Quaternion quaternion__multiply(
-  struct Quaternion lp,
-  struct Quaternion rp
+Quaternion quaternion__multiply(
+  Quaternion lp,
+  Quaternion rp
 ) {
-  return (struct Quaternion){
-    (struct Vec3){
+  return (Quaternion){
+    (Vec3){
       lp.w * rp.v.x + lp.v.x * rp.w + lp.v.y * rp.v.z - lp.v.z * rp.v.y,
       lp.w * rp.v.y - lp.v.x * rp.v.z + lp.v.y * rp.w + lp.v.z * rp.v.x,
       lp.w * rp.v.z + lp.v.x * rp.v.y - lp.v.y * rp.v.x + lp.v.z * rp.w
@@ -32,8 +32,8 @@ struct Quaternion quaternion__multiply(
 }
 
 void quaternion__to_m4x4(
-  struct Quaternion p,
-  struct M4x4 *const m
+  Quaternion p,
+  M4x4 *const m
 ) {
 
   static float x2, y2, z2, xy, xz, yz, wx, wy, wz;

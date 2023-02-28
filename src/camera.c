@@ -7,9 +7,9 @@
 #include "m4x4.h"
 #include "vector.h"
 
-const struct M4x4* camera__calculate_perspective(
-  struct Viewport *const vwprt,
-  struct Camera *const cam
+const M4x4* camera__calculate_perspective(
+  Viewport *const vwprt,
+  Camera *const cam
 ) {
   static float r, l, t, b;
   static float m0, m5, m8, m9, m10, m14;
@@ -41,12 +41,12 @@ const struct M4x4* camera__calculate_perspective(
   return &cam->projection;
 }
 
-const struct M4x4* camera__calculate_lookat(
-  struct Vec3 up,
-  struct Camera *const cam
+const M4x4* camera__calculate_lookat(
+  Vec3 up,
+  Camera *const cam
 ) {
-  static struct Vec3 camera_forward, camera_right, camera_up;
-  static struct M4x4 view, offset;
+  static Vec3 camera_forward, camera_right, camera_up;
+  static M4x4 view, offset;
 
   camera_forward = vec3_minus_vec3(cam->position, cam->look_target);
   camera_forward = vec3__normalize(camera_forward);

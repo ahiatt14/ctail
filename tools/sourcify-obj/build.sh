@@ -1,3 +1,6 @@
+# TODO: need to parameterize build target in here
+# TODO: the way this build is quite brittle, paricularly the tests
+
 if [ "$1" == "build" ]
 then
   rm -rf bin && \
@@ -12,9 +15,13 @@ then
   rm -rf test_report.txt bin && \
   mkdir bin && \
   i686-w64-mingw32-gcc tests.c parser.c normals.c \
+  ../../src/math/vector.c ../../src/math/m4x4.c ../../src/math/m3x3.c \
+  ../../src/opengl_gpu.c ../../src/math/m2x2.c ../../src/precision.c \
+  ../../src/math/tail_math.c \
+  ../../libs/GLAD/obj/glad.o \
   -o bin/tests.exe \
-  -I../../include -Itest_data \
-  ../../static/tail.a -Wall && \
-  ./bin/tests.exe > test_report.txt && \
+  -I../../include -I../../src/headers -Itest_data -I../../libs/GLAD/include \
+  -Wall && \
+  ./bin/tests.exe && \
   rm -rf bin/tests.exe
 fi

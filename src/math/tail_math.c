@@ -16,7 +16,7 @@ int vec_equals_vec(
   float const *const x0,
   float const *const x1,
   unsigned short int element_count,
-  struct FloatTolerance const *const ft
+  FloatTolerance const *const ft
 ) {
   for (int i = 0; i < element_count; i++) {
     if (!ft->within_tolerance(

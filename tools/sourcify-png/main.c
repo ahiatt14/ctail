@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
   fprintf(header_file, "#include \"tail.h\"\n");
   fprintf(
     header_file,
-    "extern struct Texture %s;\n",
+    "extern Texture %s;\n",
     src_var_name
   );
   fprintf(header_file, "#endif\n");
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
   }
   fprintf(src_file, "#include \"tail.h\"\n");
   fprintf(src_file, "#include \"%s_texture.h\"\n", png_filename);
-  fprintf(src_file, "struct Texture %s = {\n", src_var_name);
+  fprintf(src_file, "Texture %s = {\n", src_var_name);
   fprintf(src_file, ".width = %i,\n", width);
   fprintf(src_file, ".height = %i,\n", height);
   fprintf(src_file, ".channel_count = %i,\n", desired_channels);

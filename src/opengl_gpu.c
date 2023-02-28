@@ -29,7 +29,7 @@ static void compile_src(
 }
 
 static void copy_shader_to_gpu(
-  struct Shader *const gpup
+  Shader *const gpup
 ) {
   
   compile_src(
@@ -90,7 +90,7 @@ static int texture_filter_to_gl_tex_filter(uint8_t filter) {
 
 static void copy_texture_to_gpu(
   uint8_t filter,
-  struct Texture *const tex
+  Texture *const tex
 ) {
 
   glGenTextures(1, &tex->_impl_id);
@@ -126,7 +126,7 @@ static void copy_texture_to_gpu(
 }
 
 static void copy_points_to_gpu(
-  struct PointBuffer *const pb
+  PointBuffer *const pb
 ) {
   glGenBuffers(1, &pb->_impl_vbo_id);
   glGenVertexArrays(1, &pb->_impl_vao_id);
@@ -136,7 +136,7 @@ static void copy_points_to_gpu(
   glBindBuffer(GL_ARRAY_BUFFER, pb->_impl_vbo_id);
   glBufferData(
     GL_ARRAY_BUFFER,
-    sizeof(struct Vec3) * pb->points_length,
+    sizeof(Vec3) * pb->points_length,
     &(pb->points->x),
     GL_STATIC_DRAW
   );
@@ -147,13 +147,13 @@ static void copy_points_to_gpu(
     COUNT_OF_VALUES_PER_POSITION,
     GL_FLOAT,
     GL_FALSE,
-    sizeof(struct Vec3),
-    (GLvoid*)offsetof(struct Vec3, x)
+    sizeof(Vec3),
+    (GLvoid*)offsetof(Vec3, x)
   );
 }
 
 static void copy_mesh_to_gpu(
-  struct DrawableMesh *const dm,
+  DrawableMesh *const dm,
   GLenum usage
 ) {
 
@@ -180,8 +180,8 @@ static void copy_mesh_to_gpu(
     COUNT_OF_VALUES_PER_POSITION,
     GL_FLOAT,
     GL_FALSE,
-    sizeof(struct Vertex),
-    (GLvoid*)offsetof(struct Vertex, position)
+    sizeof(Vertex),
+    (GLvoid*)offsetof(Vertex, position)
   );
 
   glVertexAttribPointer(
@@ -189,8 +189,8 @@ static void copy_mesh_to_gpu(
     COUNT_OF_VALUES_PER_NORMAL,
     GL_FLOAT,
     GL_FALSE,
-    sizeof(struct Vertex),
-    (GLvoid*)offsetof(struct Vertex, normal)
+    sizeof(Vertex),
+    (GLvoid*)offsetof(Vertex, normal)
   );
 
   glVertexAttribPointer(
@@ -198,8 +198,8 @@ static void copy_mesh_to_gpu(
     COUNT_OF_VALUES_PER_UV,
     GL_FLOAT,
     GL_FALSE,
-    sizeof(struct Vertex),
-    (GLvoid*)offsetof(struct Vertex, uv)
+    sizeof(Vertex),
+    (GLvoid*)offsetof(Vertex, uv)
   );
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dm->_impl_ibo_id);
@@ -211,7 +211,7 @@ static void copy_mesh_to_gpu(
   );
 }
 
-static void update_gpu_mesh_data(struct DrawableMesh const *const dm) {
+static void update_gpu_mesh_data(DrawableMesh const *const dm) {
   glBindBuffer(GL_ARRAY_BUFFER, dm->_impl_vbo_id);
   static void *temp_buffer_map;
   temp_buffer_map = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
@@ -223,11 +223,11 @@ static void update_gpu_mesh_data(struct DrawableMesh const *const dm) {
   glUnmapBuffer(GL_ARRAY_BUFFER);
 }
 
-static void copy_static_mesh_to_gpu(struct DrawableMesh *const dm) {
+static void copy_static_mesh_to_gpu(DrawableMesh *const dm) {
   copy_mesh_to_gpu(dm, GL_STATIC_DRAW);
 }
 
-static void copy_dynamic_mesh_to_gpu(struct DrawableMesh *const dm) {
+static void copy_dynamic_mesh_to_gpu(DrawableMesh *const dm) {
   copy_mesh_to_gpu(dm, GL_DYNAMIC_DRAW);
 }
 
@@ -251,7 +251,7 @@ static void disable_MSAA() {
   glDisable(GL_MULTISAMPLE);
 }
 
-static void clear(struct Vec3 const *const c) {
+static void clear(Vec3 const *const c) {
   glClearColor(c->x, c->y, c->z, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -260,15 +260,15 @@ static void clear_depth_buffer() {
   glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-static void select_texture(struct Texture const *const tex) {
+static void select_texture(Texture const *const tex) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
 }
 
 static void select_textures(
-  struct Shader const *const shad,
+  Shader const *const shad,
   uint8_t texture_count,
-  struct Texture const *const *const textures
+  Texture const *const *const textures
 ) {
   for (int i = 0; i < texture_count; i++) {
     glActiveTexture(GL_TEXTURE0 + i);
@@ -280,14 +280,14 @@ static void select_textures(
   }
 }
 
-static void select_shader(struct Shader const *const gpup) {
+static void select_shader(Shader const *const gpup) {
   glUseProgram(gpup->_impl_id);
 }
 
 static void set_shader_m3x3(
-  struct Shader const *const gpup,
+  Shader const *const gpup,
   char const *name,
-  struct M3x3 const *const value
+  M3x3 const *const value
 ) {
   glUniformMatrix3fv(
     glGetUniformLocation(gpup->_impl_id, name),
@@ -298,9 +298,9 @@ static void set_shader_m3x3(
 }
 
 static void set_shader_m4x4(
-  struct Shader const *const gpup,
+  Shader const *const gpup,
   char const *name,
-  struct M4x4 const *const value
+  M4x4 const *const value
 ) {
   glUniformMatrix4fv(
     glGetUniformLocation(gpup->_impl_id, name),
@@ -311,9 +311,9 @@ static void set_shader_m4x4(
 }
 
 static void set_shader_vec2(
-  struct Shader const *const gpup,
+  Shader const *const gpup,
   char const *name,
-  struct Vec2 value
+  Vec2 value
 ) {
   glUniform2fv(
     glGetUniformLocation(gpup->_impl_id, name),
@@ -323,9 +323,9 @@ static void set_shader_vec2(
 }
 
 static void set_shader_vec3(
-  struct Shader const *const gpup,
+  Shader const *const gpup,
   char const *name,
-  struct Vec3 value
+  Vec3 value
 ) {
   glUniform3fv(
     glGetUniformLocation(gpup->_impl_id, name),
@@ -335,7 +335,7 @@ static void set_shader_vec3(
 }
 
 static void set_shader_float(
-    struct Shader const *const gpup,
+    Shader const *const gpup,
     char const *name,
     float value
 ) {
@@ -345,7 +345,7 @@ static void set_shader_float(
   );
 }
 
-static void draw_mesh(struct DrawableMesh const *const mesh) {
+static void draw_mesh(DrawableMesh const *const mesh) {
   glBindVertexArray(mesh->_impl_vao_id);
   glDrawElements(
     GL_TRIANGLES,
@@ -355,7 +355,7 @@ static void draw_mesh(struct DrawableMesh const *const mesh) {
   );
 }
 
-static void draw_wireframe(struct DrawableMesh const *const mesh) {
+static void draw_wireframe(DrawableMesh const *const mesh) {
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glBindVertexArray(mesh->_impl_vao_id);
   glDrawElements(
@@ -367,7 +367,7 @@ static void draw_wireframe(struct DrawableMesh const *const mesh) {
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-static void draw_points(struct PointBuffer const *const pb) {
+static void draw_points(PointBuffer const *const pb) {
   glBindVertexArray(pb->_impl_vao_id);
   glDrawArrays(
     GL_POINTS,
@@ -401,7 +401,7 @@ static int get_viewport_height() {
   return initial_viewport_dimensions[3];
 }
 
-void gpu__create_api(struct GPU *const gpu) {
+void gpu__create_api(GPU *const gpu) {
 
   glEnable(GL_PROGRAM_POINT_SIZE);
 

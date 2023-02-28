@@ -7,40 +7,40 @@
 #include "tail.h"
 
 // TODO: could clean & reduce loc by using compound literals to
-// pass anon structs for a lot of these. project for a lazy day
+// pass anon struct for a lot of these. project for a lazy day
 
 #define TEST(msg) { printf(msg)
 #define PASSED printf(": PASSED\n"); }
 
 int m2x2_equals_m2x2(
-  const struct M2x2 *m0,
-  const struct M2x2 *m1,
-  const struct FloatTolerance *ft
+  const M2x2 *m0,
+  const M2x2 *m1,
+  const FloatTolerance *ft
 );
 int m3x3_equals_m3x3(
-  const struct M3x3 *m0,
-  const struct M3x3 *m1,
-  const struct FloatTolerance *ft
+  const M3x3 *m0,
+  const M3x3 *m1,
+  const FloatTolerance *ft
 );
 int m4x4_equals_m4x4(
-  const struct M4x4 *m0,
-  const struct M4x4 *m1,
-  const struct FloatTolerance *ft
+  const M4x4 *m0,
+  const M4x4 *m1,
+  const FloatTolerance *ft
 );
-void print_m3x3(const char *name, const struct M3x3 *m);
-void print_m4x4(const char *name, const struct M4x4 *m);
-void print_vec3(const char *name, struct Vec3 t);
+void print_m3x3(const char *name, const M3x3 *m);
+void print_m4x4(const char *name, const M4x4 *m);
+void print_vec3(const char *name, Vec3 t);
 
-struct M2x2 expected_m2, actual_m2;
-struct M3x3 expected_m3, actual_m3;
-struct M4x4 expected_m4, actual_m4, actual_m4b;
+M2x2 expected_m2, actual_m2;
+M3x3 expected_m3, actual_m3;
+M4x4 expected_m4, actual_m4, actual_m4b;
 
-struct FloatTolerance f_tol = {
+FloatTolerance f_tol = {
   .within_tolerance = diff_is_within_tolerance,
   .tolerance = FLT_EPSILON
 };
 
-const struct CoordinateSpace DEFAULT_WORLDSPACE = {
+const CoordinateSpace DEFAULT_WORLDSPACE = {
   .up = { 0, 1, 0 },
   .right = { 1, 0, 0 },
   .forward = { 0, 0, 1 }
@@ -55,18 +55,18 @@ int main(void) {
   */
 
   TEST("button_is_down should return 1 when the selected button is down");
-  struct Gamepad gamepad = {0};
+  Gamepad gamepad = {0};
   gamepad.buttons |= 1 << BUTTON_Y;
   assert(button_is_down(BUTTON_Y, &gamepad) == 1);
   PASSED
 
   TEST("button_is_up should return 0 when the selected button is up");
-  struct Gamepad gamepad = {0};
+  Gamepad gamepad = {0};
   assert(button_is_up(BUTTON_Y, &gamepad) == 1);
   PASSED
 
   TEST("button_was_released should return 1 when the selected button is up but was down");
-  struct Gamepad gamepad = {0};
+  Gamepad gamepad = {0};
   gamepad.previous_buttons |= 1 << BUTTON_Y;
   assert(button_was_released(BUTTON_Y, &gamepad) == 1);
   PASSED
@@ -147,8 +147,8 @@ int main(void) {
   */
 
   TEST("vec3__dot should calculate the dot product of 2 vectors");
-  struct Vec3 a = {1.0f, 1.0f, 2.0f};
-  struct Vec3 b = {4.2f, 35.3f, 0.1f};
+  Vec3 a = {1.0f, 1.0f, 2.0f};
+  Vec3 b = {4.2f, 35.3f, 0.1f};
   assert(diff_is_within_tolerance(
     vec3__dot(a, b),
     39.7f,
@@ -157,8 +157,8 @@ int main(void) {
   PASSED
 
   TEST("vec2__dot should calcualte the dot btw 2 vec2");
-  struct Vec2 a = { 1, 0 };
-  struct Vec2 b = { 1, 0 };
+  Vec2 a = { 1, 0 };
+  Vec2 b = { 1, 0 };
   float dot = vec2__dot(a, b);
   assert(diff_is_within_tolerance(
     dot,
@@ -170,8 +170,8 @@ int main(void) {
   const float NORM_1_1_V2 = 0.7071067811865475f;
 
   TEST("vec2__dot run #2");
-  struct Vec2 a = { 1, 0 };
-  struct Vec2 b = { NORM_1_1_V2, NORM_1_1_V2 };
+  Vec2 a = { 1, 0 };
+  Vec2 b = { NORM_1_1_V2, NORM_1_1_V2 };
   float dot = vec2__dot(a, b);
   assert(diff_is_within_tolerance(
     dot,
@@ -181,8 +181,8 @@ int main(void) {
   PASSED
 
   TEST("vec2__dot run #3");
-  struct Vec2 a = { NORM_1_1_V2, NORM_1_1_V2 };
-  struct Vec2 b = { -NORM_1_1_V2, -NORM_1_1_V2 };
+  Vec2 a = { NORM_1_1_V2, NORM_1_1_V2 };
+  Vec2 b = { -NORM_1_1_V2, -NORM_1_1_V2 };
   float dot = vec2__dot(a, b);
   assert(diff_is_within_tolerance(
     dot,
@@ -192,8 +192,8 @@ int main(void) {
   PASSED
 
   TEST("vec2__fewest_rads_btw_vec2s should calculate the angle btw 2 vec2s");
-  struct Vec2 a = { 1, 0 };
-  struct Vec2 b = { 0, 1 };
+  Vec2 a = { 1, 0 };
+  Vec2 b = { 0, 1 };
   assert(diff_is_within_tolerance(
     rad_to_deg(vec2__fewest_rads_btw_vec2s(a, b)),
     90.0f,
@@ -202,8 +202,8 @@ int main(void) {
   PASSED
 
   TEST("vec2__fewest_rads_btw_vec2s run #2");
-  struct Vec2 a = { 0, 1 };
-  struct Vec2 b = { NORM_1_1_V2, -NORM_1_1_V2 };
+  Vec2 a = { 0, 1 };
+  Vec2 b = { NORM_1_1_V2, -NORM_1_1_V2 };
   assert(diff_is_within_tolerance(
     rad_to_deg(vec2__fewest_rads_btw_vec2s(a, b)),
     135.0f,
@@ -213,47 +213,47 @@ int main(void) {
 
   TEST("vec3__cross should calculate the cross product");
   f_tol.tolerance = FLT_EPSILON;
-  struct Vec3 a = { 5, 2.1f, 2.2f };
-  struct Vec3 b = { -2, -8, 3.8f };
-  struct Vec3 actual = vec3__cross(a, b);
-  struct Vec3 expected = { 25.58f, -23.4f, -35.8f };
+  Vec3 a = { 5, 2.1f, 2.2f };
+  Vec3 b = { -2, -8, 3.8f };
+  Vec3 actual = vec3__cross(a, b);
+  Vec3 expected = { 25.58f, -23.4f, -35.8f };
   assert(vec_equals_vec(&actual.x, &expected.x, 3, &f_tol));
   PASSED
 
   TEST("vec3_minus_vec3 should subtract the 2nd vec3 from the 1st");
   f_tol.tolerance = FLT_EPSILON;
-  struct Vec3 a = { 3.4f, 1, -1.002f };
-  struct Vec3 b = { 1, 0, -1 };
-  struct Vec3 actual = vec3_minus_vec3(a, b);
-  struct Vec3 expected = { 2.4f, 1, -0.002f };
+  Vec3 a = { 3.4f, 1, -1.002f };
+  Vec3 b = { 1, 0, -1 };
+  Vec3 actual = vec3_minus_vec3(a, b);
+  Vec3 expected = { 2.4f, 1, -0.002f };
   assert(vec_equals_vec(&actual.x, &expected.x, 3, &f_tol));
   PASSED
 
   TEST("vec3_plus_vec3 should add the vectors");
   f_tol.tolerance = FLT_EPSILON * 10; // TODO: this is necessary?
-  struct Vec3 a = { 3.4f, 1, -1.002f };
-  struct Vec3 b = { 1, 0, -1 };
-  struct Vec3 actual = vec3_plus_vec3(a, b);
-  struct Vec3 expected = { 4.4f, 1, -2.002f };
+  Vec3 a = { 3.4f, 1, -1.002f };
+  Vec3 b = { 1, 0, -1 };
+  Vec3 actual = vec3_plus_vec3(a, b);
+  Vec3 expected = { 4.4f, 1, -2.002f };
   assert(vec_equals_vec(&actual.x, &expected.x, 3, &f_tol));
   PASSED
 
   TEST("vec3__mean should calculate the mean vec3");
   f_tol.tolerance = FLT_EPSILON;
-  struct Vec3 vecs[4] = {
+  Vec3 vecs[4] = {
     { 2.3f, 4, 9 },
     { -2, 2.1f, 2.2f },
     { 0.1f, 0.1f, 0.1f },
     { 2, 0.8f, 3 }
   };
-  struct Vec3 actual = vec3__mean(vecs, 4);
-  struct Vec3 expected = { 0.6f, 1.75f, 3.575f };
+  Vec3 actual = vec3__mean(vecs, 4);
+  Vec3 expected = { 0.6f, 1.75f, 3.575f };
   assert(vec_equals_vec(&actual.x, &expected.x, 3, &f_tol));
   PASSED
 
   TEST("vec3__magnitude should calculate the mag of the vec3");
   f_tol.tolerance = FLT_EPSILON;
-  float actual = vec3__magnitude((struct Vec3){ 4.5f, 8, -2.2f });
+  float actual = vec3__magnitude((Vec3){ 4.5f, 8, -2.2f });
   assert(diff_is_within_tolerance(
     actual,
     9.438749917229f,
@@ -263,9 +263,9 @@ int main(void) {
 
   TEST("vec3__normalize should normalize the vec3");
   f_tol.tolerance = FLT_EPSILON;
-  struct Vec3 a = { 23.2f, 12.49f, 92.3f };
-  struct Vec3 actual = vec3__normalize(a);
-  struct Vec3 expected = {
+  Vec3 a = { 23.2f, 12.49f, 92.3f };
+  Vec3 actual = vec3__normalize(a);
+  Vec3 expected = {
     0.2416991f,
     0.1301216f,
     0.9615872f
@@ -281,7 +281,7 @@ int main(void) {
   TEST("vec2__magnitude should calculate the mag of the vec2");
   f_tol.tolerance = FLT_EPSILON;
   assert(diff_is_within_tolerance(
-    vec2__magnitude((struct Vec2){ 0.23f, 1.00f }),
+    vec2__magnitude((Vec2){ 0.23f, 1.00f }),
     1.02610915599f,
     FLT_EPSILON
   ));
@@ -289,19 +289,19 @@ int main(void) {
 
   TEST("vec2__normalize should normalize the vec2");
   f_tol.tolerance = FLT_EPSILON * 100;
-  struct Vec2 actual = vec2__normalize((struct Vec2){ 0.23f, 1.00f });
+  Vec2 actual = vec2__normalize((Vec2){ 0.23f, 1.00f });
   assert(vec_equals_vec(
     &actual.x,
-    &((struct Vec2){ 0.224147f, 0.974555f }).x,
+    &((Vec2){ 0.224147f, 0.974555f }).x,
     2,
     &f_tol
   ));
   PASSED
 
   TEST("vec2__dist_from_point_to_line should correctly calclate the distance");
-  struct Vec2 test_position = { 4.0f, 2.3f };
-  struct Vec2 p0 = { -2, 2 };
-  struct Vec2 p1 = { 0, 0 };
+  Vec2 test_position = { 4.0f, 2.3f };
+  Vec2 p0 = { -2, 2 };
+  Vec2 p1 = { 0, 0 };
   float expected = 4.45477f;
   float actual = vec2__dist_from_point_to_line(
     p0,
@@ -498,11 +498,11 @@ int main(void) {
     0, 0, 0, 1,
     &actual_m4
   );
-  struct Vec3 actual = m4x4_x_point(
+  Vec3 actual = m4x4_x_point(
     &actual_m4,
-    (struct Vec3){ 6.0f, -20.0f, -14.33f }
+    (Vec3){ 6.0f, -20.0f, -14.33f }
   );
-  struct Vec3 expected = { 10, 11.526f, -14.33f };
+  Vec3 expected = { 10, 11.526f, -14.33f };
   assert(vec_equals_vec(&actual.x, &expected.x, 3, &f_tol));
   PASSED
 
@@ -540,7 +540,7 @@ int main(void) {
 
   TEST("m4x4__translation should create a translation matrix");
   f_tol.tolerance = FLT_EPSILON;
-  struct Vec3 t = { 2.355f, 30, 1 };
+  Vec3 t = { 2.355f, 30, 1 };
   m4x4__translation(t, &actual_m4);
   m4x4__create(
     1, 0, 0, 2.355f,
@@ -589,37 +589,37 @@ int main(void) {
   // NOTE: math.h trig fns not very accurate (eg cos(90) != 0)
   // but idc really so set tolerance higher
   f_tol.tolerance = FLT_EPSILON * 1000;
-  struct M4x4 rotation;
-  struct Vec3 a = { 1.0f, 0.0f, 0.0f };
-  struct Vec3 axis = { 0.0f, 1.0f, 0.0f };
+  M4x4 rotation;
+  Vec3 a = { 1.0f, 0.0f, 0.0f };
+  Vec3 axis = { 0.0f, 1.0f, 0.0f };
   m4x4__rotation(deg_to_rad(90), axis, &rotation);
-  struct Vec3 actual = m4x4_x_point(&rotation, a);
-  struct Vec3 expected = { 0.0f, 0.0f, -1.0f };
+  Vec3 actual = m4x4_x_point(&rotation, a);
+  Vec3 expected = { 0.0f, 0.0f, -1.0f };
   assert(vec_equals_vec(&actual.x, &expected.x, 3, &f_tol));
   PASSED
 
   TEST("m4x4__rotation run #2");
   f_tol.tolerance = FLT_EPSILON * 1000;
-  struct M4x4 rotation;
+  M4x4 rotation;
   m4x4__rotation(
     deg_to_rad(180),
-    vec3__normalize((struct Vec3){ 1, 1, 0 }),
+    vec3__normalize((Vec3){ 1, 1, 0 }),
     &rotation
   );
-  struct Vec3 actual = m4x4_x_point(
+  Vec3 actual = m4x4_x_point(
     &rotation,
-    (struct Vec3){ 1, 0, 0 }
+    (Vec3){ 1, 0, 0 }
   );
-  struct Vec3 expected = { 0, 1, 0 };
+  Vec3 expected = { 0, 1, 0 };
   assert(vec_equals_vec(&actual.x, &expected.x, 3, &f_tol));
   PASSED
 
-  TEST("m4x4__view should construct an inverted space transform matrix");
+  TEST("m4x4__view should conan inverted space transform matrix");
   f_tol.tolerance = FLT_EPSILON;
   m4x4__view(
-    (struct Vec3){ 1, 0, 0 },
-    (struct Vec3){ 0, 1, 0 },
-    (struct Vec3){ 0, 0, -1 },
+    (Vec3){ 1, 0, 0 },
+    (Vec3){ 0, 1, 0 },
+    (Vec3){ 0, 0, -1 },
     &actual_m4
   );
   m4x4__create(
@@ -676,7 +676,7 @@ int main(void) {
     "from the source 4x4"
   );
   f_tol.tolerance = FLT_EPSILON;
-  struct M4x4 m;
+  M4x4 m;
   m4x4__create(
     1, 0.3f, 3, 0,
     0, -0.2f, 1, 0,
@@ -684,9 +684,9 @@ int main(void) {
     0, 0, 0, 1,
     &m
   );
-  struct M3x3 actual_m3;
+  M3x3 actual_m3;
   m4x4__sub3x3_from00(&m, &actual_m3);
-  struct M3x3 expected_m3;
+  M3x3 expected_m3;
   m3x3__create(
     1, 0.3f, 3,
     0, -0.2f, 1,
@@ -707,19 +707,19 @@ int main(void) {
   */
 
   TEST("setting viewport width should set perspective_needs_recalculating to true");
-  struct Viewport vwprt = {0};
+  Viewport vwprt = {0};
   viewport__set_width(100, &vwprt);
   assert(viewport__perspective_needs_recalculating(&vwprt));
   PASSED
 
   TEST("setting viewport height should set perspective_needs_recalculating to true");
-  struct Viewport vwprt = {0};
+  Viewport vwprt = {0};
   viewport__set_height(200, &vwprt);
   assert(viewport__perspective_needs_recalculating(&vwprt));
   PASSED
 
   TEST("viewport__get_aspect_ratio should return the viewport width / height");
-  struct Viewport vwprt = {0};
+  Viewport vwprt = {0};
   viewport__set_width(1920, &vwprt);
   viewport__set_height(1080, &vwprt);
   assert(diff_is_within_tolerance(
@@ -737,10 +737,10 @@ int main(void) {
 
   TEST("camera__calculate_lookat should create a lookat matrix");
   f_tol.tolerance = FLT_EPSILON;
-  struct Camera cam;
-  cam.position = (struct Vec3){ 0.0f, 0.25f, 0.5f };
-  cam.look_target = (struct Vec3){ 0.0f, 0.5f, -1.0f };
-  camera__calculate_lookat((struct Vec3){ 0.0f, 1.0f, 0.0f }, &cam);
+  Camera cam;
+  cam.position = (Vec3){ 0.0f, 0.25f, 0.5f };
+  cam.look_target = (Vec3){ 0.0f, 0.5f, -1.0f };
+  camera__calculate_lookat((Vec3){ 0.0f, 1.0f, 0.0f }, &cam);
   m4x4__create(
     1, 0, 0, 0,
     0, 0.98639392853f, 0.16439899802f, -0.3287979960f,
@@ -760,11 +760,11 @@ int main(void) {
     "projection matrix"
   );
   f_tol.tolerance = FLT_EPSILON * 1000;
-  struct Camera cam;
+  Camera cam;
   cam.horizontal_fov_in_deg = 75;
   cam.near_clip_distance = 0.1f;
   cam.far_clip_distance = 10;
-  struct Viewport vwprt;
+  Viewport vwprt;
   viewport__set_width(1920, &vwprt);
   viewport__set_height(1080, &vwprt);
   camera__calculate_perspective(&vwprt, &cam);
@@ -793,10 +793,10 @@ int main(void) {
     "provided rotation axis"
   ); 
   f_tol.tolerance = FLT_EPSILON;
-  struct Vec3 t = { 1, 0, 0 };
-  struct Vec3 expected = { 0, 0, -1 };
-  struct Vec3 rotated = space__ccw_angle_rotate(
-    (struct Vec3){ 0, 1, 0 },
+  Vec3 t = { 1, 0, 0 };
+  Vec3 expected = { 0, 0, -1 };
+  Vec3 rotated = space__ccw_angle_rotate(
+    (Vec3){ 0, 1, 0 },
     M_PI * 0.5f,
     t
   );
@@ -810,19 +810,19 @@ int main(void) {
 
   TEST("space__ccw_quat_rotate run #2");
   f_tol.tolerance = FLT_EPSILON * 10;
-  struct Vec3 t = { 1, 0, 0 };
-  struct Quaternion q0, q1, q2;
+  Vec3 t = { 1, 0, 0 };
+  Quaternion q0, q1, q2;
   q0 = quaternion__create(
-    (struct Vec3){ 0, 1, 0 },
+    (Vec3){ 0, 1, 0 },
     M_PI * 0.25f
   );
   q1 = quaternion__create(
-    (struct Vec3){ 0, 1, 0 },
+    (Vec3){ 0, 1, 0 },
     M_PI * 0.25f
   );
   q2 = quaternion__multiply(q0, q1);
-  struct Vec3 rotated = space__ccw_quat_rotate(q2, t);
-  struct Vec3 expected = { 0, 0, -1 };
+  Vec3 rotated = space__ccw_quat_rotate(q2, t);
+  Vec3 expected = { 0, 0, -1 };
   assert(vec_equals_vec(
     &rotated.x,
     &expected.x,
@@ -836,10 +836,10 @@ int main(void) {
     "matrix for rotation around the z axis, scale, and translation"
   );
   f_tol.tolerance = FLT_EPSILON * 10;
-  struct Transform t = {
+  Transform t = {
     .position = { 0.3f, -2.0f, -2.0f },
     .rotation = quaternion__create(
-      (struct Vec3){ 0, 0, 1 },
+      (Vec3){ 0, 0, 1 },
       deg_to_rad(45)
     ),
     .scale = 1.3f
@@ -866,7 +866,7 @@ int main(void) {
   // TODO: finish this test smh
   // TEST("space__create_model run #2");
   // f_tol.tolerance = FLT_EPSILON * 1000;
-  // struct Transform t = {
+  // Transform t = {
   //   .position = { 0, 0, 1 },
   //   .rotation_in_deg = { 90, 0, 0 },
   //   .scale = 1
@@ -899,9 +899,9 @@ int main(void) {
 }
 
 int m2x2_equals_m2x2(
-  const struct M2x2 *m0,
-  const struct M2x2 *m1,
-  const struct FloatTolerance *ft
+  const M2x2 *m0,
+  const M2x2 *m1,
+  const FloatTolerance *ft
 ) {
   for (int i = 0; i < 4; i++) {
     if (!ft->within_tolerance(
@@ -914,9 +914,9 @@ int m2x2_equals_m2x2(
 }
 
 int m3x3_equals_m3x3(
-  const struct M3x3 *m0,
-  const struct M3x3 *m1,
-  const struct FloatTolerance *ft
+  const M3x3 *m0,
+  const M3x3 *m1,
+  const FloatTolerance *ft
 ) {
   for (int i = 0; i < 9; i++) {
     if (!ft->within_tolerance(
@@ -929,9 +929,9 @@ int m3x3_equals_m3x3(
 }
 
 int m4x4_equals_m4x4(
-  const struct M4x4 *m0,
-  const struct M4x4 *m1,
-  const struct FloatTolerance *ft
+  const M4x4 *m0,
+  const M4x4 *m1,
+  const FloatTolerance *ft
 ) {
   for (int i = 0; i < 16; i++) {
     if (!ft->within_tolerance(
@@ -943,7 +943,7 @@ int m4x4_equals_m4x4(
   return 1;
 }
 
-void print_m3x3(const char *name, const struct M3x3 *m) {
+void print_m3x3(const char *name, const M3x3 *m) {
   printf(name);
   printf("%.12f, ", m->data[0]);
   printf("%.12f, ", m->data[3]);
@@ -956,9 +956,9 @@ void print_m3x3(const char *name, const struct M3x3 *m) {
   printf("%.12f\n", m->data[8]);
 }
 
-void print_m4x4(const char *name, const struct M4x4 *m) {
-  struct M4x4 transposed = {0};
-  memcpy(&transposed.data, &m->data, sizeof(struct M4x4));
+void print_m4x4(const char *name, const M4x4 *m) {
+  M4x4 transposed = {0};
+  memcpy(&transposed.data, &m->data, sizeof(M4x4));
   m4x4__transpose(&transposed);
   printf(name);
   printf("\n");
@@ -973,7 +973,7 @@ void print_m4x4(const char *name, const struct M4x4 *m) {
   printf("\n\n");
 }
 
-void print_vec3(const char *name, struct Vec3 t) {
+void print_vec3(const char *name, Vec3 t) {
   printf(name);
   printf("{ %.12f, %.12f, %.12f }", t.x, t.y, t.z);
 }
