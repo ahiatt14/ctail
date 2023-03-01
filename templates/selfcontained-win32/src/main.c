@@ -53,7 +53,7 @@ int main() {
   camera__calculate_perspective(&vwprt, &cam);
 
   gpu.copy_static_mesh_to_gpu(&CUBE_MESH);
-  gpu.copy_texture_to_gpu(&FUR_TEXTURE);
+  gpu.copy_texture_to_gpu(FILTER__NEAREST, &FUR_TAIL_TEXTURE);
   cube_shader.frag_src = CUBE_FRAG_SRC;
   cube_shader.vert_src = CUBE_VERT_SRC;
   gpu.copy_shader_to_gpu(&cube_shader);
@@ -89,7 +89,7 @@ int main() {
     gpu.clear(&COLOR_WHITE);
 
     gpu.select_shader(&cube_shader);
-    gpu.select_texture(&FUR_TEXTURE);
+    gpu.select_texture(&FUR_TAIL_TEXTURE);
     gpu.set_shader_m4x4(&cube_shader, "model", &cube_local_to_world);
     gpu.set_shader_m4x4(&cube_shader, "view", &cam.lookat);
     gpu.set_shader_m4x4(&cube_shader, "projection", &cam.projection);

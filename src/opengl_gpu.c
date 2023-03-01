@@ -96,6 +96,7 @@ static void copy_texture_to_gpu(
   glGenTextures(1, &tex->_impl_id);
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
 
+  // TODO: parameterize wrap mode!
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -123,6 +124,43 @@ static void copy_texture_to_gpu(
   );
 
   glGenerateMipmap(GL_TEXTURE_2D);
+}
+
+static void copy_cubemap_to_gpu(
+  uint8_t filter,
+  Cubemap *const cubemap
+) {
+
+  glGenTextures(1, &cubemap->_impl_id);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap->_impl_id);
+
+  for (unsigned int i = 0; i < 6; i++) {
+    glTexImage2D(
+      GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+      0,
+      GL_RGB,
+      cubemap->sides[i]->width,
+      cubemap->sides[i]->height,
+      0, // "should always be 0 (legacy stuff)",
+      GL_RGB,
+      GL_UNSIGNED_BYTE,
+      cubemap->sides[i]->data
+    );
+  }
+
+  glTexParameteri(
+    GL_TEXTURE_CUBE_MAP,
+    GL_TEXTURE_MIN_FILTER,
+    texture_filter_to_gl_tex_filter(filter)
+  );
+  glTexParameteri(
+    GL_TEXTURE_CUBE_MAP,
+    GL_TEXTURE_MAG_FILTER,
+    texture_filter_to_gl_tex_filter(filter)
+  );
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
 static void copy_points_to_gpu(
@@ -258,6 +296,11 @@ static void clear(Vec3 const *const c) {
 
 static void clear_depth_buffer() {
   glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+static void select_cubemap(Cubemap const *const cubemap) {
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap->_impl_id);
 }
 
 static void select_texture(Texture const *const tex) {
@@ -419,8 +462,10 @@ void gpu__create_api(GPU *const gpu) {
   gpu->copy_points_to_gpu = copy_points_to_gpu;
   gpu->update_gpu_mesh_data = update_gpu_mesh_data;
   gpu->copy_texture_to_gpu = copy_texture_to_gpu;
+  gpu->copy_cubemap_to_gpu = copy_cubemap_to_gpu;
   gpu->copy_shader_to_gpu = copy_shader_to_gpu;
   gpu->select_shader = select_shader;
+  gpu->select_cubemap = select_cubemap;
   gpu->select_texture = select_texture;
   gpu->select_textures = select_textures;
   gpu->set_viewport = set_viewport;
