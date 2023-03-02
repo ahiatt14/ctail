@@ -88,17 +88,37 @@ static int texture_filter_to_gl_tex_filter(uint8_t filter) {
   return FILTER__NEAREST;
 }
 
+static int texture_wrap_to_gl_tex_wrap(uint8_t wrap) {
+  switch (wrap) {
+    case WRAP__REPEAT:
+      return GL_REPEAT;
+    case WRAP__MIRROR_REPEAT:
+      return GL_MIRRORED_REPEAT;
+    case WRAP__CLAMP:
+      return GL_CLAMP_TO_EDGE;
+  }
+  return GL_REPEAT;
+}
+
 static void copy_texture_to_gpu(
   uint8_t filter,
+  uint8_t wrap,
   Texture *const tex
 ) {
 
   glGenTextures(1, &tex->_impl_id);
   glBindTexture(GL_TEXTURE_2D, tex->_impl_id);
 
-  // TODO: parameterize wrap mode!
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(
+    GL_TEXTURE_2D,
+    GL_TEXTURE_WRAP_S,
+    texture_wrap_to_gl_tex_wrap(wrap)
+  );
+  glTexParameteri(
+    GL_TEXTURE_2D,
+    GL_TEXTURE_WRAP_T,
+    texture_wrap_to_gl_tex_wrap(wrap)
+  );
 
   glTexParameteri(
     GL_TEXTURE_2D,

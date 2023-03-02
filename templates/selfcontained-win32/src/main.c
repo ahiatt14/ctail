@@ -53,7 +53,11 @@ int main() {
   camera__calculate_perspective(&vwprt, &cam);
 
   gpu.copy_static_mesh_to_gpu(&CUBE_MESH);
-  gpu.copy_texture_to_gpu(FILTER__NEAREST, &FUR_TAIL_TEXTURE);
+  gpu.copy_texture_to_gpu(
+    FILTER__NEAREST,
+    WRAP__CLAMP,
+    &FUR_TAIL_TEXTURE
+  );
   cube_shader.frag_src = CUBE_FRAG_SRC;
   cube_shader.vert_src = CUBE_VERT_SRC;
   gpu.copy_shader_to_gpu(&cube_shader);
