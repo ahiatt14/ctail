@@ -3,13 +3,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "parser.h"
-#include "normals.h"
-
 #include "mesh.h"
 #include "vector.h"
 
-#define OBJ_LINE_MAX_LENGTH 100
+#include "limits.h"
+#include "parser.h"
+#include "normals.h"
+
+#define OBJ_LINE_MAX_LENGTH 1000
 
 static inline int terminal(char c) {
   return (c == '\0' || c == '\n') ? 1 : 0;
@@ -53,7 +54,7 @@ void obj_f_triplet_line_to_vec3s(
   float *vt_indices
 ) {
   
-  char obj_line_copy[200] = {0};
+  char obj_line_copy[OBJ_LINE_MAX_LENGTH] = {0};
   strcpy(obj_line_copy, obj_line);
 
   char index_triplets[3][10] = {0};
@@ -104,10 +105,8 @@ void parse_obj_into_smooth_mesh(
   int *index_count_out
 ) {
 
-  // TODO: could clean up these temps
-
-  Vec3 obj_positions[5000] = {0};
-  Vec2 obj_uvs[5000] = {0};
+  Vec3 obj_positions[MAX_VERTICES] = {0};
+  Vec2 obj_uvs[MAX_VERTICES] = {0};
   char obj_line[OBJ_LINE_MAX_LENGTH] = {0};
 
   int obj_v_count = 0;
@@ -134,21 +133,9 @@ void parse_obj_into_smooth_mesh(
       indices,
       obj_positions
     );
-    memcpy( // TODO: try assigning directly to the struct var here. what happens..
-      &vertices[i].position.x,
-      &obj_positions[i].x,
-      sizeof(Vec3)
-    );
-    memcpy(
-      &vertices[i].normal.x,
-      &temp_normal.x,
-      sizeof(Vec3)
-    );
-    memcpy(
-      &vertices[i].uv.x,
-      &obj_uvs[i].x,
-      sizeof(Vec2)
-    );
+    vertices[i].position = obj_positions[i];
+    vertices[i].normal = temp_normal;
+    vertices[i].uv = obj_uvs[i];
   }
 
   *vert_count_out = obj_v_count;
@@ -163,16 +150,16 @@ void parse_obj_into_flat_mesh(
   int *index_count_out
 ) {
 
-  Vec3 obj_positions[5000] = {0};
-  Vec3 obj_normals[5000] = {0};
-  Vec2 obj_uvs[5000] = {0};
+  Vec3 obj_positions[MAX_VERTICES] = {0};
+  Vec3 obj_normals[MAX_VERTICES] = {0};
+  Vec2 obj_uvs[MAX_VERTICES] = {0};
 
   char obj_line[OBJ_LINE_MAX_LENGTH] = {0};
 
   Vec3 temp_vec3a = {0};
   Vec3 temp_vec3b = {0};
   Vec3 temp_vec3c = {0};
-  Vec3 temp_vec2 = {0};
+  Vec2 temp_vec2 = {0};
 
   int obj_v_count = 0;
   int obj_normal_count = 0;
@@ -182,25 +169,13 @@ void parse_obj_into_flat_mesh(
   while (fgets(obj_line, OBJ_LINE_MAX_LENGTH, obj_file) != NULL) {
     if (strncmp(obj_line, "v ", 2) == 0) {
       obj_float_line_to_vector(obj_line, &temp_vec3a.x);
-      memcpy(
-        &obj_positions[obj_v_count++],
-        &temp_vec3a.x,
-        sizeof(Vec3)
-      );
+      obj_positions[obj_v_count++] = temp_vec3a;
     } else if (strncmp(obj_line, "vt ", 3) == 0) {
       obj_float_line_to_vector(obj_line, &temp_vec2.x);
-      memcpy(
-        &obj_uvs[obj_uv_count++],
-        &temp_vec2.x,
-        sizeof(Vec2)
-      );
+      obj_uvs[obj_uv_count++] = temp_vec2;
     } else if (strncmp(obj_line, "vn", 2) == 0) {
       obj_float_line_to_vector(obj_line, &temp_vec3b.x);
-      memcpy(
-        &obj_normals[obj_normal_count++],
-        &temp_vec3b.x,
-        sizeof(Vec3)
-      );
+      obj_normals[obj_normal_count++] = temp_vec3b;
     } else if (strncmp(obj_line, "f ", 2) == 0) {
       obj_f_triplet_line_to_vec3s(
         obj_line,
@@ -208,24 +183,18 @@ void parse_obj_into_flat_mesh(
         &temp_vec3b.x,
         &temp_vec3c.x
       );
+      
       for (int face_vert_index = 0; face_vert_index < 3; face_vert_index++) {
-        memcpy(
-          &vertices[vert_count].position.x,
-          &obj_positions[(int)(&temp_vec3a.x)[face_vert_index]],
-          sizeof(Vec3)
-        );
-        memcpy(
-          &vertices[vert_count].normal.x,
-          &obj_normals[(int)(&temp_vec3b.x)[face_vert_index]],
-          sizeof(Vec3)
-        );
-        if (face_vert_index < 3) {
-          memcpy(
-            &vertices[vert_count].uv.x,
-            &obj_uvs[(int)(&temp_vec3c.x)[face_vert_index]],
-            sizeof(Vec2)
-          );
-        }
+
+        vertices[vert_count].position =
+          obj_positions[(int)(&temp_vec3a.x)[face_vert_index]];
+        vertices[vert_count].normal =
+          obj_normals[(int)(&temp_vec3b.x)[face_vert_index]];
+
+        if (face_vert_index < 3)
+          vertices[vert_count].uv =
+            obj_uvs[(int)(&temp_vec3c.x)[face_vert_index]];
+
         vert_count++;
       }
     }

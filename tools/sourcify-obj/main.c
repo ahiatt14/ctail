@@ -5,14 +5,9 @@
 
 #include "vector.h"
 
+#include "limits.h"
 #include "normals.h"
 #include "parser.h"
-
-#define MAX_VERTICES 5000
-#define MAX_INDICES 30000
-#define MAX_FILENAME_LENGTH 100
-
-#define MAX_OUTPUT_PATH_CHAR_COUNT 200
 
 void fprint_vert(FILE *file, const Vertex *v);
 void fprint_vec3(FILE *file, const Vec3 *t);
@@ -53,8 +48,8 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  char filename[MAX_FILENAME_LENGTH] = {0};
-  filename_from_path(filename, argv[1], MAX_FILENAME_LENGTH);
+  char filename[MAX_FILENAME_CHAR] = {0};
+  filename_from_path(filename, argv[1], MAX_FILENAME_CHAR);
   
   uint8_t flat_shading = obj_shading_is_flat(obj_file);
   fclose(obj_file);
@@ -79,11 +74,11 @@ int main(int argc, char *argv[]) {
     );
   }
 
-  char base_output_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
+  char base_output_filepath[MAX_FILEPATH_CHAR] = {0};
   strcat(base_output_filepath, argv[2]);
   strcat(base_output_filepath, filename);
 
-  char header_output_filepath[MAX_OUTPUT_PATH_CHAR_COUNT] = {0};
+  char header_output_filepath[MAX_FILEPATH_CHAR] = {0};
   strcat(header_output_filepath, base_output_filepath);
   strcat(header_output_filepath, "_mesh.h");
 

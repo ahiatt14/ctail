@@ -1,0 +1,10 @@
+#ifndef __SOURCIFY_OBJ_LIMITS__
+#define __SOURCIFY_OBJ_LIMITS__
+
+#define MAX_VERTICES 10000
+#define MAX_INDICES 40000
+
+#define MAX_FILEPATH_CHAR 300
+#define MAX_FILENAME_CHAR 100
+
+#endif
