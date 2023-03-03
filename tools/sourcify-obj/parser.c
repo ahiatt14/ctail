@@ -57,7 +57,7 @@ void obj_f_triplet_line_to_vec3s(
   char obj_line_copy[OBJ_LINE_MAX_LENGTH] = {0};
   strcpy(obj_line_copy, obj_line);
 
-  char index_triplets[3][10] = {0};
+  char index_triplets[3][100] = {0};
   int index_triplet_index = 0;
 
   char *token = NULL;
@@ -167,16 +167,24 @@ void parse_obj_into_flat_mesh(
   int vert_count = 0;
 
   while (fgets(obj_line, OBJ_LINE_MAX_LENGTH, obj_file) != NULL) {
+
     if (strncmp(obj_line, "v ", 2) == 0) {
+
       obj_float_line_to_vector(obj_line, &temp_vec3a.x);
       obj_positions[obj_v_count++] = temp_vec3a;
+
     } else if (strncmp(obj_line, "vt ", 3) == 0) {
+
       obj_float_line_to_vector(obj_line, &temp_vec2.x);
       obj_uvs[obj_uv_count++] = temp_vec2;
+
     } else if (strncmp(obj_line, "vn", 2) == 0) {
+
       obj_float_line_to_vector(obj_line, &temp_vec3b.x);
       obj_normals[obj_normal_count++] = temp_vec3b;
+
     } else if (strncmp(obj_line, "f ", 2) == 0) {
+
       obj_f_triplet_line_to_vec3s(
         obj_line,
         &temp_vec3a.x,
