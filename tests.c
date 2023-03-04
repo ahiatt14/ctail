@@ -27,6 +27,11 @@ int m4x4_equals_m4x4(
   const M4x4 *m1,
   const FloatTolerance *ft
 );
+int quaternion_equals_quaternion(
+  const Quaternion q0,
+  const Quaternion q1,
+  const FloatTolerance *ft
+);
 void print_m3x3(const char *name, const M3x3 *m);
 void print_m4x4(const char *name, const M4x4 *m);
 void print_vec3(const char *name, Vec3 t);
@@ -308,9 +313,6 @@ int main(void) {
     p1,
     test_position
   );
-  printf("\n\nFLT_EPSILON %.8f", FLT_EPSILON * 100);
-  printf("\nexpected %.8f", expected);
-  printf("\nactual %.8f\n\n", actual);
   assert(diff_is_within_tolerance(
     actual,
     expected,
@@ -863,32 +865,39 @@ int main(void) {
   ));
   PASSED
 
-  // TODO: finish this test smh
-  // TEST("space__create_model run #2");
-  // f_tol.tolerance = FLT_EPSILON * 1000;
-  // Transform t = {
-  //   .position = { 0, 0, 1 },
-  //   .rotation_in_deg = { 90, 0, 0 },
-  //   .scale = 1
-  // };
-  // space__create_model(
-  //   &DEFAULT_WORLDSPACE,
-  //   &t,
-  //   &actual_m4
-  // );
-  // m4x4__create(
-  //   1, 0, 0, 0,
-  //   0, 1, 0, 0,
-  //   0, 0, 1, 1,
-  //   0, 0, 0, 1,
-  //   &expected_m4
-  // );
-  // assert(m4x4_equals_m4x4(
-  //   &expected_m4,
-  //   &actual_m4,
-  //   &f_tol
-  // ));
-  // PASSED
+  /*
+
+    QUATERNIONS
+
+  */
+
+  TEST(
+    "quaternion__linear_slerp should produce a rotation"
+    "that is t proportion between q0 and q1"
+  );
+  f_tol.tolerance = FLT_EPSILON;
+  Quaternion q0 = quaternion__create(
+    DEFAULT_WORLDSPACE.up,
+    M_PI * 0.25f
+  );
+  Quaternion q1 = quaternion__create(
+    DEFAULT_WORLDSPACE.up,
+    M_PI
+  );
+  Quaternion actual = quaternion__linear_slerp(
+    q0,
+    q1,
+    0.3333333f
+  );
+  Quaternion expected = quaternion__create(
+    DEFAULT_WORLDSPACE.up,
+    M_PI * 0.5f
+  );
+  assert(abs(actual.v.x - expected.v.x) < f_tol.tolerance);
+  assert(abs(actual.v.y - expected.v.y) < f_tol.tolerance);
+  assert(abs(actual.v.z - expected.v.z) < f_tol.tolerance);
+  assert(abs(actual.w - expected.w) < f_tol.tolerance);
+  PASSED
 
   printf("\n\n");
   printf("_____________________________________\n");
@@ -942,6 +951,14 @@ int m4x4_equals_m4x4(
   }
   return 1;
 }
+
+// int quaternion_equals_quaternion(
+//   const Quaternion q0,
+//   const Quaternion q1,
+//   const FloatTolerance *ft
+// ) {
+
+// }
 
 void print_m3x3(const char *name, const M3x3 *m) {
   printf(name);

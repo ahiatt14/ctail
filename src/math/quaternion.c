@@ -56,3 +56,35 @@ void quaternion__to_m4x4(
     m
   );
 }
+
+static inline Quaternion invert_unit_quat(
+  Quaternion q
+) {
+  return (Quaternion){ .v = vec3__negate(q.v), .w = q.w };
+}
+Quaternion quaternion__linear_slerp(
+  Quaternion q0,
+  Quaternion q1,
+  float t
+) {
+
+  Quaternion diff = quaternion__multiply(
+    q1,
+    invert_unit_quat(q0)
+  );
+
+  Vec3 axis = vec3__normalize(diff.v);
+  float rads = acos(diff.w) * 2.0f;
+
+  float slerp_rads = rads * t;
+
+  Quaternion slerp_quat = (Quaternion){
+    .v = scalar_x_vec3(
+      sin(slerp_rads * 0.5f),
+      axis
+    ),
+    .w = cos(slerp_rads * 0.5f)
+  };
+
+  return quaternion__multiply(slerp_quat, q0);
+}
