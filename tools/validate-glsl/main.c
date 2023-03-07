@@ -50,8 +50,15 @@ int main(int argc, char *argv[]) {
     id = glCreateShader(GL_VERTEX_SHADER); 
   } else if (strcmp(argv[2], "geo") == 0) {
     id = glCreateShader(GL_GEOMETRY_SHADER);
+  } else if (strcmp(argv[2], "tess_ctrl") == 0) {
+    id = glCreateShader(GL_TESS_CONTROL_SHADER);
+  } else if (strcmp(argv[2], "tess_eval") == 0) {
+    id = glCreateShader(GL_TESS_EVALUATION_SHADER);
   } else {
-    printf("Second argument must by \"frag\", \"geo\", or \"vert\".\n");
+    printf(
+      "Second argument must by \"frag\", \"geo\", \"vert\", "
+      "\"tess_ctrl\", or \"tess_eval\".\n"
+    );
     return 1;
   }
 

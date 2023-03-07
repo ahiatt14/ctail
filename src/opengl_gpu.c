@@ -17,6 +17,9 @@
 #define COUNT_OF_VALUES_PER_NORMAL 3
 #define COUNT_OF_VALUES_PER_UV 2
 
+#define UNTESSELLATED 0
+#define TESSELLATED 1
+
 static void compile_src(
   GLenum shader_type,
   const char *shader_src,
@@ -29,43 +32,67 @@ static void compile_src(
 }
 
 static void copy_shader_to_gpu(
-  Shader *const gpup
+  Shader *const shader
 ) {
   
   compile_src(
     GL_FRAGMENT_SHADER,
-    gpup->frag_src,
-    &gpup->_frag_impl_id
+    shader->frag_src,
+    &shader->_frag_impl_id
   );
   compile_src(
     GL_VERTEX_SHADER,
-    gpup->vert_src,
-    &gpup->_vert_impl_id
+    shader->vert_src,
+    &shader->_vert_impl_id
   );
-  if (gpup->geo_src != NULL)
+  if (shader->geo_src != NULL)
     compile_src(
       GL_GEOMETRY_SHADER,
-      gpup->geo_src,
-      &gpup->_geo_impl_id
+      shader->geo_src,
+      &shader->_geo_impl_id
+    );
+  if (shader->tess_ctrl_src != NULL)
+    compile_src(
+      GL_TESS_CONTROL_SHADER,
+      shader->tess_ctrl_src,
+      &shader->_tess_ctrl_impl_id
+    );
+  if (shader->tess_eval_src != NULL)
+    compile_src(
+      GL_TESS_EVALUATION_SHADER,
+      shader->tess_eval_src,
+      &shader->_tess_eval_impl_id
     );
 
   GLuint prog_id = glCreateProgram();
-  gpup->_impl_id = prog_id;
-  glAttachShader(prog_id, gpup->_frag_impl_id);
-  glAttachShader(prog_id, gpup->_vert_impl_id);
-  if (gpup->geo_src != NULL)
-    glAttachShader(prog_id, gpup->_geo_impl_id);
+  shader->_impl_id = prog_id;
+  glAttachShader(prog_id, shader->_frag_impl_id);
+  glAttachShader(prog_id, shader->_vert_impl_id);
+  if (shader->geo_src != NULL)
+    glAttachShader(prog_id, shader->_geo_impl_id);
+  if (shader->tess_ctrl_src != NULL)
+    glAttachShader(prog_id, shader->_tess_ctrl_impl_id);
+  if (shader->tess_eval_src != NULL)
+    glAttachShader(prog_id, shader->_tess_eval_impl_id);
   glLinkProgram(prog_id);
 
-  glDetachShader(prog_id, gpup->_frag_impl_id);
-  glDetachShader(prog_id, gpup->_vert_impl_id);
-  if (gpup->geo_src != NULL)
-    glDetachShader(prog_id, gpup->_geo_impl_id);
+  glDetachShader(prog_id, shader->_frag_impl_id);
+  glDeleteShader(shader->_frag_impl_id);
 
-  glDeleteShader(gpup->_frag_impl_id);
-  glDeleteShader(gpup->_vert_impl_id);
-  if (gpup->geo_src != NULL)
-    glDeleteShader(gpup->_geo_impl_id);
+  glDetachShader(prog_id, shader->_vert_impl_id);
+  glDeleteShader(shader->_vert_impl_id);
+
+  if (shader->geo_src != NULL) {
+    glDetachShader(prog_id, shader->_geo_impl_id);
+    glDeleteShader(shader->_geo_impl_id);
+  }
+  
+  if (shader->tess_ctrl_src != NULL) {
+    glDetachShader(prog_id, shader->_tess_ctrl_impl_id);
+    glDeleteShader(shader->_tess_ctrl_impl_id);
+    glDetachShader(prog_id, shader->_tess_eval_impl_id);
+    glDeleteShader(shader->_tess_eval_impl_id);   
+  }
 }
 
 static int channel_count_to_gl_tex_format(int channel_count) {
@@ -211,21 +238,22 @@ static void copy_points_to_gpu(
 }
 
 static void copy_mesh_to_gpu(
-  DrawableMesh *const dm,
-  GLenum usage
+  DrawableMesh *const mesh,
+  GLenum usage,
+  uint8_t tessellated
 ) {
 
-  glGenBuffers(1, &dm->_impl_vbo_id);
-  glGenBuffers(1, &dm->_impl_ibo_id);
-  glGenVertexArrays(1, &dm->_impl_vao_id);
+  glGenBuffers(1, &mesh->_impl_vbo_id);
+  glGenBuffers(1, &mesh->_impl_ibo_id);
+  glGenVertexArrays(1, &mesh->_impl_vao_id);
 
-  glBindVertexArray(dm->_impl_vao_id);
+  glBindVertexArray(mesh->_impl_vao_id);
 
-  glBindBuffer(GL_ARRAY_BUFFER, dm->_impl_vbo_id);
+  glBindBuffer(GL_ARRAY_BUFFER, mesh->_impl_vbo_id);
   glBufferData(
     GL_ARRAY_BUFFER,
-    dm->vertices_size,
-    &(dm->vertices->position.x),
+    mesh->vertices_size,
+    &(mesh->vertices->position.x),
     usage
   );
 
@@ -260,33 +288,41 @@ static void copy_mesh_to_gpu(
     (GLvoid*)offsetof(Vertex, uv)
   );
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dm->_impl_ibo_id);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->_impl_ibo_id);
+  // NOTE: quad patches only for now
+  if (tessellated) glPatchParameteri(GL_PATCH_VERTICES, 4);
   glBufferData(
     GL_ELEMENT_ARRAY_BUFFER,
-    dm->indices_size,
-    dm->indices,
+    mesh->indices_size,
+    mesh->indices,
     GL_STATIC_DRAW
   );
 }
 
-static void update_gpu_mesh_data(DrawableMesh const *const dm) {
-  glBindBuffer(GL_ARRAY_BUFFER, dm->_impl_vbo_id);
+static void update_gpu_mesh_data(DrawableMesh const *const mesh) {
+  glBindBuffer(GL_ARRAY_BUFFER, mesh->_impl_vbo_id);
   static void *temp_buffer_map;
   temp_buffer_map = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
   memcpy(
     temp_buffer_map,
-    &dm->vertices[0].position.x,
-    dm->vertices_size
+    &mesh->vertices[0].position.x,
+    mesh->vertices_size
   );
   glUnmapBuffer(GL_ARRAY_BUFFER);
 }
 
-static void copy_static_mesh_to_gpu(DrawableMesh *const dm) {
-  copy_mesh_to_gpu(dm, GL_STATIC_DRAW);
+// TODO: switch to single copy_mesh_to_gpu fn
+// with extra parameters now that there's more than one dimension
+static void copy_static_mesh_to_gpu(DrawableMesh *const mesh) {
+  copy_mesh_to_gpu(mesh, GL_STATIC_DRAW, UNTESSELLATED);
 }
 
-static void copy_dynamic_mesh_to_gpu(DrawableMesh *const dm) {
-  copy_mesh_to_gpu(dm, GL_DYNAMIC_DRAW);
+static void copy_dynamic_mesh_to_gpu(DrawableMesh *const mesh) {
+  copy_mesh_to_gpu(mesh, GL_DYNAMIC_DRAW, UNTESSELLATED);
+}
+
+static void copy_tessellated_mesh_to_gpu(DrawableMesh *const mesh) {
+  copy_mesh_to_gpu(mesh, GL_STATIC_DRAW, TESSELLATED);
 }
 
 static void enable_depth_test() {
@@ -343,17 +379,17 @@ static void select_textures(
   }
 }
 
-static void select_shader(Shader const *const gpup) {
-  glUseProgram(gpup->_impl_id);
+static void select_shader(Shader const *const shader) {
+  glUseProgram(shader->_impl_id);
 }
 
 static void set_shader_m3x3(
-  Shader const *const gpup,
+  Shader const *const shader,
   char const *name,
   M3x3 const *const value
 ) {
   glUniformMatrix3fv(
-    glGetUniformLocation(gpup->_impl_id, name),
+    glGetUniformLocation(shader->_impl_id, name),
     1,
     GL_FALSE,
     &(value->data[0])
@@ -361,12 +397,12 @@ static void set_shader_m3x3(
 }
 
 static void set_shader_m4x4(
-  Shader const *const gpup,
+  Shader const *const shader,
   char const *name,
   M4x4 const *const value
 ) {
   glUniformMatrix4fv(
-    glGetUniformLocation(gpup->_impl_id, name),
+    glGetUniformLocation(shader->_impl_id, name),
     1,
     GL_FALSE,
     &(value->data[0])
@@ -374,36 +410,36 @@ static void set_shader_m4x4(
 }
 
 static void set_shader_vec2(
-  Shader const *const gpup,
+  Shader const *const shader,
   char const *name,
   Vec2 value
 ) {
   glUniform2fv(
-    glGetUniformLocation(gpup->_impl_id, name),
+    glGetUniformLocation(shader->_impl_id, name),
     1,
     &value.x
   );
 }
 
 static void set_shader_vec3(
-  Shader const *const gpup,
+  Shader const *const shader,
   char const *name,
   Vec3 value
 ) {
   glUniform3fv(
-    glGetUniformLocation(gpup->_impl_id, name),
+    glGetUniformLocation(shader->_impl_id, name),
     1,
     &value.x
   );
 }
 
 static void set_shader_float(
-    Shader const *const gpup,
+    Shader const *const shader,
     char const *name,
     float value
 ) {
   glUniform1f(
-    glGetUniformLocation(gpup->_impl_id, name),
+    glGetUniformLocation(shader->_impl_id, name),
     value
   );
 }
@@ -416,6 +452,28 @@ static void draw_mesh(DrawableMesh const *const mesh) {
     GL_UNSIGNED_INT,
     (GLvoid*)0
   );
+}
+
+static void draw_tessellated_mesh(DrawableMesh const *const mesh) {
+  glBindVertexArray(mesh->_impl_vao_id);
+  glDrawElements(
+    GL_PATCHES,
+    mesh->indices_length,
+    GL_UNSIGNED_INT,
+    0
+  );
+}
+
+static void draw_tessellated_wireframe(DrawableMesh const *const mesh) {
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glBindVertexArray(mesh->_impl_vao_id);
+  glDrawElements(
+    GL_PATCHES,
+    mesh->indices_length,
+    GL_UNSIGNED_INT,
+    0
+  );
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 static void draw_wireframe(DrawableMesh const *const mesh) {
@@ -479,6 +537,7 @@ void gpu__create_api(GPU *const gpu) {
   gpu->cull_no_faces = cull_no_faces;
   gpu->copy_static_mesh_to_gpu = copy_static_mesh_to_gpu;
   gpu->copy_dynamic_mesh_to_gpu = copy_dynamic_mesh_to_gpu;
+  gpu->copy_tessellated_mesh_to_gpu = copy_tessellated_mesh_to_gpu;
   gpu->copy_points_to_gpu = copy_points_to_gpu;
   gpu->update_gpu_mesh_data = update_gpu_mesh_data;
   gpu->copy_texture_to_gpu = copy_texture_to_gpu;
@@ -497,6 +556,8 @@ void gpu__create_api(GPU *const gpu) {
   gpu->set_shader_vec3 = set_shader_vec3;
   gpu->set_shader_float = set_shader_float;
   gpu->draw_mesh = draw_mesh;
+  gpu->draw_tessellated_mesh = draw_tessellated_mesh;
+  gpu->draw_tessellated_wireframe = draw_tessellated_wireframe;
   gpu->draw_wireframe = draw_wireframe;
   gpu->draw_points = draw_points;
 }

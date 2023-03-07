@@ -4,7 +4,7 @@ target="win32"
 wsl_abs_path_to_root="/mnt/d/c/tail/"
 artifact_dir="src/temp_assets_src/"
 declare -a options=("-O2" "-Wall")
-declare -a includes=("-Isrc/headers" "-Ilibs/GLAD/include" "-Ilibs/GLFW/include" "-Iinclude -I$artifact_dir")
+declare -a includes=("-Isrc/headers" "-Ilibs/GLAD/include/glad" "-Ilibs/GLFW/include" "-Iinclude -I$artifact_dir")
 
 declare -A targets
 targets[win32]=i686-w64-mingw32-gcc

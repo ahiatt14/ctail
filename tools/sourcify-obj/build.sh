@@ -20,7 +20,7 @@ then
   ../../src/math/tail_math.c \
   ../../libs/GLAD/obj/glad.o \
   -o bin/tests.exe \
-  -I../../include -I../../src/headers -Itest_data -I../../libs/GLAD/include \
+  -I../../include -I../../src/headers -Itest_data -I../../libs/GLAD/include/glad \
   -Wall && \
   ./bin/tests.exe && \
   rm -rf bin/tests.exe
