@@ -433,6 +433,17 @@ static void set_shader_vec3(
   );
 }
 
+static void set_shader_int(
+    Shader const *const shader,
+    char const *name,
+    int value
+) {
+  glUniform1i(
+    glGetUniformLocation(shader->_impl_id, name),
+    value
+  );
+}
+
 static void set_shader_float(
     Shader const *const shader,
     char const *name,
@@ -554,6 +565,7 @@ void gpu__create_api(GPU *const gpu) {
   gpu->set_shader_m4x4 = set_shader_m4x4;
   gpu->set_shader_vec2 = set_shader_vec2;
   gpu->set_shader_vec3 = set_shader_vec3;
+  gpu->set_shader_int = set_shader_int;
   gpu->set_shader_float = set_shader_float;
   gpu->draw_mesh = draw_mesh;
   gpu->draw_tessellated_mesh = draw_tessellated_mesh;
